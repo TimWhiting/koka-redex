@@ -30,8 +30,8 @@ pub fun rule/show-latex(Rule(name, premises, conclusion): rule<n, p, c>, ?show-l
   "\\inferrule*[Right=" ++ name.show-latex-j ++ "]\n  { " ++ premises-str ++ " }\n  { " ++ conc-str ++ " }"
 
 // Format a single item (terminal element that is not type-nil or type-cons)
-pub fun default/show-latex(a: a, ?show-md: a -> e string): e list<string>
-  Cons(show-md(a), Nil)
+pub fun default/show-latex(a: a, ?show-latex-j: a -> e string): e list<string>
+  Cons(show-latex-j(a), Nil)
 
 pub value struct latexstr( s: string )
 

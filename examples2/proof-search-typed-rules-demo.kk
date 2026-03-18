@@ -27,7 +27,8 @@ fun facts(): list<fact>
 
 pub fun main()
   val goal = reach(TInt(1), TInt(4))
-  val policies = [Relation-policy("reach", LatNondetSet), Relation-policy("edge", LatDetError)]
+  val policies = [Relation-policy("reach", memo-lattice/nondet-set()),
+                  Relation-policy("edge", memo-lattice/det-error())]
   val search-rules =
     [ koka-redex2/proof-search/Rule("reach-edge", [edge(v("x"), v("y"))], reach(v("x"), v("y"))),
       koka-redex2/proof-search/Rule("reach-step", [edge(v("x"), v("y")), reach(v("y"), v("z"))], reach(v("x"), v("z"))) ]

@@ -1,6 +1,7 @@
 module koka-redex2/proof-search-policy
 
 import koka-redex2/proof-search
+import std/fixpoint/lattice
 
 /*
   Typed implicit policy layer
@@ -12,12 +13,14 @@ import koka-redex2/proof-search
 
   Idea:
   - pred-tag<r> names a runtime predicate and carries a phantom type r.
-  - rel-lattice<r> carries the policy for relation type r.
-  - policy/of(tag) uses implicit rel-lattice<r> to produce relation-policy.
+  - rel-memo-lattice<r> carries the memo lattice for relation type r.
+  - policy/of(tag) uses implicit rel-memo-lattice<r> to produce relation-policy.
 
   This enables per-relation policy declarations like:
-    fun lattice/reach(): rel-lattice<r-reach> Rel-lattice(LatNondetSet)
-    fun lattice/edge(): rel-lattice<r-edge> Rel-lattice(LatDetError)
+    val reach/rel-memo-lattice : rel-memo-lattice<r-reach>
+      = Rel-memo-lattice(memo-lattice/nondet-set())
+    val edge/rel-memo-lattice : rel-memo-lattice<r-edge>
+      = Rel-memo-lattice(memo-lattice/det-error())
 
   Then policies can be materialized from typed tags without manually writing
   string-based Relation-policy entries.
@@ -26,17 +29,17 @@ import koka-redex2/proof-search
 pub value struct pred-tag<r>
   name: string
 
-pub value struct rel-lattice<r>
-  lattice: relation-lattice
+pub value struct rel-memo-lattice<r>
+  memo-lattice: change-lattice<relation-memo-state, found-proof>
 
 pub fun mk/pred-tag(name: string): pred-tag<r>
   Pred-tag(name)
 
-pub fun policy/of(tag: pred-tag<r>, ?rel-lattice: rel-lattice<r>): relation-policy
+pub fun policy/of(tag: pred-tag<r>, ?rel-memo-lattice: rel-memo-lattice<r>): relation-policy
   match tag
     Pred-tag(name) ->
-      match rel-lattice
-        Rel-lattice(lattice) -> Relation-policy(name, lattice)
+      match rel-memo-lattice
+        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice)
 
 pub fun map-field(tag: pred-tag<r>, ?policy/of: pred-tag<r> -> relation-policy): relation-policy
   tag.policy/of

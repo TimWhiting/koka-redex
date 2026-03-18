@@ -313,110 +313,146 @@ pub fun proof/show(pf: proof, indent: string = ""): div string
   Memo model
   ----------
   - Key: ground goal string.
-  - Change: one newly found proof for a relation.
-  - Aggregate: relation-specific lattice accumulator.
+  - Change: one newly found proof.
+  - Aggregate: relation-specific memo state.
 
-  relation-lattice policies:
-  - LatDetError  : deterministic; second distinct result becomes a conflict.
-  - LatNondetSet : nondeterministic; accumulate deduplicated proofs.
-  - LatDetFirst  : deterministic-first; keep only the first result.
+  Instead of a mode enum, each relation policy now carries an explicit
+  memo lattice value (change-lattice<relation-memo-state, found-proof>).
 */
 
-pub type relation-lattice
-  LatDetError
-  LatNondetSet
-  LatDetFirst
-
-pub value struct relation-policy
-  pred: string
-  lattice: relation-lattice
-
-type found-proof
+pub type found-proof
   Found-proof(proof: proof, key: string)
 
 type search-change
   NoChange
-  Found(pred: string, lattice: relation-lattice, result: found-proof)
+  Found(pred: string, result: found-proof)
+
+pub type relation-memo-state
+  MemoDet(value: maybe<found-proof>)
+  MemoDetConflict(first: found-proof, second: found-proof)
+  MemoFirst(value: maybe<found-proof>)
+  MemoNondet(values: list<found-proof>)
+
+pub value struct relation-policy
+  pred: string
+  memo-lattice: change-lattice<relation-memo-state, found-proof>
 
 type search-agg
   AggUnknown
-  AggDet(pred: string, value: maybe<found-proof>)
-  AggDetConflict(pred: string, first: found-proof, second: found-proof)
-  AggFirst(pred: string, value: maybe<found-proof>)
-  AggNondet(pred: string, values: list<found-proof>)
+  AggKnown(pred: string, memo-lattice: change-lattice<relation-memo-state, found-proof>, state: relation-memo-state)
 
 fun found-proof/same-key(fp1: found-proof, fp2: found-proof): bool
   match (fp1, fp2)
     (Found-proof(_, k1), Found-proof(_, k2)) -> k1 == k2
 
-fun relation-lattice-of(pred: string, policies: list<relation-policy>): relation-lattice
-  match policies
-    Nil -> LatNondetSet
-    Cons(Relation-policy(name, lattice), rst) ->
-      if name == pred then lattice else relation-lattice-of(pred, rst)
+fun relation-policy/of(predicate: string, policies: list<relation-policy>): relation-policy
+  match policies.find(fn(p) p.pred == predicate)
+    Just(p) -> p
+    Nothing -> Relation-policy(predicate, memo-lattice/nondet-set())
 
-fun search-join(old: search-agg, change: search-change): (bool, search-agg)
-  // This is the lattice join used by fixpoint-memo/cache.
-  match change
-    NoChange -> (False, old)
-    Found(pred, lattice, found) ->
-      match old
-        AggUnknown ->
-          match lattice
-            LatDetError -> (True, AggDet(pred, Just(found)))
-            LatNondetSet -> (True, AggNondet(pred, [found]))
-            LatDetFirst -> (True, AggFirst(pred, Just(found)))
-        AggDet(pred0, Nothing) ->
-          if pred0 == pred then (True, AggDet(pred, Just(found))) else (False, old)
-        AggDet(pred0, Just(first)) ->
-          if pred0 == pred then
-            if first.same-key(found) then (False, old)
-            else (True, AggDetConflict(pred, first, found))
-          else (False, old)
-        AggDetConflict(_, _, _) -> (False, old)
-        AggFirst(pred0, Nothing) ->
-          if pred0 == pred then (True, AggFirst(pred, Just(found))) else (False, old)
-        AggFirst(pred0, Just(first)) ->
-          if pred0 == pred then
-            if first.same-key(found) then (False, old)
-            else (False, old)
-          else (False, old)
-        AggNondet(pred0, values) ->
-          if pred0 == pred then
-            if values.any(fn(v) v.same-key(found)) then (False, old)
-            else (True, AggNondet(pred, Cons(found, values)))
-          else (False, old)
+fun memo-state/show(s: relation-memo-state): string
+  match s
+    MemoDet(Nothing) -> "MemoDet(None)"
+    MemoDet(Just(_)) -> "MemoDet(Some)"
+    MemoDetConflict(_, _) -> "MemoDetConflict"
+    MemoFirst(Nothing) -> "MemoFirst(None)"
+    MemoFirst(Just(_)) -> "MemoFirst(Some)"
+    MemoNondet(vs) -> "MemoNondet(" ++ vs.length.show ++ ")"
+
+fun memo-lattice/det-error-join(old: relation-memo-state, found: found-proof): (bool, relation-memo-state)
+  match old
+    MemoDet(Nothing) -> (True, MemoDet(Just(found)))
+    MemoDet(Just(first)) ->
+      if first.same-key(found) then (False, old)
+      else (True, MemoDetConflict(first, found))
+    MemoDetConflict(_, _) -> (False, old)
+    _ -> (False, old)
+
+fun memo-lattice/det-first-join(old: relation-memo-state, found: found-proof): (bool, relation-memo-state)
+  match old
+    MemoFirst(Nothing) -> (True, MemoFirst(Just(found)))
+    MemoFirst(Just(first)) ->
+      if first.same-key(found) then (False, old)
+      else (False, old)
+    _ -> (False, old)
+
+fun memo-lattice/nondet-set-join(old: relation-memo-state, found: found-proof): (bool, relation-memo-state)
+  match old
+    MemoNondet(values) ->
+      if values.any(fn(v) v.same-key(found)) then (False, old)
+      else (True, MemoNondet(Cons(found, values)))
+    _ -> (False, old)
+
+fun memo-lattice/det-error-changes(state: relation-memo-state): list<found-proof>
+  match state
+    MemoDet(Nothing) -> Nil
+    MemoDet(Just(found)) -> [found]
+    MemoDetConflict(first, second) -> [first, second]
+    _ -> Nil
+
+fun memo-lattice/det-first-changes(state: relation-memo-state): list<found-proof>
+  match state
+    MemoFirst(Nothing) -> Nil
+    MemoFirst(Just(found)) -> [found]
+    _ -> Nil
+
+fun memo-lattice/nondet-set-changes(state: relation-memo-state): list<found-proof>
+  match state
+    MemoNondet(values) -> values
+    _ -> Nil
+
+pub fun memo-lattice/det-error(): change-lattice<relation-memo-state, found-proof>
+  Change-lattice(MemoDet(Nothing), memo-lattice/det-error-join, memo-lattice/det-error-changes)
+
+pub fun memo-lattice/det-first(): change-lattice<relation-memo-state, found-proof>
+  Change-lattice(MemoFirst(Nothing), memo-lattice/det-first-join, memo-lattice/det-first-changes)
+
+pub fun memo-lattice/nondet-set(): change-lattice<relation-memo-state, found-proof>
+  Change-lattice(MemoNondet(Nil), memo-lattice/nondet-set-join, memo-lattice/nondet-set-changes)
 
 fun search-changes(agg: search-agg): list<search-change>
   // Exposes the current aggregate as a stream of changes for dependents.
   match agg
     AggUnknown -> Nil
-    AggDet(_pred, Nothing) -> Nil
-    AggDet(pred, Just(found)) -> [Found(pred, LatDetError, found)]
-    AggDetConflict(pred, first, second) -> [Found(pred, LatDetError, first), Found(pred, LatDetError, second)]
-    AggFirst(_pred, Nothing) -> Nil
-    AggFirst(pred, Just(found)) -> [Found(pred, LatDetFirst, found)]
-    AggNondet(pred, values) -> values.map(fn(found) Found(pred, LatNondetSet, found))
+    AggKnown(pred, lat, state) ->
+      val Change-lattice(_, _, changes) = lat
+      changes(state).map(fn(found) Found(pred, found))
 
-fun search-lattice(): change-lattice<search-agg, search-change>
-  Change-lattice(AggUnknown, search-join, search-changes)
+fun search-lattice(policies: list<relation-policy>): change-lattice<search-agg, search-change>
+  fun join(old: search-agg, change: search-change): _ (bool, search-agg)
+    match change
+      NoChange -> (False, old)
+      Found(pred, found) ->
+        match old
+          AggUnknown ->
+            val Relation-policy(_, lat) = relation-policy/of(pred, policies)
+            val Change-lattice(bottom, join, _) = lat
+            val (changed, state) = join(bottom, found)
+            (changed, AggKnown(pred, lat, state))
+          AggKnown(pred0, lat, state) ->
+            if pred0 == pred then
+              val Change-lattice(_, join, _) = lat
+              val (changed, state2) = join(state, found)
+              (changed, AggKnown(pred, lat, state2))
+            else (False, old)
+  Change-lattice(AggUnknown, join, search-changes)
 
 fun search-change/show(_: search-change): string
   "search-change"
 
-fun found-change(pred: string, lattice: relation-lattice, pf: proof): div search-change
+fun found-change(pred: string, pf: proof): div search-change
   // Proof string is used as a stable dedup key inside aggregation.
   val k = pf.show
-  Found(pred, lattice, Found-proof(pf, k))
+  Found(pred, Found-proof(pf, k))
 
-fun base-branch(goal: fact, f: fact, s: list<binding>, pred: string, lattice: relation-lattice): <cache<string,search-change>,div> search-change
+fun base-branch(goal: fact, f: fact, s: list<binding>, pred: string): <cache<string,search-change>,div> search-change
   match unify-fact(goal, f, s)
-    Just(s1) -> found-change(pred, lattice, ByFact(apply-subst-fact(goal, s1)))
+    Just(s1) -> found-change(pred, ByFact(apply-subst-fact(goal, s1)))
     Nothing -> NoChange
 
 fun rule-branch(goal: fact, r: rule, s: list<binding>, depth: int, next-id: int, seen1: list<fact>,
                 base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>,
-                pred: string, lattice: relation-lattice): <cache<string,search-change>,div> search-change
+                pred: string): <cache<string,search-change>,div> search-change
   val (next1, rf) = freshen-rule(r, next-id)
   val Rule(rname, rpremises, rconclusion) = rf
   match unify-fact(goal, rconclusion, s)
@@ -424,7 +460,7 @@ fun rule-branch(goal: fact, r: rule, s: list<binding>, depth: int, next-id: int,
       match prove-premises-memo(rpremises, s1, depth - 1, next1, seen1, base-facts, rules, policies)
         Just((s2, subproofs, _)) ->
           val conc = apply-subst-fact(rconclusion, s2)
-          found-change(pred, lattice, ByRule(rname, conc, subproofs))
+          found-change(pred, ByRule(rname, conc, subproofs))
         Nothing -> NoChange
     Nothing -> NoChange
 
@@ -437,7 +473,7 @@ fun prove-premises-memo(premises: list<fact>, s: list<binding>, depth: int, next
       if p1.is-ground then
         // Ground premise: safe to table.
         match prove-goal-memo(p1, s, depth, next-id, seen-ground, base-facts, rules, policies)
-          Found(_, _, Found-proof(pf, _)) ->
+          Found(_, Found-proof(pf, _)) ->
             match prove-premises-memo(ps, s, depth, next-id, seen-ground, base-facts, rules, policies)
               Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
               Nothing -> Nothing
@@ -461,11 +497,10 @@ fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, see
       match prove-goal(goal, s, depth, next-id, seen-ground, base-facts, rules)
         Just((_, pf, _)) ->
           val Fact(pred, _) = goal
-          found-change(pred, relation-lattice-of(pred, policies), pf)
+          found-change(pred, pf)
         Nothing -> NoChange
     else
       val Fact(pred, _) = goal
-      val lattice = relation-lattice-of(pred, policies)
       if goal.is-ground && fact/in-list(goal, seen-ground) then NoChange
       else
         val seen1 = if goal.is-ground then Cons(goal, seen-ground) else seen-ground
@@ -474,11 +509,11 @@ fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, see
         with each <- memo(key)
         val base-branches =
           base-facts.map(fn(f)
-            fn() base-branch(goal, f, s, pred, lattice)
+            fn() base-branch(goal, f, s, pred)
           )
         val rule-branches =
           rules.map(fn(r)
-            fn() rule-branch(goal, r, s, depth, next-id, seen1, base-facts, rules, policies, pred, lattice)
+            fn() rule-branch(goal, r, s, depth, next-id, seen1, base-facts, rules, policies, pred)
           )
         val branches = base-branches ++ rule-branches
         each(if branches.is-empty then [fn() NoChange] else branches)
@@ -486,21 +521,21 @@ fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, see
 fun agg-proofs(agg: search-agg): <exn,div> list<proof>
   match agg
     AggUnknown -> Nil
-    AggDet(_, Nothing) -> Nil
-    AggDet(_, Just(found)) -> [found-proof/proof(found)]
-    AggDetConflict(pred, _, _) ->
-      // Deterministic policy explicitly rejects multiple distinct derivations.
-      throw("deterministic relation produced multiple results: " ++ pred)
-    AggFirst(_, Nothing) -> Nil
-    AggFirst(_, Just(found)) -> [found-proof/proof(found)]
-    AggNondet(_, values) -> values.map(found-proof/proof)
+    AggKnown(pred, _, state) ->
+      match state
+        MemoDetConflict(_, _) -> throw("deterministic relation produced multiple results: " ++ pred)
+        MemoDet(Nothing) -> Nil
+        MemoDet(Just(found)) -> [found-proof/proof(found)]
+        MemoFirst(Nothing) -> Nil
+        MemoFirst(Just(found)) -> [found-proof/proof(found)]
+        MemoNondet(values) -> values.map(found-proof/proof)
 
 pub fun search-all-memo(goal: fact, base-facts: list<fact>, rules: list<rule>,
                         policies: list<relation-policy> = Nil, max-depth: int = 50): <exn,div> list<proof>
   val key = goal.show
   val table =
     // Lattice is provided explicitly; no implicit lattice resolution.
-    with std/fixpoint/fixpoint-memo/cache(?change-lattice = search-lattice(), ?order2 = string/order2,
+    with std/fixpoint/fixpoint-memo/cache(?change-lattice = search-lattice(policies), ?order2 = string/order2,
                                           ?k/show = show/string/show, ?r/show = search-change/show)
     prove-goal-memo(goal, Nil, max-depth, 0, Nil, base-facts, rules, policies)
   match table.lookup(key)

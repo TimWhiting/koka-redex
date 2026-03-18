@@ -2,6 +2,11 @@ module examples2/proof-search-implicit-policy-demo
 
 import koka-redex2/proof-search
 import koka-redex2/proof-search-policy
+import koka-redex2/syntax
+import koka-redex2/proof-search-bridge
+import type-level/structs
+import type-level/list
+import type-level/nil
 
 pub type r-reach
   RReach
@@ -9,11 +14,11 @@ pub type r-reach
 pub type r-edge
   REdge
 
-val reach/rel-lattice : rel-lattice<r-reach>
-  = Rel-lattice(LatNondetSet)
+val reach/rel-memo-lattice : rel-memo-lattice<r-reach>
+  = Rel-memo-lattice(memo-lattice/nondet-set())
 
-val edge/rel-lattice : rel-lattice<r-edge>
-  = Rel-lattice(LatDetError)
+val edge/rel-memo-lattice : rel-memo-lattice<r-edge>
+  = Rel-memo-lattice(memo-lattice/det-error())
 
 fun v(name: string): term
   TVar(name, 0)
@@ -24,9 +29,12 @@ fun edge(a: term, b: term): fact
 fun reach(a: term, b: term): fact
   Fact("reach", [a, b])
 
-fun rules(): list<rule>
-  [ Rule("reach-edge", [edge(v("x"), v("y"))], reach(v("x"), v("y"))),
-    Rule("reach-step", [edge(v("x"), v("y")), reach(v("y"), v("z"))], reach(v("x"), v("z"))) ]
+fun relation()
+  relation-def(
+    cons/rule("reach-edge", edge(v("x"), v("y")), reach(v("x"), v("y")), fn()
+      single/rule("reach-step", edge(v("x"), v("y")) \ reach(v("y"), v("z")), reach(v("x"), v("z")))
+    )
+  )
 
 fun facts(): list<fact>
   [ edge(TInt(1), TInt(2)),
@@ -39,9 +47,23 @@ fun policies(): list<relation-policy>
   [ policy/of(reach-tag),
     policy/of(edge-tag) ]
 
+fun fact/to-premises(f: fact): list<fact>
+  Cons(f, Nil)
+
+fun tcons/to-premises(TCons(h, t): type-cons<fact, b>, ?to-premises: b -> list<fact>): list<fact>
+  Cons(h, t.to-premises)
+
+fun tnil/to-premises(_: type-nil): list<fact>
+  Nil
+
+fun fact/to-fact(f: fact): fact
+  f
+
 pub fun main()
   val goal = reach(TInt(1), TInt(4))
-  match search-memo(goal, facts(), rules(), policies(), 25)
+  match search-memo/relation(goal, facts(), relation(), policies(), 25,
+    ?as-fact = fact/to-fact
+  )
     Just(pf) ->
       println("Goal: " ++ goal.show)
       println("Proof:\n" ++ pf.show)

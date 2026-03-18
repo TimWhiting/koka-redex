@@ -10,7 +10,7 @@ fun rules(): list<rule>
     Rule("color-red-2", Nil, color(1, "red")) ]
 
 pub fun main()
-  val policies = [Relation-policy("color", LatDetError)]
+  val policies = [Relation-policy("color", memo-lattice/det-error())]
   val goal = color(1, "red")
   match try({ search-all-memo(goal, Nil, rules(), policies, 10) })
     Ok(proofs) ->

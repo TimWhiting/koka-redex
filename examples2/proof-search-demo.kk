@@ -22,7 +22,8 @@ fun facts(): list<fact>
 
 pub fun main()
   val goal = reach(TInt(1), TInt(4))
-  val policies = [Relation-policy("reach", LatNondetSet), Relation-policy("edge", LatDetError)]
+  val policies = [Relation-policy("reach", memo-lattice/nondet-set()),
+                  Relation-policy("edge", memo-lattice/det-error())]
   match search-memo(goal, facts(), rules(), policies, 25)
     Just(pf) ->
       println("Goal: " ++ goal.show)

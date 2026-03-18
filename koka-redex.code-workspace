@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../koka-community/std"
+		},
+		{
+			"path": "../../koka-community/reactives"
+		},
+		{
+			"path": "../../koka-community/html"
+		},
+		{
+			"path": "../../koka-community/samples"
+		},
+		{
+			"path": "../../koka-community/type-level"
+		},
+		{
+			"path": "../../koka-dev/test/overload"
+		},
+		{
+			"path": "../../koka-dev/samples/handlers/named"
+		}
+	],
+	"settings": {}
+}

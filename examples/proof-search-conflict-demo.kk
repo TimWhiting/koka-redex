@@ -1,6 +1,6 @@
-module examples2/proof-search-conflict-demo
+module examples/proof-search-conflict-demo
 
-import koka-redex2/proof-search
+import koka-redex/proof-search
 
 fun color(i: int, c: string): fact
   Fact("color", [TInt(i), TAtom(c)])
@@ -10,7 +10,7 @@ fun rules(): list<rule>
     Rule("color-red-2", Nil, color(1, "red")) ]
 
 pub fun main()
-  val policies = [Relation-policy("color", memo-lattice/det-error())]
+  val policies = [Relation-policy("color", memo-lattice/det-error(), DepthHybrid)]
   val goal = color(1, "red")
   match try({ search-all-memo(goal, Nil, rules(), policies, 10) })
     Ok(proofs) ->

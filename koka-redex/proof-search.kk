@@ -1,4 +1,4 @@
-module koka-redex2/proof-search
+module koka-redex/proof-search
 
 import std/fixpoint/fixpoint-memo
 import std/fixpoint/lattice
@@ -232,14 +232,28 @@ fun fact/in-list(f: fact, fs: list<fact>): div bool
 // prove-premises processes premises left-to-right so substitutions found by
 // earlier premises constrain later ones.
 
+type depth-control
+  DepthFinite
+  DepthInfinite
+
+fun depth-control/dec(depth: int, dctrl: depth-control): int
+  match dctrl
+    DepthFinite -> depth - 1
+    DepthInfinite -> depth
+
+fun depth-control/exhausted(depth: int, dctrl: depth-control): bool
+  match dctrl
+    DepthFinite -> depth < 0
+    DepthInfinite -> False
+
 fun prove-premises(premises: list<fact>, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-                   base-facts: list<fact>, rules: list<rule>): div maybe<(list<binding>, list<proof>, int)>
+                   base-facts: list<fact>, rules: list<rule>, dctrl: depth-control): div maybe<(list<binding>, list<proof>, int)>
   match premises
     Nil -> Just((s, Nil, next-id))
     Cons(p, ps) ->
-      match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules)
+      match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules, dctrl)
         Just((s1, pf, next1)) ->
-          match prove-premises(ps, s1, depth, next1, seen-ground, base-facts, rules)
+          match prove-premises(ps, s1, depth, next1, seen-ground, base-facts, rules, dctrl)
             Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
             Nothing -> Nothing
         Nothing -> Nothing
@@ -253,7 +267,7 @@ fun try-base-facts(goal: fact, s: list<binding>, base-facts: list<fact>): div ma
         Nothing -> try-base-facts(goal, s, rst)
 
 fun try-rules(goal: fact, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-              base-facts: list<fact>, all-rules: list<rule>, rules: list<rule>): div maybe<(list<binding>, proof, int)>
+              base-facts: list<fact>, all-rules: list<rule>, rules: list<rule>, dctrl: depth-control): div maybe<(list<binding>, proof, int)>
   match rules
     Nil -> Nothing
     Cons(r, rst) ->
@@ -261,17 +275,17 @@ fun try-rules(goal: fact, s: list<binding>, depth: int, next-id: int, seen-groun
       val Rule(rname, rpremises, rconclusion) = rf
       match unify-fact(goal, rconclusion, s)
         Just(s1) ->
-          match prove-premises(rpremises, s1, depth - 1, next1, seen-ground, base-facts, all-rules)
+          match prove-premises(rpremises, s1, depth-control/dec(depth, dctrl), next1, seen-ground, base-facts, all-rules, dctrl)
             Just((s2, subproofs, next2)) ->
               val conc = apply-subst-fact(rconclusion, s2)
               Just((s2, ByRule(rname, conc, subproofs), next2))
-            Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst)
-        Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst)
+            Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst, dctrl)
+        Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst, dctrl)
 
 fun prove-goal(goal0: fact, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-               base-facts: list<fact>, rules: list<rule>): div maybe<(list<binding>, proof, int)>
+               base-facts: list<fact>, rules: list<rule>, dctrl: depth-control): div maybe<(list<binding>, proof, int)>
   // seen-ground is a simple cycle brake for recursive ground goals.
-  if depth < 0 then Nothing
+  if depth-control/exhausted(depth, dctrl) then Nothing
   else
     val goal = apply-subst-fact(goal0, s)
     if goal.is-ground && fact/in-list(goal, seen-ground) then Nothing
@@ -279,10 +293,10 @@ fun prove-goal(goal0: fact, s: list<binding>, depth: int, next-id: int, seen-gro
       val seen1 = if goal.is-ground then Cons(goal, seen-ground) else seen-ground
       match try-base-facts(goal, s, base-facts)
         Just((s1, pf, _)) -> Just((s1, pf, next-id))
-        Nothing -> try-rules(goal, s, depth, next-id, seen1, base-facts, rules, rules)
+        Nothing -> try-rules(goal, s, depth, next-id, seen1, base-facts, rules, rules, dctrl)
 
 pub fun search(goal: fact, base-facts: list<fact>, rules: list<rule>, max-depth: int = 50): div maybe<proof>
-  match prove-goal(goal, Nil, max-depth, 0, Nil, base-facts, rules)
+  match prove-goal(goal, Nil, max-depth, 0, Nil, base-facts, rules, DepthFinite)
     Just((_, pf, _)) -> Just(pf)
     Nothing -> Nothing
 
@@ -336,6 +350,12 @@ pub type relation-memo-state
 pub value struct relation-policy
   pred: string
   memo-lattice: change-lattice<relation-memo-state, found-proof>
+  depth-mode: relation-depth-mode
+
+pub type relation-depth-mode
+  DepthTrusted
+  DepthResetPerGoal(limit: int)
+  DepthHybrid
 
 type search-agg
   AggUnknown
@@ -348,7 +368,25 @@ fun found-proof/same-key(fp1: found-proof, fp2: found-proof): bool
 fun relation-policy/of(predicate: string, policies: list<relation-policy>): relation-policy
   match policies.find(fn(p) p.pred == predicate)
     Just(p) -> p
-    Nothing -> Relation-policy(predicate, memo-lattice/nondet-set())
+    Nothing -> Relation-policy(predicate, memo-lattice/nondet-set(), DepthHybrid)
+
+fun relation-depth/reset(mode: relation-depth-mode, incoming-depth: int): int
+  match mode
+    DepthTrusted -> incoming-depth
+    DepthResetPerGoal(limit) -> limit
+    DepthHybrid -> incoming-depth
+
+fun relation-depth/premise-depth(mode: relation-depth-mode, depth: int): int
+  match mode
+    DepthTrusted -> depth
+    DepthResetPerGoal(_) -> depth - 1
+    DepthHybrid -> depth
+
+fun relation-depth/control(mode: relation-depth-mode): depth-control
+  match mode
+    DepthTrusted -> DepthInfinite
+    DepthResetPerGoal(_) -> DepthFinite
+    DepthHybrid -> DepthFinite
 
 fun memo-state/show(s: relation-memo-state): string
   match s
@@ -425,7 +463,7 @@ fun search-lattice(policies: list<relation-policy>): change-lattice<search-agg, 
       Found(pred, found) ->
         match old
           AggUnknown ->
-            val Relation-policy(_, lat) = relation-policy/of(pred, policies)
+            val Relation-policy(_, lat, _) = relation-policy/of(pred, policies)
             val Change-lattice(bottom, join, _) = lat
             val (changed, state) = join(bottom, found)
             (changed, AggKnown(pred, lat, state))
@@ -452,12 +490,12 @@ fun base-branch(goal: fact, f: fact, s: list<binding>, pred: string): <cache<str
 
 fun rule-branch(goal: fact, r: rule, s: list<binding>, depth: int, next-id: int, seen1: list<fact>,
                 base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>,
-                pred: string): <cache<string,search-change>,div> search-change
+                pred: string, depth-mode: relation-depth-mode): <cache<string,search-change>,div> search-change
   val (next1, rf) = freshen-rule(r, next-id)
   val Rule(rname, rpremises, rconclusion) = rf
   match unify-fact(goal, rconclusion, s)
     Just(s1) ->
-      match prove-premises-memo(rpremises, s1, depth - 1, next1, seen1, base-facts, rules, policies)
+      match prove-premises-memo(rpremises, s1, relation-depth/premise-depth(depth-mode, depth), next1, seen1, base-facts, rules, policies, depth-mode)
         Just((s2, subproofs, _)) ->
           val conc = apply-subst-fact(rconclusion, s2)
           found-change(pred, ByRule(rname, conc, subproofs))
@@ -465,7 +503,8 @@ fun rule-branch(goal: fact, r: rule, s: list<binding>, depth: int, next-id: int,
     Nothing -> NoChange
 
 fun prove-premises-memo(premises: list<fact>, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-                        base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>): <cache<string,search-change>,div> maybe<(list<binding>, list<proof>, int)>
+                        base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>,
+                        depth-mode: relation-depth-mode): <cache<string,search-change>,div> maybe<(list<binding>, list<proof>, int)>
   match premises
     Nil -> Just((s, Nil, next-id))
     Cons(p, ps) ->
@@ -474,37 +513,38 @@ fun prove-premises-memo(premises: list<fact>, s: list<binding>, depth: int, next
         // Ground premise: safe to table.
         match prove-goal-memo(p1, s, depth, next-id, seen-ground, base-facts, rules, policies)
           Found(_, Found-proof(pf, _)) ->
-            match prove-premises-memo(ps, s, depth, next-id, seen-ground, base-facts, rules, policies)
+            match prove-premises-memo(ps, s, depth, next-id, seen-ground, base-facts, rules, policies, depth-mode)
               Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
               Nothing -> Nothing
           NoChange -> Nothing
       else
         // Non-ground premise: keep substitution-threaded DFS semantics.
-        match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules)
+        match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules, relation-depth/control(depth-mode))
           Just((s1, pf, next1)) ->
-            match prove-premises-memo(ps, s1, depth, next1, seen-ground, base-facts, rules, policies)
+            match prove-premises-memo(ps, s1, depth, next1, seen-ground, base-facts, rules, policies, depth-mode)
               Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
               Nothing -> Nothing
           Nothing -> Nothing
 
 fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
                     base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>): <cache<string,search-change>,div> search-change
-  if depth < 0 then NoChange
+  val goal = apply-subst-fact(goal0, s)
+  val Fact(pred, _) = goal
+  val Relation-policy(_, _, depth-mode) = relation-policy/of(pred, policies)
+  val local-depth = relation-depth/reset(depth-mode, depth)
+  if depth-control/exhausted(local-depth, relation-depth/control(depth-mode)) then NoChange
   else
-    val goal = apply-subst-fact(goal0, s)
     if !goal.is-ground then
       // Non-ground goals are not table keys; use DFS and wrap result as change.
-      match prove-goal(goal, s, depth, next-id, seen-ground, base-facts, rules)
+      match prove-goal(goal, s, local-depth, next-id, seen-ground, base-facts, rules, relation-depth/control(depth-mode))
         Just((_, pf, _)) ->
-          val Fact(pred, _) = goal
           found-change(pred, pf)
         Nothing -> NoChange
     else
-      val Fact(pred, _) = goal
       if goal.is-ground && fact/in-list(goal, seen-ground) then NoChange
       else
         val seen1 = if goal.is-ground then Cons(goal, seen-ground) else seen-ground
-        val key = goal.show
+        val key = goal.show 
         // memo(key) provides recursive tabling over all applicable branches.
         with each <- memo(key)
         val base-branches =
@@ -513,7 +553,7 @@ fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, see
           )
         val rule-branches =
           rules.map(fn(r)
-            fn() rule-branch(goal, r, s, depth, next-id, seen1, base-facts, rules, policies, pred)
+            fn() rule-branch(goal, r, s, local-depth, next-id, seen1, base-facts, rules, policies, pred, depth-mode)
           )
         val branches = base-branches ++ rule-branches
         each(if branches.is-empty then [fn() NoChange] else branches)

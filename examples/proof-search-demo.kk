@@ -1,6 +1,6 @@
-module examples2/proof-search-demo
+module examples/proof-search-demo
 
-import koka-redex2/proof-search
+import koka-redex/proof-search
 
 fun v(name: string): term
   TVar(name, 0)
@@ -22,8 +22,8 @@ fun facts(): list<fact>
 
 pub fun main()
   val goal = reach(TInt(1), TInt(4))
-  val policies = [Relation-policy("reach", memo-lattice/nondet-set()),
-                  Relation-policy("edge", memo-lattice/det-error())]
+  val policies = [Relation-policy("reach", memo-lattice/nondet-set(), DepthHybrid),
+                  Relation-policy("edge", memo-lattice/det-error(), DepthHybrid)]
   match search-memo(goal, facts(), rules(), policies, 25)
     Just(pf) ->
       println("Goal: " ++ goal.show)

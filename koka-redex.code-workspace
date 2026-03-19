@@ -25,5 +25,7 @@
 			"path": "../../koka-dev/samples/handlers/named"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"koka.dev.developmentPath": "/Users/timwhiting/koka-dev"
+	}
 }

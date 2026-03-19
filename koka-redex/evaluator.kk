@@ -1,6 +1,6 @@
-module koka-redex2/evaluator
+module koka-redex/evaluator
 
-import koka-redex2/syntax
+import koka-redex/syntax
 import type-level/list
 import type-level/structs
 import type-level/nil

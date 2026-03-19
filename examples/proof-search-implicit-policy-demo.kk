@@ -1,12 +1,9 @@
-module examples2/proof-search-implicit-policy-demo
+module examples/proof-search-implicit-policy-demo
 
-import koka-redex2/proof-search
-import koka-redex2/proof-search-policy
-import koka-redex2/syntax
-import koka-redex2/proof-search-bridge
-import type-level/structs
-import type-level/list
-import type-level/nil
+import koka-redex/proof-search
+import koka-redex/proof-search-policy
+import koka-redex/syntax
+import koka-redex/proof-search-bridge 
 
 pub type r-reach
   RReach
@@ -30,10 +27,19 @@ fun reach(a: term, b: term): fact
   Fact("reach", [a, b])
 
 fun relation()
-  relation-def(
-    cons/rule("reach-edge", edge(v("x"), v("y")), reach(v("x"), v("y")), fn()
-      single/rule("reach-step", edge(v("x"), v("y")) \ reach(v("y"), v("z")), reach(v("x"), v("z")))
+  with relation-def
+  with rule(
+    edge(v("x"), v("y")), 
+    // ------------------
+    "reach-edge", 
+    reach(v("x"), v("y"))
     )
+  single/rule(
+    edge(v("x"), v("y")) \ 
+    reach(v("y"), v("z")), 
+    "reach-step",
+    // --------------
+    reach(v("x"), v("z"))
   )
 
 fun facts(): list<fact>
@@ -47,25 +53,11 @@ fun policies(): list<relation-policy>
   [ policy/of(reach-tag),
     policy/of(edge-tag) ]
 
-fun fact/to-premises(f: fact): list<fact>
-  Cons(f, Nil)
-
-fun tcons/to-premises(TCons(h, t): type-cons<fact, b>, ?to-premises: b -> list<fact>): list<fact>
-  Cons(h, t.to-premises)
-
-fun tnil/to-premises(_: type-nil): list<fact>
-  Nil
-
-fun fact/to-fact(f: fact): fact
-  f
-
 pub fun main()
   val goal = reach(TInt(1), TInt(4))
-  match search-memo/relation(goal, facts(), relation(), policies(), 25,
-    ?as-fact = fact/to-fact
-  )
+  match search-memo/relation(goal, facts(), relation(), policies(), 25, ?as-fact = to-fact)
     Just(pf) ->
       println("Goal: " ++ goal.show)
-      println("Proof:\n" ++ pf.show)
+      println("Proof:\n" ++ pf.show) 
     Nothing ->
       println("No proof found for: " ++ goal.show)

@@ -1,6 +1,6 @@
-module koka-redex2/proof-search-policy
+module koka-redex/proof-search-policy
 
-import koka-redex2/proof-search
+import koka-redex/proof-search
 import std/fixpoint/lattice
 
 /*
@@ -39,7 +39,14 @@ pub fun policy/of(tag: pred-tag<r>, ?rel-memo-lattice: rel-memo-lattice<r>): rel
   match tag
     Pred-tag(name) ->
       match rel-memo-lattice
-        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice)
+        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, DepthHybrid)
+
+pub fun policy/of-depth(tag: pred-tag<r>, depth-mode: relation-depth-mode,
+                        ?rel-memo-lattice: rel-memo-lattice<r>): relation-policy
+  match tag
+    Pred-tag(name) ->
+      match rel-memo-lattice
+        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, depth-mode)
 
 pub fun map-field(tag: pred-tag<r>, ?policy/of: pred-tag<r> -> relation-policy): relation-policy
   tag.policy/of

@@ -4,7 +4,6 @@ module examples/cfa-forward-demo
 // Rules are defined using proof-search's rule/fact/term types.
 // Execution uses forward.kk instead of backward-chaining proof-search.
 
-import koka-redex/proof-search
 import koka-redex/forward
 
 // ---------------------------------------------------------------------------

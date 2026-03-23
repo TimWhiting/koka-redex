@@ -6,7 +6,6 @@ module examples/reach-forward-demo
 //   2. Partial query: reach(1, ?) — discover all reachable from 1
 //   3. Open query: reach(?, ?) — full saturation from base facts
 
-import koka-redex/proof-search
 import koka-redex/forward
 
 // ---------------------------------------------------------------------------

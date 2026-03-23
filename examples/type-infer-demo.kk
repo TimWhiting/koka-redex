@@ -11,7 +11,6 @@ module examples/type-infer-demo
 //   T-Lam:  Γ[x:α] ⊢ e : τ  ⊢  Γ ⊢ λx.e : α → τ    (α fresh)
 //   T-App:  Γ ⊢ e1 : τ1,  Γ ⊢ e2 : τ2,  unify(τ1, τ2 → α)  ⊢  Γ ⊢ e1 e2 : α
 
-import koka-redex/proof-search
 import koka-redex/forward
 
 // ---------------------------------------------------------------------------

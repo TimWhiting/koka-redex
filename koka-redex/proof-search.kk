@@ -50,7 +50,7 @@ pub type proof
   ByFact(fact: fact)
   ByRule(name: string, conclusion: fact, subproofs: list<proof>)
 
-value struct binding
+pub value struct binding
   name: string
   id: int
   value: term
@@ -97,7 +97,7 @@ fun walk(t: term, s: list<binding>): div term
         Nothing -> t
     _ -> t
 
-fun term/eq(t1: term, t2: term): div bool
+pub fun term/eq(t1: term, t2: term): div bool
   match (t1, t2)
     (TVar(n1, i1), TVar(n2, i2)) -> n1 == n2 && i1 == i2
     (TAtom(a1), TAtom(a2)) -> a1 == a2
@@ -152,7 +152,7 @@ fun unify-term(t1: term, t2: term, s: list<binding>): div maybe<list<binding>>
       if n1 == n2 then unify-args(as1, as2, s) else Nothing
     _ -> Nothing
 
-fun unify-fact(f1: fact, f2: fact, s: list<binding>): div maybe<list<binding>>
+pub fun unify-fact(f1: fact, f2: fact, s: list<binding>): div maybe<list<binding>>
   match (f1, f2)
     (Fact(p1, as1), Fact(p2, as2)) ->
       if p1 == p2 then unify-args(as1, as2, s) else Nothing
@@ -164,7 +164,7 @@ fun apply-subst-term(t: term, s: list<binding>): div term
     TInt(i) -> TInt(i)
     TNode(n, args) -> TNode(n, args.map(fn(arg) apply-subst-term(arg, s)))
 
-fun apply-subst-fact(Fact(pred, args): fact, s: list<binding>): div fact
+pub fun apply-subst-fact(Fact(pred, args): fact, s: list<binding>): div fact
   Fact(pred, args.map(fn(arg) apply-subst-term(arg, s)))
 
 fun term/is-ground(t: term): div bool
@@ -216,7 +216,7 @@ fun rename-facts(fs: list<fact>, next-id: int, rs: list<renaming>): div (int, li
       val (n2, rs2, rst1) = rename-facts(rst, n1, rs1)
       (n2, rs2, Cons(f1, rst1))
 
-fun freshen-rule(r: rule, next-id: int): div (int, rule)
+pub fun freshen-rule(r: rule, next-id: int): div (int, rule)
   val Rule(name, premises, conclusion) = r
   val (n1, rs1, conc1) = rename-fact(conclusion, next-id, Nil)
   val (n2, _, prems1) = rename-facts(premises, n1, rs1)
@@ -246,17 +246,34 @@ fun depth-control/exhausted(depth: int, dctrl: depth-control): bool
     DepthFinite -> depth < 0
     DepthInfinite -> False
 
+fun try-external-results(results: list<(list<binding>, proof)>, ps: list<fact>, depth: int, next-id: int, seen-ground: list<fact>,
+                         base-facts: list<fact>, rules: list<rule>, dctrl: depth-control,
+                         ?external: external-solver): div maybe<(list<binding>, list<proof>, int)>
+  match results
+    Nil -> Nothing
+    Cons((s1, pf), rest) ->
+      match prove-premises(ps, s1, depth, next-id, seen-ground, base-facts, rules, dctrl, ?external=external)
+        Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
+        Nothing -> try-external-results(rest, ps, depth, next-id, seen-ground, base-facts, rules, dctrl, ?external=external)
+
 fun prove-premises(premises: list<fact>, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-                   base-facts: list<fact>, rules: list<rule>, dctrl: depth-control): div maybe<(list<binding>, list<proof>, int)>
+                   base-facts: list<fact>, rules: list<rule>, dctrl: depth-control,
+                   ?external: external-solver): div maybe<(list<binding>, list<proof>, int)>
   match premises
     Nil -> Just((s, Nil, next-id))
     Cons(p, ps) ->
-      match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules, dctrl)
-        Just((s1, pf, next1)) ->
-          match prove-premises(ps, s1, depth, next1, seen-ground, base-facts, rules, dctrl)
-            Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
+      val p1 = apply-subst-fact(p, s)
+      // Try external solver first (supports backtracking through all results)
+      match external(p1, s)
+        Just(results) ->
+          try-external-results(results, ps, depth, next-id, seen-ground, base-facts, rules, dctrl, ?external=external)
+        Nothing ->
+          match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules, dctrl, ?external=external)
+            Just((s1, pf, next1)) ->
+              match prove-premises(ps, s1, depth, next1, seen-ground, base-facts, rules, dctrl, ?external=external)
+                Just((s2, pfs, next2)) -> Just((s2, Cons(pf, pfs), next2))
+                Nothing -> Nothing
             Nothing -> Nothing
-        Nothing -> Nothing
 
 fun try-base-facts(goal: fact, s: list<binding>, base-facts: list<fact>): div maybe<(list<binding>, proof, int)>
   match base-facts
@@ -267,7 +284,8 @@ fun try-base-facts(goal: fact, s: list<binding>, base-facts: list<fact>): div ma
         Nothing -> try-base-facts(goal, s, rst)
 
 fun try-rules(goal: fact, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-              base-facts: list<fact>, all-rules: list<rule>, rules: list<rule>, dctrl: depth-control): div maybe<(list<binding>, proof, int)>
+              base-facts: list<fact>, all-rules: list<rule>, rules: list<rule>, dctrl: depth-control,
+              ?external: (fact, list<binding>) -> div maybe<list<(list<binding>, proof)>>): div maybe<(list<binding>, proof, int)>
   match rules
     Nil -> Nothing
     Cons(r, rst) ->
@@ -275,15 +293,16 @@ fun try-rules(goal: fact, s: list<binding>, depth: int, next-id: int, seen-groun
       val Rule(rname, rpremises, rconclusion) = rf
       match unify-fact(goal, rconclusion, s)
         Just(s1) ->
-          match prove-premises(rpremises, s1, depth-control/dec(depth, dctrl), next1, seen-ground, base-facts, all-rules, dctrl)
+          match prove-premises(rpremises, s1, depth-control/dec(depth, dctrl), next1, seen-ground, base-facts, all-rules, dctrl, ?external=external)
             Just((s2, subproofs, next2)) ->
               val conc = apply-subst-fact(rconclusion, s2)
               Just((s2, ByRule(rname, conc, subproofs), next2))
-            Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst, dctrl)
-        Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst, dctrl)
+            Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst, dctrl, ?external=external)
+        Nothing -> try-rules(goal, s, depth, next1, seen-ground, base-facts, all-rules, rst, dctrl, ?external=external)
 
 fun prove-goal(goal0: fact, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
-               base-facts: list<fact>, rules: list<rule>, dctrl: depth-control): div maybe<(list<binding>, proof, int)>
+               base-facts: list<fact>, rules: list<rule>, dctrl: depth-control,
+               ?external: external-solver): div maybe<(list<binding>, proof, int)>
   // seen-ground is a simple cycle brake for recursive ground goals.
   if depth-control/exhausted(depth, dctrl) then Nothing
   else
@@ -293,10 +312,19 @@ fun prove-goal(goal0: fact, s: list<binding>, depth: int, next-id: int, seen-gro
       val seen1 = if goal.is-ground then Cons(goal, seen-ground) else seen-ground
       match try-base-facts(goal, s, base-facts)
         Just((s1, pf, _)) -> Just((s1, pf, next-id))
-        Nothing -> try-rules(goal, s, depth, next-id, seen1, base-facts, rules, rules, dctrl)
+        Nothing -> try-rules(goal, s, depth, next-id, seen1, base-facts, rules, rules, dctrl, ?external=external)
 
-pub fun search(goal: fact, base-facts: list<fact>, rules: list<rule>, max-depth: int = 50): div maybe<proof>
-  match prove-goal(goal, Nil, max-depth, 0, Nil, base-facts, rules, DepthFinite)
+// External relation solver: given a goal and current substitution, return
+// Nothing if not handled, or Just(list of (substitution, proof) pairs) for all solutions.
+// The DFS engine tries each solution in order with backtracking.
+pub alias external-solver = (fact, list<binding>) -> div maybe<list<(list<binding>, proof)>>
+
+pub fun default/external(_goal: fact, _s: list<binding>): div maybe<list<(list<binding>, proof)>>
+  Nothing
+
+pub fun search(goal: fact, base-facts: list<fact>, rules: list<rule>, max-depth: int = 50,
+               ?external: external-solver): div maybe<proof>
+  match prove-goal(goal, Nil, max-depth, 0, Nil, base-facts, rules, DepthFinite, ?external=external)
     Just((_, pf, _)) -> Just(pf)
     Nothing -> Nothing
 
@@ -347,10 +375,11 @@ pub type relation-memo-state
   MemoFirst(value: maybe<found-proof>)
   MemoNondet(values: list<found-proof>)
 
-pub value struct relation-policy
+pub struct relation-policy
   pred: string
   memo-lattice: change-lattice<relation-memo-state, found-proof>
   depth-mode: relation-depth-mode
+  memo-key: maybe<(fact) -> div string>  // Custom memo key: if Just, use instead of goal.show and skip groundness check
 
 pub type relation-depth-mode
   DepthTrusted
@@ -368,7 +397,7 @@ fun found-proof/same-key(fp1: found-proof, fp2: found-proof): bool
 fun relation-policy/of(predicate: string, policies: list<relation-policy>): relation-policy
   match policies.find(fn(p) p.pred == predicate)
     Just(p) -> p
-    Nothing -> Relation-policy(predicate, memo-lattice/nondet-set(), DepthHybrid)
+    Nothing -> Relation-policy(predicate, memo-lattice/nondet-set(), DepthHybrid, Nothing)
 
 fun relation-depth/reset(mode: relation-depth-mode, incoming-depth: int): int
   match mode
@@ -478,9 +507,14 @@ fun search-lattice(policies: list<relation-policy>): change-lattice<search-agg, 
 fun search-change/show(_: search-change): string
   "search-change"
 
+pub fun proof/conclusion-key(pf: proof): div string
+  match pf
+    ByFact(f) -> f.show
+    ByRule(_, conc, _) -> conc.show
+
 fun found-change(pred: string, pf: proof): div search-change
-  // Proof string is used as a stable dedup key inside aggregation.
-  val k = pf.show
+  // Dedup key is the conclusion only — same result via different paths is one entry.
+  val k = pf.conclusion-key
   Found(pred, Found-proof(pf, k))
 
 fun base-branch(goal: fact, f: fact, s: list<binding>, pred: string): <cache<string,search-change>,div> search-change
@@ -502,6 +536,13 @@ fun rule-branch(goal: fact, r: rule, s: list<binding>, depth: int, next-id: int,
         Nothing -> NoChange
     Nothing -> NoChange
 
+fun can-table-premise(p: fact, policies: list<relation-policy>): div bool
+  if p.is-ground then True
+  else
+    val Fact(pred, _) = p
+    val policy = relation-policy/of(pred, policies)
+    policy.memo-key.is-just
+
 fun prove-premises-memo(premises: list<fact>, s: list<binding>, depth: int, next-id: int, seen-ground: list<fact>,
                         base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>,
                         depth-mode: relation-depth-mode): <cache<string,search-change>,div> maybe<(list<binding>, list<proof>, int)>
@@ -509,8 +550,8 @@ fun prove-premises-memo(premises: list<fact>, s: list<binding>, depth: int, next
     Nil -> Just((s, Nil, next-id))
     Cons(p, ps) ->
       val p1 = apply-subst-fact(p, s)
-      if p1.is-ground then
-        // Ground premise: safe to table.
+      if can-table-premise(p1, policies) then
+        // Ground premise or custom key: safe to table.
         match prove-goal-memo(p1, s, depth, next-id, seen-ground, base-facts, rules, policies)
           Found(_, Found-proof(pf, _)) ->
             match prove-premises-memo(ps, s, depth, next-id, seen-ground, base-facts, rules, policies, depth-mode)
@@ -518,7 +559,7 @@ fun prove-premises-memo(premises: list<fact>, s: list<binding>, depth: int, next
               Nothing -> Nothing
           NoChange -> Nothing
       else
-        // Non-ground premise: keep substitution-threaded DFS semantics.
+        // Non-ground premise without custom key: keep substitution-threaded DFS semantics.
         match prove-goal(p, s, depth, next-id, seen-ground, base-facts, rules, relation-depth/control(depth-mode))
           Just((s1, pf, next1)) ->
             match prove-premises-memo(ps, s1, depth, next1, seen-ground, base-facts, rules, policies, depth-mode)
@@ -530,12 +571,15 @@ fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, see
                     base-facts: list<fact>, rules: list<rule>, policies: list<relation-policy>): <cache<string,search-change>,div> search-change
   val goal = apply-subst-fact(goal0, s)
   val Fact(pred, _) = goal
-  val Relation-policy(_, _, depth-mode) = relation-policy/of(pred, policies)
+  val policy = relation-policy/of(pred, policies)
+  val Relation-policy(_, _, depth-mode, custom-key) = policy
   val local-depth = relation-depth/reset(depth-mode, depth)
   if depth-control/exhausted(local-depth, relation-depth/control(depth-mode)) then NoChange
   else
-    if !goal.is-ground then
-      // Non-ground goals are not table keys; use DFS and wrap result as change.
+    // With a custom key, we can table non-ground goals (the user controls what's keyed)
+    val can-table = custom-key.is-just || goal.is-ground
+    if !can-table then
+      // Non-ground goals without custom key: use DFS and wrap result as change.
       match prove-goal(goal, s, local-depth, next-id, seen-ground, base-facts, rules, relation-depth/control(depth-mode))
         Just((_, pf, _)) ->
           found-change(pred, pf)
@@ -544,7 +588,9 @@ fun prove-goal-memo(goal0: fact, s: list<binding>, depth: int, next-id: int, see
       if goal.is-ground && fact/in-list(goal, seen-ground) then NoChange
       else
         val seen1 = if goal.is-ground then Cons(goal, seen-ground) else seen-ground
-        val key = goal.show 
+        val key = match custom-key
+          Just(f) -> f(goal)
+          Nothing -> goal.show
         // memo(key) provides recursive tabling over all applicable branches.
         with each <- memo(key)
         val base-branches =
@@ -587,3 +633,13 @@ pub fun search-memo(goal: fact, base-facts: list<fact>, rules: list<rule>,
   match search-all-memo(goal, base-facts, rules, policies, max-depth)
     Nil -> Nothing
     Cons(pf, _) -> Just(pf)
+
+// Run search and return the full memo table: all goals explored and their proofs.
+// This is the "collecting semantics" view — the table is the analysis result.
+pub fun search-table(goal: fact, base-facts: list<fact>, rules: list<rule>,
+                     policies: list<relation-policy> = Nil, max-depth: int = 50): <exn,div> list<(string, list<proof>)>
+  val table =
+    with std/fixpoint/fixpoint-memo/cache(?change-lattice = search-lattice(policies), ?order2 = string/order2,
+                                          ?k/show = show/string/show, ?r/show = search-change/show)
+    prove-goal-memo(goal, Nil, max-depth, 0, Nil, base-facts, rules, policies)
+  table.list.map(fn((k, agg)) (k, agg-proofs(agg)))

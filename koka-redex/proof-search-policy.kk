@@ -39,14 +39,21 @@ pub fun policy/of(tag: pred-tag<r>, ?rel-memo-lattice: rel-memo-lattice<r>): rel
   match tag
     Pred-tag(name) ->
       match rel-memo-lattice
-        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, DepthHybrid)
+        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, DepthHybrid, Nothing)
 
 pub fun policy/of-depth(tag: pred-tag<r>, depth-mode: relation-depth-mode,
                         ?rel-memo-lattice: rel-memo-lattice<r>): relation-policy
   match tag
     Pred-tag(name) ->
       match rel-memo-lattice
-        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, depth-mode)
+        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, depth-mode, Nothing)
+
+pub fun policy/of-key(tag: pred-tag<r>, key-fn: (fact) -> div string,
+                      ?rel-memo-lattice: rel-memo-lattice<r>): relation-policy
+  match tag
+    Pred-tag(name) ->
+      match rel-memo-lattice
+        Rel-memo-lattice(memo-lattice) -> Relation-policy(name, memo-lattice, DepthHybrid, Just(key-fn))
 
 pub fun map-field(tag: pred-tag<r>, ?policy/of: pred-tag<r> -> relation-policy): relation-policy
   tag.policy/of

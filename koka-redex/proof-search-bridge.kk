@@ -64,3 +64,12 @@ pub fun search-all-memo/relation(goal: j,
                                  ?relation/to-search-rules: relation-def<r> -> list<koka-redex/proof-search/rule>,
                                  ?as-fact: j -> fact): <exn,div> list<proof>
   search-all-memo(as-fact(goal), base-facts.map(as-fact), rel.to-search-rules, policies, max-depth)
+
+pub fun search-table/relation(goal: j,
+                               base-facts: list<j>,
+                               rel: relation-def<r>,
+                               policies: list<relation-policy> = Nil,
+                               max-depth: int = 50,
+                               ?relation/to-search-rules: relation-def<r> -> list<koka-redex/proof-search/rule>,
+                               ?as-fact: j -> fact): <exn,div> list<(string, list<proof>)>
+  search-table(as-fact(goal), base-facts.map(as-fact), rel.to-search-rules, policies, max-depth)

@@ -178,6 +178,16 @@ pub fun make-memo-key(pred: string, n-inputs: int): div ((fact) -> div string)
         if p == pred then Fact(p, args.take(n)).show
         else f.show
 
+// Derive a (pred-name, memo-key) pair from a sample judgement chain.
+// The chain is traversed via to-fact-args to count input positions.
+// Usage: derive-key(e \ REval \ v) gives ("eval", key-fn-that-takes-1-input)
+pub fun derive-key(
+  sample: a,
+  ?to-fact-args: a -> div (list<term>, string, list<term>)
+): div (string, (fact) -> div string)
+  val (inputs, pred, _) = sample.to-fact-args
+  (pred, make-memo-key(pred, inputs.length))
+
 // Compose memo-keys for multiple relations
 pub fun compose-memo-keys(
   keys: list<(string, (fact) -> div string)>

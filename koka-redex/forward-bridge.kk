@@ -212,3 +212,69 @@ pub fun compose-externals(
         match solvers.find(fn(p) p.fst == pred)
           Just(kv) -> (kv.snd)(goal)
           Nothing -> Nothing
+
+// ============================================================================
+// Typed forward-search: takes relation-def and typed goal
+// ============================================================================
+
+// Search with a typed relation and typed goal.
+// The goal is a judgement chain (e.g., e \ REval \ v) that gets converted to a fact.
+// The relation-def is converted to rules via implicits.
+// Memo-key is derived from the goal's chain structure (inputs before marker).
+pub fun typed/forward-search(
+  goal: g,
+  rel: relation-def<r>,
+  ?to-fact: g -> div fact,
+  ?to-fact-args: g -> div (list<term>, string, list<term>),
+  ?to-list: r -> div list<koka-redex/term/rule>,
+  ?external: (fact) -> <logic,div> maybe<list<fact>>,
+  ?memo-key: (fact) -> div string
+): <div,exn> list<(string, list<fact>)>
+  val rules = to-list(rel.rules)
+  val goal-fact = goal.to-fact
+  koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=memo-key)
+
+// Search with auto-derived memo-key from the goal chain structure.
+// The key function is derived once from the goal's input/output split.
+pub fun auto/forward-search(
+  goal: g,
+  rel: relation-def<r>,
+  ?to-fact: g -> div fact,
+  ?to-fact-args: g -> div (list<term>, string, list<term>),
+  ?to-list: r -> div list<koka-redex/term/rule>,
+  ?external: (fact) -> <logic,div> maybe<list<fact>>
+): <div,exn> list<(string, list<fact>)>
+  val rules = to-list(rel.rules)
+  val goal-fact = goal.to-fact
+  val (pred, key-fn) = derive-key(goal)
+  // Use derived key for the goal's relation, fall back to full key for others
+  val mk = compose-memo-keys([(pred, key-fn)])
+  koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=mk)
+
+// ============================================================================
+// Typed external solvers
+// ============================================================================
+
+// Simple wrapper: pair a predicate name with a solver function
+pub fun wrap-external(
+  pred: string,
+  solver: (fact) -> <logic,div> maybe<list<fact>>
+): (string, (fact) -> <logic,div> maybe<list<fact>>)
+  (pred, solver)
+
+// Make an external solver for a relation where the solver operates
+// at the term level on the arguments.
+// The solver receives the list of resolved args and returns
+// lists of complete arg-lists for each solution.
+pub fun make-external(
+  pred: string,
+  solver: (list<term>) -> <logic,div> list<list<term>>
+): (string, (fact) -> <logic,div> maybe<list<fact>>)
+  (pred, fn(goal)
+    match goal
+      Fact(p, args) ->
+        if p == pred then
+          val results = solver(args)
+          Just(results.map(fn(a) Fact(pred, a)))
+        else Nothing
+  )

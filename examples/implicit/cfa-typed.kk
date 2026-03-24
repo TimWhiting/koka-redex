@@ -1,39 +1,41 @@
 module examples/implicit/cfa-typed
 
-// 0CFA with store-passing using typed rules via the forward bridge.
-// Demonstrates:
-//   - Domain types with relation markers (e \ REval \ v)
-//   - Automatic memo-key derivation from chain structure
-//   - External solver for lookup
-//   - Over-approximation via collecting semantics
+// 0CFA with store-passing using DOMAIN TYPES via the forward bridge.
+// Rules are written over expr/store types. The bridge converts to fact/term.
 
 import koka-redex/forward-bridge
 
 // ============================================================================
-// Domain types
+// Domain types — note EAny/SAny for metavariables in rules
 // ============================================================================
 
+// Domain types. EAny/SAny are metavariables (for use in rules).
+// Name positions (EVar, ELam, SCons) take `expr` so metavariables work there.
 pub type expr
-  EAny(pre: string, i: int)
-  EVar(nm: string)
+  EAny(pre: string, i: int)  // metavariable → TVar
+  EAtom(nm: string)           // literal name → TAtom
+  EVar(nm: expr)              // var(name)
   EApp(e1: expr, e2: expr)
-  ELam(x: string, body: expr)
+  ELam(x: expr, body: expr)   // lam(name, body)
 
 pub type store
+  SAny(pre: string, i: int)  // metavariable → TVar
   SNil
-  SCons(nm: string, vl: expr, rest: store)
+  SCons(nm: expr, vl: expr, rest: store)
 
 pub fun expr/to-term(e: expr): term
   match e
     EAny(p, i) -> TVar(p, i)
-    EVar(n) -> TNode("var", [TAtom(n)])
+    EAtom(n) -> TAtom(n)
+    EVar(n) -> TNode("var", [n.to-term])
     EApp(e1, e2) -> TNode("app", [e1.to-term, e2.to-term])
-    ELam(x, body) -> TNode("lam", [TAtom(x), body.to-term])
+    ELam(x, body) -> TNode("lam", [x.to-term, body.to-term])
 
 pub fun store/to-term(s: store): term
   match s
+    SAny(p, i) -> TVar(p, i)
     SNil -> TNode("snil", [])
-    SCons(n, v, rest) -> TNode("scons", [TAtom(n), v.to-term, rest.to-term])
+    SCons(n, v, rest) -> TNode("scons", [n.to-term, v.to-term, rest.to-term])
 
 // ============================================================================
 // Relation markers
@@ -41,86 +43,61 @@ pub fun store/to-term(s: store): term
 
 pub type r-eval
   REval
-
 pub fun r-eval/pred-name(_: r-eval): string
   "eval"
 
 pub type r-lookup
   RLookup
-
 pub fun r-lookup/pred-name(_: r-lookup): string
   "lookup"
 
 // ============================================================================
-// Judgement constructors
+// Judgement constructors — type-cons chains via \
 // ============================================================================
 
-// eval(expr, store) => (value, store')
-// Written as: expr \ store \ REval \ expr \ store
+// eval(expr, store) => (expr, store)
 fun eval-j(e: expr, s: store, v: expr, s2: store)
   e \ s \ REval \ v \ s2
 
-// lookup(store, name, value) — external, but we define the chain for key derivation
-fun lookup-j(s: store, x: string, v: expr)
+// lookup(store, name) => expr
+fun lookup-j(s: store, x: expr, v: expr)
   s \ x \ RLookup \ v
 
 // ============================================================================
-// Helper: expression metavariables
+// Metavariable helpers
 // ============================================================================
 
-fun v(nm: string): expr
+fun ev(nm: string): expr
   EAny(nm, 0)
 
 fun sv(nm: string): store
-  // Store metavariable — represented as a TVar in the engine
-  // We use a special store constructor that maps to TVar
-  SNil // placeholder — we'll use term-level vars directly
-
-// For rules we need term-level metavariables for stores
-// Since store is threaded, we use TVar directly in the fact
-fun eval-fact(e: term, s: term, vl: term, s2: term): fact
-  Fact("eval", [e, s, vl, s2])
-
-fun snil-t(): term
-  TNode("snil", [])
-
-fun scons-t(nm: term, vl: term, rest: term): term
-  TNode("scons", [nm, vl, rest])
-
-fun tv(nm: string): term
-  TVar(nm, 0)
+  SAny(nm, 0)
 
 // ============================================================================
-// Rules (fact-level for stores, domain-type for expressions)
-// We use fact-level since stores need metavariables (TVar)
+// Rules — ENTIRELY in domain types
 // ============================================================================
 
 fun cfa-relation()
+  val x = ev("x")  // metavariable for param name
   with relation-def
-  // E-Lam
+  // E-Lam: λ values evaluate to themselves
+  with rule(TNil, "E-Lam",
+    eval-j(ELam(x, ev("e")), sv("s"), ELam(x, ev("e")), sv("s")))
+  // E-Var: variable lookup (external)
   with rule(
-    TNil,
-    "E-Lam",
-    eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
-              TNode("lam", [tv("x"), tv("e")]), tv("s"))
-  )
-  // E-Var: lookup in store (external)
-  with rule(
-    Fact("lookup", [tv("s"), tv("x"), tv("val")]),
+    lookup-j(sv("s"), x, ev("val")),
     "E-Var",
-    eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s"))
-  )
-  // E-App
+    eval-j(EVar(x), sv("s"), ev("val"), sv("s")))
+  // E-App: application with store threading
   single/rule(
-    eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \
-    eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \
-    eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3")),
+    eval-j(ev("e1"), sv("s0"), ELam(x, ev("e3")), sv("s1")) \
+    eval-j(ev("e2"), sv("s1"), ev("v2"), sv("s2")) \
+    eval-j(ev("e3"), SCons(x, ev("v2"), sv("s2")), ev("v"), sv("s3")),
     "E-App",
-    eval-fact(TNode("app", [tv("e1"), tv("e2")]), tv("s0"), tv("v"), tv("s3"))
-  )
+    eval-j(EApp(ev("e1"), ev("e2")), sv("s0"), ev("v"), sv("s3")))
 
 // ============================================================================
-// External solver: lookup
+// External solver + policy (still at term level for now)
 // ============================================================================
 
 fun store-lookup-all(s: term, nm: term): div list<term>
@@ -130,56 +107,48 @@ fun store-lookup-all(s: term, nm: term): div list<term>
       found ++ store-lookup-all(rest, nm)
     _ -> []
 
-fun lookup-external(goal: fact): <logic,div> maybe<list<fact>>
-  match goal
-    Fact("lookup", [s, nm, _]) ->
-      val results = store-lookup-all(s, nm)
-      Just(results.map(fn(vl) Fact("lookup", [s, nm, vl])))
-    _ -> Nothing
-
-// ============================================================================
-// Memo-key: eval has 2 inputs (expr, store), lookup has 2 inputs (store, name)
-// ============================================================================
+val lookup-solver = make-external("lookup") fn(args)
+  match args
+    Cons(s, Cons(nm, _)) ->
+      store-lookup-all(s, nm).map(fn(vl) [s, nm, vl])
+    _ -> []
 
 fun cfa-memo-key(): div ((fact) -> div string)
-  val eval-key = make-memo-key("eval", 2)
-  val lookup-key = make-memo-key("lookup", 2)
-  compose-memo-keys([("eval", eval-key), ("lookup", lookup-key)])
+  compose-memo-keys([
+    ("eval", make-memo-key("eval", 2)),
+    ("lookup", make-memo-key("lookup", 2))
+  ])
 
-fun cfa-external(): ((fact) -> <logic,div> maybe<list<fact>>)
-  compose-externals([("lookup", lookup-external)])
+fun cfa-ext()
+  compose-externals([lookup-solver])
 
 // ============================================================================
-// Examples
+// Run — goals use domain types, bridge converts
 // ============================================================================
-
-fun evar-t(x: string): term
-  TNode("var", [TAtom(x)])
-
-fun elam-t(x: string, body: term): term
-  TNode("lam", [TAtom(x), body])
-
-fun eapp-t(e1: term, e2: term): term
-  TNode("app", [e1, e2])
 
 pub fun main()
   val rules = relation/to-rules(cfa-relation())
+  val mk = cfa-memo-key()
+  val ext = cfa-ext()
   println("Rules: " ++ rules.length.show)
 
-  // Example 1: (λx.x)(λz.z)
+  // Example 1: (λx.x)(λz.z) — concrete programs use EAtom for literal names
   println("\n=== (λx.x)(λz.z) ===")
-  val id-fn = elam-t("x", evar-t("x"))
-  val goal1 = eval-fact(eapp-t(id-fn, elam-t("z", evar-t("z"))), snil-t(), tv("v"), tv("s"))
-  val table1 = forward-search(goal1, rules, ?external=cfa-external(), ?memo-key=cfa-memo-key())
+  val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
+  val goal1 = eval-j(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z")))), SNil, ev("v"), sv("s"))
+  val goal1-fact = chain/to-fact(goal1)
+  val table1 = koka-redex/forward/forward-search(goal1-fact, rules, ?external=ext, ?memo-key=mk)
   println("Entries: " ++ table1.length.show)
 
   // Example 2: let f = λx.x in (f λa.a)(f λb.b)
   println("\n=== let f = λx.x in (f λa.a)(f λb.b) ===")
-  val lam-a = elam-t("a", evar-t("a"))
-  val lam-b = elam-t("b", evar-t("b"))
-  val body = eapp-t(eapp-t(evar-t("f"), lam-a), eapp-t(evar-t("f"), lam-b))
-  val goal2 = eval-fact(eapp-t(elam-t("f", body), id-fn), snil-t(), tv("v"), tv("s"))
-  val table2 = forward-search(goal2, rules, ?external=cfa-external(), ?memo-key=cfa-memo-key())
+  val lam-a = ELam(EAtom("a"), EVar(EAtom("a")))
+  val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
+  val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
+  val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
+  val goal2 = eval-j(prog2, SNil, ev("v"), sv("s"))
+  val goal2-fact = chain/to-fact(goal2)
+  val table2 = koka-redex/forward/forward-search(goal2-fact, rules, ?external=ext, ?memo-key=mk)
   println("Entries: " ++ table2.length.show)
 
   println("\nOver-approximation:")

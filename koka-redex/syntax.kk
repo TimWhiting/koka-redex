@@ -21,7 +21,7 @@ pub fun single/rule(premises: p, name: n, conclusion: c): type-struct<n, rule<n,
 pub fun cons/rule(premises: p, name: n, conclusion: c, rest: () -> type-struct<_, _, _>): type-struct<n, rule<n, p, c>, type-struct<_, _, _>>
   any/mk-field(Rule(name, premises, conclusion)) + rest()
 
-pub fun (\)(h: a, t: b): type-cons<a, b>
+pub fun cons/(\)(h: a, t: b): type-cons<a, b>
   h +: t
 
 pub fun default/relation-def(rules: r): relation-def<r>

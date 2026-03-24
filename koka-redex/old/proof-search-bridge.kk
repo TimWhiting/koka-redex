@@ -23,28 +23,28 @@ pub fun map-field(r: koka-redex/syntax/rule<n, p, c>,
                   ?name/show: n -> string,
                   ?to-premises: p -> list<j>,
                   ?to-fact: c -> j,
-                  ?as-fact: j -> fact): koka-redex/proof-search/rule
+                  ?as-fact: j -> fact): proof-search/rule
   match r
     Rule(name, premises, conclusion) ->
-      koka-redex/proof-search/Rule(name.show, premises.to-premises.map(as-fact), as-fact(to-fact(conclusion)))
+      proof-search/Rule(name.show, premises.to-premises.map(as-fact), as-fact(to-fact(conclusion)))
 
 pub fun fact/map-field(r: koka-redex/syntax/rule<n, p, c>,
                        ?name/show: n -> string,
                        ?to-premises: p -> list<fact>,
-                       ?to-fact: c -> fact): koka-redex/proof-search/rule
+                       ?to-fact: c -> fact): proof-search/rule
   match r
     Rule(name, premises, conclusion) ->
-      koka-redex/proof-search/Rule(name.show, premises.to-premises, to-fact(conclusion))
+      proof-search/Rule(name.show, premises.to-premises, to-fact(conclusion))
 
 pub fun default/to-search-rules(RelationDef(rules): relation-def<r>,
-                                 ?to-list: r -> list<koka-redex/proof-search/rule>): list<koka-redex/proof-search/rule>
+                                 ?to-list: r -> list<proof-search/rule>): list<proof-search/rule>
   to-list(rules)
 
 // Specialized converter for fact-based relations. This keeps the supporting
 // implicit conversions in one module so callers only need ?as-fact.
 pub fun fact/to-search-rules(RelationDef(rules): relation-def<type-struct<n, f, r>>,
-                             ?map-field: f -> koka-redex/proof-search/rule,
-                             ?to-list: r -> list<koka-redex/proof-search/rule>): list<koka-redex/proof-search/rule>
+                             ?map-field: f -> proof-search/rule,
+                             ?to-list: r -> list<proof-search/rule>): list<proof-search/rule>
   type-level/structs/to-list(rules, ?map-field = map-field, ?to-list = to-list)
 
 pub fun search-memo/relation(goal: j,
@@ -52,7 +52,7 @@ pub fun search-memo/relation(goal: j,
                              rel: relation-def<r>,
                              policies: list<relation-policy> = Nil,
                              max-depth: int = 50,
-                             ?relation/to-search-rules: relation-def<r> -> list<koka-redex/proof-search/rule>,
+                             ?relation/to-search-rules: relation-def<r> -> list<proof-search/rule>,
                              ?as-fact: j -> fact): <exn,div> maybe<proof>
   search-memo(as-fact(goal), base-facts.map(as-fact), rel.to-search-rules, policies, max-depth)
 
@@ -61,7 +61,7 @@ pub fun search-all-memo/relation(goal: j,
                                  rel: relation-def<r>,
                                  policies: list<relation-policy> = Nil,
                                  max-depth: int = 50,
-                                 ?relation/to-search-rules: relation-def<r> -> list<koka-redex/proof-search/rule>,
+                                 ?relation/to-search-rules: relation-def<r> -> list<proof-search/rule>,
                                  ?as-fact: j -> fact): <exn,div> list<proof>
   search-all-memo(as-fact(goal), base-facts.map(as-fact), rel.to-search-rules, policies, max-depth)
 
@@ -70,6 +70,6 @@ pub fun search-table/relation(goal: j,
                                rel: relation-def<r>,
                                policies: list<relation-policy> = Nil,
                                max-depth: int = 50,
-                               ?relation/to-search-rules: relation-def<r> -> list<koka-redex/proof-search/rule>,
+                               ?relation/to-search-rules: relation-def<r> -> list<proof-search/rule>,
                                ?as-fact: j -> fact): <exn,div> list<(string, list<proof>)>
   search-table(as-fact(goal), base-facts.map(as-fact), rel.to-search-rules, policies, max-depth)

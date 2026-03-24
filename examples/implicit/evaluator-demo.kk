@@ -3,6 +3,7 @@ module examples/implicit/evaluator-demo
 import koka-redex/syntax
 import koka-redex/old/evaluator
 import type-level/list
+import type-level/nil
 
 pub type rule-edge12
   RuleEdge12
@@ -23,15 +24,7 @@ pub fun edge(a: int, b: int)
   a \ "edge" \ b
 
 pub fun reach(a: int, b: int)
-  a \ "reach" \ b
-
-pub fun fact/eq(f1: type-cons<int, type-cons<string, int>>, f2: type-cons<int, type-cons<string, int>>): bool
-  match (f1, f2)
-    (TCons(a1, TCons(r1, b1)), TCons(a2, TCons(r2, b2))) -> a1 == a2 && r1 == r2 && b1 == b2
-
-pub fun fact/show(f: type-cons<int, type-cons<string, int>>): string
-  match f
-    TCons(a, TCons(r, b)) -> a.show ++ " " ++ r ++ " " ++ b.show
+  a \ "reach" \ b 
 
 pub fun relation()
   relation-def(
@@ -49,6 +42,6 @@ pub fun main()
     Eval-rule([reach(1, 2), reach(2, 3)], reach(1, 3))
   ]
   val seeds = [edge(1, 2), edge(2, 3)]
-  val facts = evaluate-rules(rules, seeds, ?(==) = fact/eq)
+  val facts = evaluate-rules(rules, seeds)
   println("Derived facts:")
-  facts.foreach(fn(fact) println("- " ++ fact/show(fact)))
+  facts.foreach(fn(fact) println("- " ++ show(fact)))

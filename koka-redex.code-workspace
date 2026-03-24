@@ -23,6 +23,9 @@
 		},
 		{
 			"path": "../../koka-dev/samples/handlers/named"
+		},
+		{
+			"path": "../../timwhitingdev"
 		}
 	],
 	"settings": {

@@ -1,4 +1,4 @@
-module examples/proof-search-implicit-policy-demo
+module examples/implicit/proof-search-implicit-policy-demo
 
 import koka-redex/proof-search
 import koka-redex/proof-search-policy

@@ -1,4 +1,4 @@
-module examples/proof-search-depth-modes-demo
+module examples/implicit/proof-search-depth-modes-demo
 
 import koka-redex/proof-search
 
@@ -22,9 +22,9 @@ fun facts(): list<fact>
   [ r(TInt(1)) ]
 
 fun policies(mode: relation-depth-mode): list<relation-policy>
-  [ Relation-policy("p", memo-lattice/nondet-set(), mode),
-    Relation-policy("q", memo-lattice/nondet-set(), mode),
-    Relation-policy("r", memo-lattice/nondet-set(), mode) ]
+  [ Relation-policy("p", memo-lattice/nondet-set(), mode, Nothing),
+    Relation-policy("q", memo-lattice/nondet-set(), mode, Nothing),
+    Relation-policy("r", memo-lattice/nondet-set(), mode, Nothing) ]
 
 fun run-mode(label: string, mode: relation-depth-mode, max-depth: int)
   val goal = p(TInt(1))

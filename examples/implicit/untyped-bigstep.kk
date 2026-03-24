@@ -1,4 +1,4 @@
-module examples/untyped-bigstep
+module examples/implicit/untyped-bigstep
 
 import koka-redex/syntax
 import koka-redex/markdown

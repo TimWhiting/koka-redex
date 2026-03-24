@@ -1,4 +1,4 @@
-module examples/proof-search-demo
+module examples/implicit/proof-search-demo
 
 import koka-redex/proof-search
 

@@ -1,4 +1,4 @@
-module examples/cfa-store-direct
+module examples/direct/cfa-store-direct
 
 // 0CFA for lambda calculus — store-passing style using fixpoint-memo
 //

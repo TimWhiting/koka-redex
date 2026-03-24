@@ -1,4 +1,4 @@
-module examples/evaluator-demo
+module examples/implicit/evaluator-demo
 
 import koka-redex/syntax
 import koka-redex/evaluator

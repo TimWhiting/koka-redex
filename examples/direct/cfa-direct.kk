@@ -1,4 +1,4 @@
-module examples/cfa-direct
+module examples/direct/cfa-direct
 
 // 0CFA for lambda calculus — direct style using fixpoint-memo
 //

@@ -1,4 +1,4 @@
-module examples/proof-search-untyped-bigstep-demo
+module examples/implicit/proof-search-untyped-bigstep-demo
 
 import koka-redex/proof-search
 import koka-redex/proof-search-policy

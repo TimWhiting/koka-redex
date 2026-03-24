@@ -1,4 +1,6 @@
-module scratch/pattern-rel
+module scratch/min-repro3
+
+// Trying to trigger the bug with forward-bridge implicits
 
 import koka-redex/forward-bridge
 import koka-redex/pattern
@@ -8,6 +10,7 @@ pub type r-test
 pub fun r-test/pred-name(_: r-test): string
   "test"
 
+// Use pattern<int> in a chain — same as pattern-rel.kk
 fun test-j(a: pattern<int>, b: pattern<int>)
   a \ RTest \ b
 
@@ -17,17 +20,12 @@ fun pv(nm: string, id: int): pattern<int>
 fun pi(n: int): pattern<int>
   PatTerm(TInt(n))
 
-fun test-relation()
-  val x = pv("x", 1)
-  val y = pv("y", 2)
+// Single rule — just one entry, no type-struct recursion
+fun test-one()
   with relation-def
-  with rule(TNil, "base", test-j(pi(1), pi(2)))
-  single/rule(
-    test-j(x, y),
-    "step",
-    test-j(x, pi(99)))
+  single/rule(TNil, "only", test-j(pv("x", 1), pv("y", 2)))
 
 pub fun main()
-  val rel = test-relation()
+  val rel = test-one()
   val rules = relation/to-rules(rel)
   println("Rules: " ++ rules.length.show)

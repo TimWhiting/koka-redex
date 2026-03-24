@@ -1,5 +1,25 @@
 # Koka Codegen Bug: `_lp_1_rp_` undeclared in generated C
 
+## Root Cause Analysis
+
+The C backend's `genLambda` function (in `src/Backend/C/FromCore.hs`, line ~1228) computes free variables of a lambda via `freeLocals (Lam params eff body)`. This analysis finds a spurious `()` (unit) value as a free variable. The unit value comes from `type-nil/TNil` (a zero-field constructor) that appears in the lambda body's pattern matches after inlining.
+
+The C codegen then:
+1. Creates a closure struct with `kk_unit_t _lp_1_rp_` as a captured field
+2. Generates a constructor `new_main_funNNN(_lp_1_rp_, _ctx)` that requires the unit argument
+3. But the calling scope (the `main` function) never declares `_lp_1_rp_`
+
+**Verified via `--showfcore`:** The final Core IR shows the lambda with NO free variables. The spurious capture is introduced by the C backend, not present in the Core.
+
+**Proposed fix:** In `genLambda`, filter unit-typed variables from `freeVars` since `kk_Unit` can always be reconstructed locally. Alternatively, fix the free variable analysis to not include variables that are produced by pattern matching on zero-field constructors inside the lambda body.
+
+**Minimal trigger conditions:**
+- A `type-struct` with `to-list`/`map-field` implicit traversal
+- Where the `map-field` lambda's body pattern-matches on a value containing a zero-field constructor (e.g., `type-nil/TNil`)
+- And the implicit chain involves multiple levels of resolution (forward-bridge's chain-to-fact, premise conversion, etc.)
+
+The bug does NOT trigger with simpler implicit chains (direct `map-field` without multi-level implicit resolution).
+
 ## Minimal Reproduction
 
 ```koka

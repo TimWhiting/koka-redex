@@ -1,4 +1,4 @@
-module koka-redex/proof-search
+module koka-redex/old/proof-search
 
 import std/fixpoint/fixpoint-memo
 import std/fixpoint/lattice

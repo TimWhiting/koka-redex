@@ -1,6 +1,6 @@
 module examples/implicit/proof-search-conflict-demo
 
-import koka-redex/proof-search
+import koka-redex/old/proof-search
 
 fun color(i: int, c: string): fact
   Fact("color", [TInt(i), TAtom(c)])

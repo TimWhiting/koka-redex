@@ -1,6 +1,6 @@
-module koka-redex/proof-search-policy
+module koka-redex/old/proof-search-policy
 
-import koka-redex/proof-search
+import koka-redex/old/proof-search
 import std/fixpoint/lattice
 
 /*

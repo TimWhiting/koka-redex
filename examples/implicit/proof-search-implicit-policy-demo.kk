@@ -1,9 +1,9 @@
 module examples/implicit/proof-search-implicit-policy-demo
 
-import koka-redex/proof-search
-import koka-redex/proof-search-policy
+import koka-redex/old/proof-search
+import koka-redex/old/proof-search-policy
 import koka-redex/syntax
-import koka-redex/proof-search-bridge 
+import koka-redex/old/proof-search-bridge 
 
 pub type r-reach
   RReach

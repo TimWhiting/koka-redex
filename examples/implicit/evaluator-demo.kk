@@ -1,7 +1,7 @@
 module examples/implicit/evaluator-demo
 
 import koka-redex/syntax
-import koka-redex/evaluator
+import koka-redex/old/evaluator
 import type-level/list
 
 pub type rule-edge12

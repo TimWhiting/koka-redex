@@ -1,6 +1,6 @@
 module examples/implicit/proof-search-depth-modes-demo
 
-import koka-redex/proof-search
+import koka-redex/old/proof-search
 
 fun v(name: string): term
   TVar(name, 0)

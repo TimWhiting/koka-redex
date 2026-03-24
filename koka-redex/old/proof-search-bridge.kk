@@ -1,8 +1,8 @@
-module koka-redex/proof-search-bridge
+module koka-redex/old/proof-search-bridge
 
 import koka-redex/syntax
-import koka-redex/evaluator
-import koka-redex/proof-search
+import koka-redex/old/evaluator
+import koka-redex/old/proof-search
 pub import type-level/structs
 pub import type-level/list
 pub import type-level/nil

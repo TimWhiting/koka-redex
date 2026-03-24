@@ -175,6 +175,26 @@ SLG handles well-founded negation; we do not currently support negation. SLG use
 
 To our knowledge, **no prior work expresses microKanren's unification primitives as algebraic effects in a language with effect handlers**. The combination of unification-as-effect with tabled memoization-as-effect is novel and enables clean composition — the `logic` effect handles substitution state, the `cache` effect handles tabling, and Koka's effect system ensures they compose correctly.
 
+### Parsing Strategies as Evaluation Strategies
+
+Our demand-driven tabled resolution can be understood through the lens of parsing strategies, which have long served as a laboratory for studying the spectrum between top-down and bottom-up evaluation [Sikkel 1997; Shieber, Schabes, and Pereira 1995].
+
+In pure top-down evaluation (Prolog-style SLD resolution, recursive-descent parsing), the goal determines computation but evaluation may diverge or redundantly recompute. In pure bottom-up evaluation (Datalog-style saturation, CYK parsing), all derivable facts are computed regardless of the goal. **Left-corner parsing** [Rosenkrantz and Lewis 1970; Demers 1977] occupies an intermediate position: the goal nonterminal filters which grammar rules are applicable, but recognition proceeds bottom-up from the left corner of each rule. Pereira and Shieber [1987] showed this strategy can be implemented in Prolog via a grammar transform, and Shieber, Schabes, and Pereira [1995] unified these strategies within a deductive parsing framework using tabled inference.
+
+Our framework occupies an analogous position for program analysis:
+
+| Left-Corner Parsing | Our Framework |
+|---|---|
+| Goal nonterminal to parse | Goal query to resolve |
+| Left corner (first RHS symbol) | Ground/syntax-directed inputs |
+| Bottom-up recognition from input | Forward evaluation from base facts |
+| Top-down completion of remaining RHS | Demand-driven resolution of subgoals |
+| Chart / memo table | Tabling with lattice fixpoint |
+
+Like left-corner parsing, we use the goal to determine which rules are relevant, then evaluate those rules starting from their grounded inputs (base facts, syntax-directed components), memoizing intermediate results. This avoids both the non-termination risks of pure top-down evaluation and the exhaustive saturation of pure bottom-up analysis.
+
+The **magic sets transformation** [Beeri and Ramakrishnan 1991] achieves a similar effect for Datalog by rewriting bottom-up programs to incorporate top-down demand. Our approach achieves this integration directly through the evaluation strategy — the `memo`/`depend` mechanism naturally combines demand-driven goal selection with bottom-up result propagation — rather than through program transformation. The connection between tabled resolution [Chen and Warren 1996] and chart parsing [Earley 1970] has been noted in the logic programming literature [Johnson 1995; McAllester 2002]. Our work can be seen as bringing the left-corner insight — that the goal selects rules while grounded information drives evaluation within those rules — to the setting of program analysis with per-relation lattice policies.
+
 ### Abstract Interpretation and ADI
 
 **Abstracting Abstract Machines (AAM)** [Van Horn and Might 2010] and **Abstracting Definitional Interpreters (ADI)** [Darais et al. 2017] show that a concrete interpreter, when composed with memoization and a finite store abstraction, yields a sound abstract interpreter. The key insight is that memoization + finite abstraction = termination + soundness.

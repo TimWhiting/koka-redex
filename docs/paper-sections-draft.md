@@ -117,13 +117,6 @@ dispatch function; the typed version would use `?solve: pred-tag<r> -> solver<r>
 
 ## Related Work
 
-~ todo
-Flesh out citations. Add: Chen & Warren (SLG resolution), Sagonas et al. (XSB),
-Swift & Warren (tabled LP survey). Position our work precisely against SLG —
-the main difference is per-relation lattice policies and embedding in a typed
-functional language with effects.
-~
-
 ### Positioning
 
 Our framework is best characterized as **tabled logic programming with per-relation lattice policies and external relation dispatch**, embedded in Koka via algebraic effects and implicit parameters.
@@ -132,50 +125,77 @@ Like **Prolog**, our engine is demand-driven and uses unification with logic var
 
 Unlike any of these, our framework (1) allows per-relation lattice policies resolved via the host language's type system, (2) dispatches premises to external Koka functions for constraint solving alongside rule-based derivation, and (3) is embedded in a language with algebraic effects that naturally express the computational patterns of tabled search (memoization, nondeterminism, fixpoint).
 
-### Rule-Based Analysis Frameworks
+### PLT Redex
 
-**PLT Redex** (Felleisen et al.) provides a domain-specific language for reduction semantics in Racket. Users define languages, reduction relations, and typing judgements using S-expression patterns. Redex offers rendering (typeset rules), random testing, and trace exploration. However, Redex does not provide fixpoint computation, lattice-based abstract interpretation, or tabled search — analyses that require iteration must be hand-coded. Our framework complements this direction: we start from typed rule declarations and derive executable analysis engines with tabled fixpoint behavior.
+**PLT Redex** [Felleisen, Findler, and Flatt 2009] provides a domain-specific language for reduction semantics embedded in Racket. Redex and our framework share the same starting point — users declare languages, relations, and rules — but diverge sharply in what the framework does with those declarations.
+
+**What Redex provides that we do not.** Redex's `define-language` grammar mechanism enables pattern matching with nonterminal-based metavariables: any symbol matching a grammar production is automatically a pattern variable, with subscripts (`e_1`, `e_2`) for distinct instances. The `variable-not-otherwise-mentioned` pattern automatically excludes keywords. This S-expression-based pattern language is more concise than our typed metavariable encoding, which requires explicit metavar constructors or pattern wrappers.
+
+Redex also provides evaluation context decomposition via `in-hole` and context-plugging — expressing reduction semantics with evaluation contexts like `E ::= [] | E e | v E`. Our framework does not support contexts with holes; rules must be fully syntax-directed or use explicit premise ordering.
+
+Redex's `redex-check` provides random testing: given a language grammar, it generates random terms and checks that a property (expressed as a metafunction or judgement) holds. This is complementary to our fixpoint approach — we compute all results via tabled search rather than sampling.
+
+**What we provide that Redex does not.** Redex has no built-in fixpoint computation, lattice-based aggregation, or tabled memoization. When a Redex user needs iterative analysis (e.g., 0CFA, type inference with fixpoints), they must hand-code the iteration loop, lattice joins, and termination checks. Our framework derives this machinery automatically from the rule declarations: the tabled engine handles fixpoint iteration, per-relation lattice policies control aggregation, and the `memo`/`depend`/`add-result` mechanism ensures termination.
+
+Redex does not dispatch to external solvers. Metafunctions (Racket functions called from within rules) provide functional computation, but they are eager and deterministic — they cannot produce multiple results or participate in nondeterministic search. Our external relation mechanism (`?external`) integrates constraint solvers (e.g., unification) into the tabled search, with `do-each` exploring all solutions.
+
+**Metavariable comparison.** Redex's pattern language is untyped: metavariables are just symbols, and the grammar disambiguates. Our typed approach uses Koka's type system to distinguish metavariables from concrete values. The advantage is static type checking (a `pattern<expr>` cannot appear where a `pattern<ty>` is expected); the disadvantage is verbosity (users must explicitly mark metavar positions). We explore several metavariable encoding strategies — phantom-typed `pattern<a>` wrappers, `EAny` constructors, and fresh-variable effects — each trading off conciseness against type safety.
+
+**Rendering.** Both frameworks support rendering rules as typeset inference rules. Redex uses Racket's pict library; our framework uses LaTeX and Markdown generation via type-level traversal of rule structures. Both derive rendering from the same rule definitions used for execution.
 
 ~ todo
-More careful PLT Redex comparison: Redex's context decomposition / plugging
-is a pattern we don't support (reduction contexts with holes). Redex's random
-testing is complementary to our fixpoint approach. Discuss whether our typed
-rule encoding could support Redex-style testing.
+Cite: Felleisen, Findler, Flatt. "Semantics Engineering with PLT Redex." MIT Press, 2009.
+Also cite Klein et al. "Run Your Research" (random testing with Redex).
 ~
 
-**Datalog and Soufflé** (Jordan et al.) provide efficient bottom-up evaluation of Horn clauses with stratified negation and lattice extensions. Soufflé compiles Datalog programs to C++ for high performance. The execution model is fixed (bottom-up semi-naive evaluation); there is no demand-driven evaluation, no unification with logic variables, and no external relation dispatch. Our engine implements demand-driven tabled resolution over a richer term language.
+### Datalog and Extensions
 
-**Formulog** (Bembenek et al.) extends Datalog with ML-like functions and SMT solver integration. Programs can call external functions from within Datalog rules. This shares our motivation of combining rule-based reasoning with functional computation. Formulog is a standalone language; our approach leverages Koka's type system (implicits, effects) for extensibility.
+**Datalog and Soufflé** [Jordan et al. 2016] provide efficient bottom-up evaluation of Horn clauses with stratified negation and lattice extensions. Soufflé compiles Datalog programs to C++ for high performance. The execution model is fixed (bottom-up semi-naive evaluation); there is no demand-driven evaluation, no unification with logic variables, and no external relation dispatch. Our engine implements demand-driven tabled resolution — computation is triggered by goals, not by exhaustive forward saturation.
 
-**Flix** (Madsen et al.) combines Datalog-style fixpoint computation with a functional programming language, supporting user-defined lattices. Like our framework, Flix allows lattice-stratified analyses. Unlike our approach, Flix commits to bottom-up evaluation and does not support demand-driven tabled resolution or external solver dispatch per premise.
+**Formulog** [Bembenek et al. 2020] extends Datalog with ML-like functions and SMT solver integration. Programs can call external functions from within Datalog rules, and constraint-generating rules can dispatch to Z3. This shares our motivation of combining rule-based reasoning with functional computation and external solvers. Formulog is a standalone language with its own type system and runtime; our approach leverages Koka's existing type system (implicits, effects) for extensibility, and external solvers are just Koka functions — no foreign function interface or separate solver process.
+
+**Flix** [Madsen et al. 2016] combines Datalog-style fixpoint computation with a functional programming language, supporting user-defined lattices. Like our framework, Flix allows lattice-stratified analyses where different relations aggregate results differently. Unlike our approach, Flix commits to bottom-up evaluation and does not support demand-driven tabled resolution, unification with logic variables, or external solver dispatch per premise.
+
+~ todo
+Also mention: Doop (Bravenboer & Smaragdakis) for Datalog-based points-to analysis.
+Ascent (Rust) for Datalog in a systems language.
+~
 
 ### Logic Programming and Tabled Resolution
 
-**Prolog** pioneered backward-chaining goal-directed search with unification. **Tabled logic programming** (XSB Prolog, SLG resolution; Chen & Warren) adds memoization to avoid infinite loops and enable well-founded fixpoints. Our engine is a form of tabled resolution, but extends it with per-relation lattice policies — in standard tabled LP, all predicates share the same memoization strategy (set-of-answers). Our framework allows different relations to use different aggregation (deterministic-first, deterministic-error, nondeterministic-set, or custom lattices).
+**Prolog** pioneered backward-chaining goal-directed search with unification. **Tabled logic programming** [Chen and Warren 1996; Swift and Warren 2012] (XSB Prolog, SLG resolution) adds memoization to avoid infinite loops and enable well-founded fixpoints. Our engine is a form of tabled resolution with two key extensions.
 
-~ todo
-Discuss how our approach relates to SLG resolution more precisely:
-- SLG uses answer completion; we use lattice fixpoint
-- SLG handles negation; we don't (yet)
-- Our per-relation lattice policies are a generalization of SLG's uniform answer set
-~
+First, **per-relation lattice policies**: in standard tabled LP (SLG), all predicates use the same memoization strategy — a set of ground answers. Our framework allows different relations to use different aggregation semantics (`nondet-set`, `det-first`, `det-error`, or custom lattices). This is a generalization: SLG's answer set is our `nondet-set` policy; a deterministic function is our `det-first` policy. The policy is selected via the host language's type system (implicit resolution on phantom-typed relation tags), not by runtime configuration.
 
-**miniKanren/microKanren** (Byrd et al., Hemann & Friedman) embed relational programming in functional languages using interleaving search. The Koka `microkanren` sample demonstrates this with `choose`/`fail` effects. Our framework draws on this pattern for nondeterminism (`do-each`/`none`) but replaces stream-based search with tabled fixpoint computation and lattice-based aggregation.
+Second, **external relation dispatch**: SLG and XSB support tabled and non-tabled predicates, but all predicates are defined as Prolog clauses. Our framework allows individual relations to be implemented as host-language functions — the `?external` mechanism dispatches to arbitrary Koka computations (unification, arithmetic, store operations) that can use the same algebraic effects (nondeterminism, failure) as rule-based resolution.
+
+SLG handles well-founded negation; we do not currently support negation. SLG uses answer completion to detect that a tabled predicate has computed all its answers; our approach uses lattice fixpoint — when the lattice stops growing, the computation terminates. These are equivalent for the `nondet-set` case but our lattice-based approach generalizes to widening and abstract domains.
+
+**miniKanren/microKanren** [Byrd et al. 2012; Hemann and Friedman 2013] embed relational programming in functional languages using interleaving search with `conde`/`fresh`/`==` as the core primitives. Our logic effect (`logic.kk`) draws directly on this tradition: `unify`, `freshv`, `save`/`restore` mirror microKanren's substitution-based operations. The key difference is that microKanren uses stream-based interleaving for completeness, while our engine uses tabled memoization with lattice-based aggregation. Stream interleaving produces answers lazily but does not cache or share results between branches; tabling trades laziness for guaranteed sharing and termination on finite domains.
+
+To our knowledge, **no prior work expresses microKanren's unification primitives as algebraic effects in a language with effect handlers**. The combination of unification-as-effect with tabled memoization-as-effect is novel and enables clean composition — the `logic` effect handles substitution state, the `cache` effect handles tabling, and Koka's effect system ensures they compose correctly.
 
 ### Abstract Interpretation and ADI
 
-**Abstracting Abstract Machines (AAM)** (Van Horn & Might) and **Abstracting Definitional Interpreters (ADI)** (Darais et al.) show that a concrete interpreter, when composed with memoization and a finite store abstraction, yields a sound abstract interpreter. Our 0CFA example directly realizes this pattern: the bigstep rules are the "concrete interpreter," the tabled engine provides memoization, and the `nondet-set` lattice policy provides the collecting semantics. The contribution is that this pattern falls out naturally from rule-based tabled execution rather than being hand-coded per analysis.
+**Abstracting Abstract Machines (AAM)** [Van Horn and Might 2010] and **Abstracting Definitional Interpreters (ADI)** [Darais et al. 2017] show that a concrete interpreter, when composed with memoization and a finite store abstraction, yields a sound abstract interpreter. The key insight is that memoization + finite abstraction = termination + soundness.
+
+Our 0CFA example directly realizes this pattern: the bigstep evaluation rules define a "concrete interpreter," the tabled engine provides memoization, and the `nondet-set` lattice policy provides collecting semantics. The store-passing variant shows that the ADI pattern works with explicit store threading — the memo key projects only input positions (expression, store), and the lattice collects all (value, store') outputs.
+
+The contribution relative to AAM/ADI is that this pattern falls out naturally from our rule-based tabled execution, rather than being hand-coded per analysis. The user writes evaluation rules in the same style as a paper's inference rules; the framework derives the memoized abstract interpreter by selecting the right lattice policy and memo-key projection.
+
+~ todo
+Also cite: Gilray et al. "Pushdown Control-Flow Analysis for Free" for
+finitization and allocation strategies in AAM.
+Johnson & Van Horn "Abstracting Abstract Control" for store-widening vs store-passing.
+~
 
 ### Type-Directed Overloading and Implicits
 
-**Scala implicits** and **Haskell typeclasses** provide type-directed dispatch for selecting implementations. Koka's implicit parameters serve a similar role: per-relation lattice policies, bridge conversions, and external solvers are resolved by the type system. The pattern of using phantom-typed tags (`pred-tag<r>`) to drive implicit resolution for analysis-specific behavior appears novel in the context of program analysis frameworks.
+**Scala implicits** and **Haskell typeclasses** provide type-directed dispatch for selecting implementations. Koka's implicit parameters serve a similar role in our framework: per-relation lattice policies, bridge conversions, and external solvers are all resolved by the type system at compile time.
 
-~ todo
-Discuss connection to type-directed partial evaluation (Danvy et al.) and
-staging / multi-stage programming. Our typed rule representation could be
-viewed as a staged computation: rules are the "code," the engine is the
-"interpreter," and compilation to direct Koka code is the "staged" version.
-~
+The specific pattern of using **phantom-typed tags** to drive implicit resolution for analysis-specific behavior is central to our design. A `pred-tag<r>` carries a phantom type `r` that the compiler uses to look up the corresponding `rel-memo-lattice<r>` — the user declares the policy once, and all uses of that relation automatically receive the correct lattice. Similarly, the `forward-bridge` uses `?to-term`, `?pred-name`, and `?to-fact-args` implicits to traverse heterogeneous type-level structures, converting typed rule definitions to engine format without user-written boilerplate.
+
+This is related to the **type class metaprogramming** patterns in Haskell (e.g., GHC.Generics, deriving strategies) and **compile-time reflection** in Scala 3. Our approach is lighter-weight: Koka's implicit parameters are resolved by name and type at each call site, without the full machinery of type class instances or macro expansion. The trade-off is less expressiveness (no instance overlapping, no superclass constraints) but more predictability in resolution.
 
 ---
 

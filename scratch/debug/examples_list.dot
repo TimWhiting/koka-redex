@@ -1,0 +1,57 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 12
+2 -> 3
+2 -> 10
+2 -> 12
+3 -> 4
+3 -> 6
+3 -> 12
+4 -> 5
+4 -> 12
+5 -> 12
+6 -> 7
+6 -> 12
+7 -> 8
+7 -> 12
+10 -> 11
+11 [label="Env Refinements: <<call{LetDef(right), []}:::Top>>
+
+⊥"]
+9 [label="Env Refinements: <<[a,rst]:::Top>>
+
+"]
+12 [label="Env Refinements: <<[]:::Top>>
+
+⊥"]
+10 [label="Eval: LamBody [a,rst] TCons(a, rst)<<call{LetDef(right), []}:::Top>>
+
+"]
+8 [label="Eval: DefNonRec pub fun (+:) : forall<a,b> (a : a, rst : b) -> type-level/list/type-cons<a,b>;<<Top>>
+
+"]
+7 [label="Eval: ExprBasic (+:)<<[]:::Top>>
+
+"]
+5 [label="Eval: ExprBasic @open<<[]:::Top>>
+
+"]
+6 [label="Eval: AppParam list:448 0 (+:)<<[]:::Top>>
+
+"]
+4 [label="Eval: AppLambda @open<<[]:::Top>>
+
+"]
+3 [label="Eval: AppLambda @open((+:))<<[]:::Top>>
+
+"]
+1 [label="Eval: ExprBasic right<<[]:::Top>>
+
+"]
+2 [label="Eval: LetDef val right : type-level/list/type-cons<list<int>,type-level/list/type-cons<int,type-level/list/type-cons<string,type-level/list/type-cons<string,type-level/nil/type-nil>>>>;<<[]:::Top>>
+
+"]
+ 0 [label="Start"]
+
+}

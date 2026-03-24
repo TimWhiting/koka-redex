@@ -1,0 +1,20 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 3
+1 -> 4
+4 [label="Env Refinements: <<[]:::Top>>
+
+⊥"]
+3 [label="Env Refinements: <<[]:::[]:::Top>>
+
+⊥"]
+2 [label="Eval: DefNonRec pub fun single/rule : forall<a,b,c> (premises : c, name : b, conclusion : a) -> type-level/structs/type-struct<b,koka-redex2/syntax/rule<b,c,a>,type-level/nil/type-nil>;<<Top>>
+
+"]
+1 [label="Eval: ExprBasic single/rule<<[]:::[]:::Top>>
+
+"]
+ 0 [label="Start"]
+
+}

@@ -1,0 +1,17 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 3
+2 -> 3
+3 [label="Env Refinements: <<[]:::Top>>
+
+⊥"]
+1 [label="Eval: ExprBasic debug-goal<<[]:::Top>>
+
+"]
+2 [label="Eval: LetDef fun debug-goal : (label : string, g : koka-redex2/proof-search/fact) -> <pure,console/console> ();<<[]:::Top>>
+
+"]
+ 0 [label="Start"]
+
+}

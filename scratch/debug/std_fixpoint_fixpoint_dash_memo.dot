@@ -1,0 +1,302 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 5
+1 -> 8
+1 -> 16
+1 -> 23
+2 -> 3
+2 -> 5
+2 -> 7
+3 -> 4
+4 -> 6
+7 -> 3
+8 -> 6
+8 -> 9
+8 -> 16
+9 -> 6
+9 -> 10
+9 -> 15
+9 -> 17
+9 -> 22
+10 -> 6
+10 -> 11
+10 -> 13
+10 -> 18
+11 -> 6
+11 -> 12
+11 -> 19
+12 -> 6
+12 -> 20
+13 -> 6
+13 -> 14
+13 -> 21
+16 -> 17
+17 -> 18
+17 -> 22
+18 -> 19
+18 -> 21
+19 -> 20
+21 -> 14
+23 -> 7
+23 -> 8
+23 -> 16
+5 [label="Env Refinements: <<[comp,@implicit/order2,@implicit/change-lattice,@implicit/k/show,@implicit/r/show]:::Top>>
+
+"]
+6 [label="Env Refinements: <<[]:::Top>>
+
+"]
+20 [label="Eval: ExprBasic @open<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+12 [label="Eval: ExprBasic @open<<[]:::Top>>
+
+"]
+21 [label="Eval: AppParam test-fixpoint-memo:998 0 int-list-lattice<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+13 [label="Eval: AppParam test-fixpoint-memo:998 0 int-list-lattice<<[]:::Top>>
+
+"]
+19 [label="Eval: AppLambda @open<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+11 [label="Eval: AppLambda @open<<[]:::Top>>
+
+"]
+18 [label="Eval: AppLambda @open(int-list-lattice)<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+10 [label="Eval: AppLambda @open(int-list-lattice)<<[]:::Top>>
+
+"]
+16 [label="Eval: AppParam test-fixpoint-memo:975 2 @arg-x233<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+8 [label="Eval: AppParam test-fixpoint-memo:975 2 @arg-x233<<[]:::Top>>
+
+"]
+17 [label="Eval: LetDef val @arg-x233 : std/fixpoint/lattice/change-lattice<list<int>,int>;<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+9 [label="Eval: LetDef val @arg-x233 : std/fixpoint/lattice/change-lattice<list<int>,int>;<<[]:::Top>>
+
+"]
+22 [label="Eval: LamBody [] Change-lattice(Nil, (fn(old, new){
+    (@open(list/join)(old, new, (@open((==)))));
+  }), (fn(x){
+    x;
+  }))<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+14 [label="Eval: DefNonRec fun int-list-lattice : () -> std/fixpoint/lattice/change-lattice<list<int>,int>;<<Top>>
+
+"]
+23 [label="Eval: ExprBasic ?change-lattice<<call{LetBody(cache(@arg-x231, @arg-x232, @arg-x233, @arg-x234, @arg-x235)), .}:::Top>>
+
+"]
+1 [label="Eval: ExprBasic ?change-lattice<<[comp,@implicit/order2,@implicit/change-lattice,@implicit/k/show,@implicit/r/show]:::Top>>
+
+"]
+15 [label="Expr: AppLambda cache<<call{LetDef(@arg-x233), .}:::Top>>
+
+"]
+4 [label="Expr: AppLambda cache<<[]:::Top>>
+
+"]
+3 [label="Expr: DefNonRec // A fixpoint cache handler
+pub fun cache : forall<a,b,e,c,d> (comp : () -> <pure,std/fixpoint/fixpoint-memo/cache<c,d>|e> b, ?order2 : (c, c) -> pure order2<c>, ?change-lattice : std/fixpoint/lattice/change-lattice<a,d>, ?k/show : (c) -> string, ?r/show : (d) -> string) -> <pure|e> std/data/rb-map/rbmap<c,a>;<<Top>>
+
+"]
+7 [label="Call: LamBody [comp,@implicit/order2,@implicit/change-lattice,@implicit/k/show,@implicit/r/show] match (?change-lattice) {
+  (@skip Change-lattice((change-lattice/bottom), (change-lattice/join), (change-lattice/changes)) : std/fixpoint/lattice/change-lattice<a,b> )
+     -> local-scope((forall<h> fn(){
+      val iev@1615 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@1806 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2001 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2054 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2260 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2366 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2510 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2689 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2757 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2992 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@3116 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@3282 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@3385 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      local-var((@open(empty)()), (fn(cache){
+          ((fn(@action){
+            (fn(x){
+              local-get(cache, iev@1615);
+            })((@action()));
+          })((fn(){
+            (local-var((@open(empty)()), (fn(deps){
+                ((fn(@action){
+                  cache/@handle((@Hnd-cache(3, (@open(clause-tail2)((fn(key, change){
+                        (match ((lookup((local-get(cache, iev@1806)), key, (@open(?order2))))) {
+                          (Just((r')) : maybe<a> )
+                             -> (match ((@open(change-lattice/join)(r', change))) {
+                              (@skip Tuple2((changed), (r'')) : (bool, a) )
+                                 -> (match (changed) {
+                                  (True() : bool )
+                                     -> val _ : ()
+                                              = local-set(cache, (set((local-get(cache, iev@2001)), key, r'', (@open(?order2)))));
+                                    update((local-get(deps, iev@2054)), key, change, (@open(?order2)));
+                                  (@skip False() : bool )
+                                     -> Unit;
+                                });
+                            });
+                          (@skip Nothing() : (maybe<a>) )
+                             -> val _ : ()
+                                      = local-set(cache, (set((local-get(cache, iev@2260)), key, (@open(tuple2/snd)((@open(change-lattice/join)(change-lattice/bottom, change)))), (@open(?order2)))));
+                            update((local-get(deps, iev@2366)), key, change, (@open(?order2)));
+                        });
+                      }))), (@open(clause-control1)((fn(key, resume){
+                        val _ : ()
+                              = (match ((lookup((local-get(deps, iev@2510)), key, (@open(?order2))))) {
+                                (Just((resumes)) : maybe<list<(a) -> <(pure == 1 <exn,div>),local<h>|e> ()>> )
+                                   -> val ress : list<(a) -> <div,exn,local<h>|e> ()>
+                                            = Cons(resume, resumes);
+                                  local-set(deps, (set((local-get(deps, iev@2689)), key, ress, (@open(?order2)))));
+                                _
+                                   -> @open(error-pattern)(\"std/fixpoint/fixpoint-memo(46, 7)\", \"_\");
+                              });
+                        (match ((lookup((local-get(cache, iev@2757)), key, (@open(?order2))))) {
+                          (Just((r)) : maybe<a> )
+                             -> foreach((@open(change-lattice/changes)(r)), resume);
+                          _
+                             -> @open(error-pattern)(\"std/fixpoint/fixpoint-memo(50, 7)\", \"cache\");
+                        });
+                      }))), (forall<a> @open(clause-control1)((fn(ss, resume){
+                        (foreach(ss, resume));
+                      }))), (@open(clause-tail1)((fn(key){
+                        (match ((match ((contains((local-get(cache, iev@2992)), key, (@open(?order2))))) {
+                          (True() : bool )
+                             -> True;
+                          _
+                             -> contains((local-get(deps, iev@3116)), key, (@open(?order2)));
+                        })) {
+                          (True() : bool )
+                             -> True;
+                          (@skip False() : bool )
+                             -> val _ : ();
+                                val _ : ();
+                            False;
+                        });
+                      }))), (forall<a> @open(clause-never0)((fn(){
+                        Unit;
+                      }))))), (fn(x){
+                      Unit;
+                    }), @action);
+                })((fn(){
+                  ((fn(){
+                    @mask-builtin((fn(){
+                      (comp());
+                    }));
+                  })());
+                })));
+              })));
+          })));
+        }));
+    }));
+}<<call{LetBody(cache(@arg-x231, @arg-x232, @arg-x233, @arg-x234, @arg-x235)), .}:::Top>>
+
+"]
+2 [label="Call: LamBody [comp,@implicit/order2,@implicit/change-lattice,@implicit/k/show,@implicit/r/show] match (?change-lattice) {
+  (@skip Change-lattice((change-lattice/bottom), (change-lattice/join), (change-lattice/changes)) : std/fixpoint/lattice/change-lattice<a,b> )
+     -> local-scope((forall<h> fn(){
+      val iev@1615 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@1806 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2001 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2054 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2260 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2366 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2510 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2689 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@2757 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@2992 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@3116 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      val iev@3282 : hdiv<h,std/data/rb-map/rbmap<b,a>,<div,exn|e>>;
+      val iev@3385 : hdiv<h,std/data/rb-map/rbmap<a,list<(b) -> <(pure == 1 <exn,div>),local<h>|e> ()>>,<div,exn|e>>;
+      local-var((@open(empty)()), (fn(cache){
+          ((fn(@action){
+            (fn(x){
+              local-get(cache, iev@1615);
+            })((@action()));
+          })((fn(){
+            (local-var((@open(empty)()), (fn(deps){
+                ((fn(@action){
+                  cache/@handle((@Hnd-cache(3, (@open(clause-tail2)((fn(key, change){
+                        (match ((lookup((local-get(cache, iev@1806)), key, (@open(?order2))))) {
+                          (Just((r')) : maybe<a> )
+                             -> (match ((@open(change-lattice/join)(r', change))) {
+                              (@skip Tuple2((changed), (r'')) : (bool, a) )
+                                 -> (match (changed) {
+                                  (True() : bool )
+                                     -> val _ : ()
+                                              = local-set(cache, (set((local-get(cache, iev@2001)), key, r'', (@open(?order2)))));
+                                    update((local-get(deps, iev@2054)), key, change, (@open(?order2)));
+                                  (@skip False() : bool )
+                                     -> Unit;
+                                });
+                            });
+                          (@skip Nothing() : (maybe<a>) )
+                             -> val _ : ()
+                                      = local-set(cache, (set((local-get(cache, iev@2260)), key, (@open(tuple2/snd)((@open(change-lattice/join)(change-lattice/bottom, change)))), (@open(?order2)))));
+                            update((local-get(deps, iev@2366)), key, change, (@open(?order2)));
+                        });
+                      }))), (@open(clause-control1)((fn(key, resume){
+                        val _ : ()
+                              = (match ((lookup((local-get(deps, iev@2510)), key, (@open(?order2))))) {
+                                (Just((resumes)) : maybe<list<(a) -> <(pure == 1 <exn,div>),local<h>|e> ()>> )
+                                   -> val ress : list<(a) -> <div,exn,local<h>|e> ()>
+                                            = Cons(resume, resumes);
+                                  local-set(deps, (set((local-get(deps, iev@2689)), key, ress, (@open(?order2)))));
+                                _
+                                   -> @open(error-pattern)(\"std/fixpoint/fixpoint-memo(46, 7)\", \"_\");
+                              });
+                        (match ((lookup((local-get(cache, iev@2757)), key, (@open(?order2))))) {
+                          (Just((r)) : maybe<a> )
+                             -> foreach((@open(change-lattice/changes)(r)), resume);
+                          _
+                             -> @open(error-pattern)(\"std/fixpoint/fixpoint-memo(50, 7)\", \"cache\");
+                        });
+                      }))), (forall<a> @open(clause-control1)((fn(ss, resume){
+                        (foreach(ss, resume));
+                      }))), (@open(clause-tail1)((fn(key){
+                        (match ((match ((contains((local-get(cache, iev@2992)), key, (@open(?order2))))) {
+                          (True() : bool )
+                             -> True;
+                          _
+                             -> contains((local-get(deps, iev@3116)), key, (@open(?order2)));
+                        })) {
+                          (True() : bool )
+                             -> True;
+                          (@skip False() : bool )
+                             -> val _ : ();
+                                val _ : ();
+                            False;
+                        });
+                      }))), (forall<a> @open(clause-never0)((fn(){
+                        Unit;
+                      }))))), (fn(x){
+                      Unit;
+                    }), @action);
+                })((fn(){
+                  ((fn(){
+                    @mask-builtin((fn(){
+                      (comp());
+                    }));
+                  })());
+                })));
+              })));
+          })));
+        }));
+    }));
+}<<[comp,@implicit/order2,@implicit/change-lattice,@implicit/k/show,@implicit/r/show]:::Top>>
+
+"]
+ 0 [label="Start"]
+
+}

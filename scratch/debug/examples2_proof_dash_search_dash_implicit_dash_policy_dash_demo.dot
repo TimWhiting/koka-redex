@@ -1,0 +1,356 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 17
+1 -> 18
+1 -> 20
+1 -> 63
+1 -> 65
+2 -> 3
+2 -> 17
+2 -> 18
+2 -> 19
+2 -> 61
+3 -> 4
+3 -> 18
+4 -> 5
+4 -> 13
+4 -> 18
+5 -> 6
+5 -> 18
+6 -> 7
+6 -> 9
+6 -> 18
+6 -> 24
+7 -> 8
+7 -> 18
+8 -> 18
+9 -> 10
+9 -> 18
+10 -> 11
+10 -> 18
+13 -> 14
+13 -> 16
+14 -> 15
+19 -> 3
+19 -> 18
+19 -> 59
+19 -> 60
+20 -> 21
+20 -> 26
+20 -> 55
+21 -> 22
+22 -> 23
+23 -> 7
+23 -> 18
+23 -> 24
+23 -> 58
+24 -> 18
+24 -> 25
+24 -> 57
+25 -> 18
+25 -> 56
+26 -> 18
+26 -> 27
+26 -> 55
+27 -> 18
+27 -> 28
+27 -> 33
+27 -> 34
+27 -> 35
+27 -> 36
+27 -> 37
+27 -> 38
+27 -> 39
+27 -> 40
+27 -> 41
+27 -> 54
+28 -> 18
+28 -> 29
+28 -> 31
+28 -> 53
+29 -> 18
+29 -> 30
+29 -> 52
+30 -> 18
+30 -> 51
+31 -> 18
+31 -> 32
+31 -> 50
+33 -> 34
+34 -> 13
+34 -> 35
+35 -> 36
+36 -> 37
+36 -> 39
+37 -> 38
+39 -> 40
+40 -> 11
+41 -> 42
+41 -> 49
+42 -> 43
+42 -> 45
+43 -> 44
+45 -> 46
+46 -> 47
+50 -> 32
+52 -> 51
+53 -> 50
+53 -> 52
+54 -> 41
+54 -> 53
+55 -> 54
+57 -> 56
+58 -> 37
+58 -> 57
+60 -> 33
+61 -> 33
+61 -> 60
+61 -> 62
+63 -> 18
+63 -> 19
+63 -> 20
+63 -> 59
+63 -> 64
+64 -> 20
+64 -> 60
+65 -> 20
+65 -> 61
+65 -> 62
+65 -> 64
+59 [label="Env Refinements: <<call{AppParam(@open(?relation/to-search-rules)(rel)), .}:::[]:::Top>>
+
+⊥"]
+48 [label="Env Refinements: <<[rules]:::Top>>
+
+"]
+12 [label="Env Refinements: <<[goal,base-facts,rel,policies,max-depth,@implicit/relation/to-search-rules,@implicit/as-fact]:::Top>>
+
+"]
+62 [label="Env Refinements: <<[@arg-x1]:::call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+17 [label="Env Refinements: <<[@arg-x1]:::[]:::Top>>
+
+"]
+18 [label="Env Refinements: <<[]:::Top>>
+
+"]
+49 [label="Eval: LamBody [rules] RelationDef((@open(rules)()))<<call{LamBody([]), .}:::Top>>
+
+"]
+47 [label="Eval: DefNonRec pub fun func/relation-def : forall<a> (rules : () -> a) -> koka-redex2/syntax/relation-def<a>;<<Top>>
+
+"]
+15 [label="Eval: ExprBasic @open<<call{LetBody(@fct-x1630(@arg-x1623, @arg-x1624, @arg-x1625, @arg-x1626, @arg-x1627, @arg-x1628, @arg-x1629)), .}:::Top>>
+
+"]
+14 [label="Eval: AppLambda @open<<call{LetBody(@fct-x1630(@arg-x1623, @arg-x1624, @arg-x1625, @arg-x1626, @arg-x1627, @arg-x1628, @arg-x1629)), .}:::Top>>
+
+"]
+20 [label="Eval: AppParam proof-search-bridge:626 0 rel<<call{LetBody(@fct-x1630(@arg-x1623, @arg-x1624, @arg-x1625, @arg-x1626, @arg-x1627, @arg-x1628, @arg-x1629)), .}:::Top>>
+
+"]
+11 [label="Eval: DefNonRec pub fun search-memo/relation : forall<a,b> (goal : a, base-facts : list<a>, rel : koka-redex2/syntax/relation-def<b>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<b>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (a) -> koka-redex2/proof-search/fact) -> <exn,div> maybe<koka-redex2/proof-search/proof>;<<Top>>
+
+"]
+40 [label="Eval: ExprBasic search-memo/relation<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+10 [label="Eval: ExprBasic search-memo/relation<<[]:::Top>>
+
+"]
+38 [label="Eval: ExprBasic @open<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+8 [label="Eval: ExprBasic @open<<[]:::Top>>
+
+"]
+39 [label="Eval: AppParam proof-search-implicit-policy-demo:480 0 search-memo/relation<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+9 [label="Eval: AppParam proof-search-implicit-policy-demo:480 0 search-memo/relation<<[]:::Top>>
+
+"]
+37 [label="Eval: AppLambda @open<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+7 [label="Eval: AppLambda @open<<[]:::Top>>
+
+"]
+51 [label="Eval: ExprBasic @open<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+30 [label="Eval: ExprBasic @open<<[]:::Top>>
+
+"]
+50 [label="Eval: AppParam proof-search-implicit-policy-demo:470 0 relation<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+31 [label="Eval: AppParam proof-search-implicit-policy-demo:470 0 relation<<[]:::Top>>
+
+"]
+52 [label="Eval: AppLambda @open<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+29 [label="Eval: AppLambda @open<<[]:::Top>>
+
+"]
+53 [label="Eval: AppLambda @open(relation)<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+28 [label="Eval: AppLambda @open(relation)<<[]:::Top>>
+
+"]
+64 [label="Eval: ExprBasic @arg-x1<<call{AppParam(@open(?relation/to-search-rules)(rel)), .}:::call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+63 [label="Eval: ExprBasic @arg-x1<<call{AppParam(@open(?relation/to-search-rules)(rel)), .}:::[]:::Top>>
+
+"]
+65 [label="Eval: ExprBasic @arg-x1<<[@arg-x1]:::call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+1 [label="Eval: ExprBasic @arg-x1<<[@arg-x1]:::[]:::Top>>
+
+"]
+55 [label="Eval: AppParam proof-search-implicit-policy-demo:358 2 @arg-x1625<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+26 [label="Eval: AppParam proof-search-implicit-policy-demo:358 2 @arg-x1625<<[]:::Top>>
+
+"]
+35 [label="Eval: AppLambda @fct-x1630<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+5 [label="Eval: AppLambda @fct-x1630<<[]:::Top>>
+
+"]
+54 [label="Eval: LetDef val @arg-x1625 : koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>;<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+27 [label="Eval: LetDef val @arg-x1625 : koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>;<<[]:::Top>>
+
+"]
+36 [label="Eval: LetDef fun @fct-x1630 : (goal : koka-redex2/proof-search/fact, base-facts : list<koka-redex2/proof-search/fact>, rel : koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (koka-redex2/proof-search/fact) -> koka-redex2/proof-search/fact) -> <div,exn,console/console> maybe<koka-redex2/proof-search/proof>;<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+6 [label="Eval: LetDef fun @fct-x1630 : (goal : koka-redex2/proof-search/fact, base-facts : list<koka-redex2/proof-search/fact>, rel : koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (koka-redex2/proof-search/fact) -> koka-redex2/proof-search/fact) -> <div,exn,console/console> maybe<koka-redex2/proof-search/proof>;<<[]:::Top>>
+
+"]
+46 [label="Eval: ExprBasic func/relation-def<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+44 [label="Eval: ExprBasic @open<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+45 [label="Eval: AppParam proof-search-implicit-policy-demo:89 0 func/relation-def<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+43 [label="Eval: AppLambda @open<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+42 [label="Eval: AppLambda @open(func/relation-def)<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+41 [label="Eval: LamBody [] @open(func/relation-def)((fn(){
+  (@open(cons/rule)((@open(edge)((@open(v)(\"x\")), (@open(v)(\"y\")))), \"reach-edge\", (@open(reach)((@open(v)(\"x\")), (@open(v)(\"y\")))), (fn(){
+      (@open(single/rule)((@open((\))((@open(edge)((@open(v)(\"x\")), (@open(v)(\"y\")))), (@open(reach)((@open(v)(\"y\")), (@open(v)(\"z\")))))), \"reach-step\", (@open(reach)((@open(v)(\"x\")), (@open(v)(\"z\"))))));
+    })));
+}))<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+32 [label="Eval: DefNonRec fun relation : () -> koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>;<<Top>>
+
+"]
+13 [label="Expr: AppParam proof-search-bridge:628 0 ?relation/to-search-rules<<call{LetBody(@fct-x1630(@arg-x1623, @arg-x1624, @arg-x1625, @arg-x1626, @arg-x1627, @arg-x1628, @arg-x1629)), .}:::Top>>
+
+"]
+16 [label="Expr: AppLambda @open(?relation/to-search-rules)<<call{LetBody(@fct-x1630(@arg-x1623, @arg-x1624, @arg-x1625, @arg-x1626, @arg-x1627, @arg-x1628, @arg-x1629)), .}:::Top>>
+
+"]
+22 [label="Expr: DefNonRec pub fun search-memo/relation : forall<a,b> (goal : a, base-facts : list<a>, rel : koka-redex2/syntax/relation-def<b>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<b>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (a) -> koka-redex2/proof-search/fact) -> <exn,div> maybe<koka-redex2/proof-search/proof>;<<Top>>
+
+"]
+58 [label="Expr: AppParam proof-search-implicit-policy-demo:480 0 search-memo/relation<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+23 [label="Expr: AppParam proof-search-implicit-policy-demo:480 0 search-memo/relation<<[]:::Top>>
+
+"]
+34 [label="Expr: AppParam proof-search-implicit-policy-demo:361 5 @arg-x1628<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+4 [label="Expr: AppParam proof-search-implicit-policy-demo:361 5 @arg-x1628<<[]:::Top>>
+
+"]
+56 [label="Expr: AppLambda @fct-x1630<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+25 [label="Expr: AppLambda @fct-x1630<<[]:::Top>>
+
+"]
+33 [label="Expr: LetDef val @arg-x1628 : (koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>) -> list<koka-redex2/proof-search/rule>;<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+3 [label="Expr: LetDef val @arg-x1628 : (koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>) -> list<koka-redex2/proof-search/rule>;<<[]:::Top>>
+
+"]
+57 [label="Expr: LetDef fun @fct-x1630 : (goal : koka-redex2/proof-search/fact, base-facts : list<koka-redex2/proof-search/fact>, rel : koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (koka-redex2/proof-search/fact) -> koka-redex2/proof-search/fact) -> <div,exn,console/console> maybe<koka-redex2/proof-search/proof>;<<call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+24 [label="Expr: LetDef fun @fct-x1630 : (goal : koka-redex2/proof-search/fact, base-facts : list<koka-redex2/proof-search/fact>, rel : koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,type-level/structs/type-struct<string,koka-redex2/syntax/rule<string,type-level/list/type-cons<koka-redex2/proof-search/fact,koka-redex2/proof-search/fact>,koka-redex2/proof-search/fact>,type-level/nil/type-nil>>>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (koka-redex2/proof-search/fact) -> koka-redex2/proof-search/fact) -> <div,exn,console/console> maybe<koka-redex2/proof-search/proof>;<<[]:::Top>>
+
+"]
+21 [label="Call: LamBody [goal,base-facts,rel,policies,max-depth,@implicit/relation/to-search-rules,@implicit/as-fact] val @uniq-policies@685 : list<koka-redex2/proof-search/relation-policy>;
+val @uniq-max-depth@689 : int;
+@open(search-memo)((@open(?as-fact)(goal)), (map(base-facts, (@open(?as-fact)))), (@open(?relation/to-search-rules)(rel)), (@Optional(@uniq-policies@685)), (@Optional(@uniq-max-depth@689)))<<call{LetBody(@fct-x1630(@arg-x1623, @arg-x1624, @arg-x1625, @arg-x1626, @arg-x1627, @arg-x1628, @arg-x1629)), .}:::Top>>
+
+"]
+60 [label="Call: LamBody [@arg-x1] @open(fact/to-search-rules)(@arg-x1, (fn(@arg-x1){
+    (@open(fact/map-field)(@arg-x1, (@open(string/show)), (@open(fact/to-premises)), (@open(fact/to-fact))));
+  }), (fn(@arg-x1){
+    (to-list(@arg-x1, (fn(@arg-x1){
+        (@open(fact/map-field)(@arg-x1, (@open(string/show)), (fn(@arg-x1){
+            (@open(tcons/to-premises)(@arg-x1, (@open(fact/to-premises))));
+          }), (@open(fact/to-fact))));
+      }), (@open(to-list))));
+  }))<<call{AppParam(@open(?relation/to-search-rules)(rel)), .}:::call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+19 [label="Call: LamBody [@arg-x1] @open(fact/to-search-rules)(@arg-x1, (fn(@arg-x1){
+    (@open(fact/map-field)(@arg-x1, (@open(string/show)), (@open(fact/to-premises)), (@open(fact/to-fact))));
+  }), (fn(@arg-x1){
+    (to-list(@arg-x1, (fn(@arg-x1){
+        (@open(fact/map-field)(@arg-x1, (@open(string/show)), (fn(@arg-x1){
+            (@open(tcons/to-premises)(@arg-x1, (@open(fact/to-premises))));
+          }), (@open(fact/to-fact))));
+      }), (@open(to-list))));
+  }))<<call{AppParam(@open(?relation/to-search-rules)(rel)), .}:::[]:::Top>>
+
+"]
+61 [label="Call: LamBody [@arg-x1] @open(fact/to-search-rules)(@arg-x1, (fn(@arg-x1){
+    (@open(fact/map-field)(@arg-x1, (@open(string/show)), (@open(fact/to-premises)), (@open(fact/to-fact))));
+  }), (fn(@arg-x1){
+    (to-list(@arg-x1, (fn(@arg-x1){
+        (@open(fact/map-field)(@arg-x1, (@open(string/show)), (fn(@arg-x1){
+            (@open(tcons/to-premises)(@arg-x1, (@open(fact/to-premises))));
+          }), (@open(fact/to-fact))));
+      }), (@open(to-list))));
+  }))<<[@arg-x1]:::call{LetDef(@arg-x1625), .}:::Top>>
+
+"]
+2 [label="Call: LamBody [@arg-x1] @open(fact/to-search-rules)(@arg-x1, (fn(@arg-x1){
+    (@open(fact/map-field)(@arg-x1, (@open(string/show)), (@open(fact/to-premises)), (@open(fact/to-fact))));
+  }), (fn(@arg-x1){
+    (to-list(@arg-x1, (fn(@arg-x1){
+        (@open(fact/map-field)(@arg-x1, (@open(string/show)), (fn(@arg-x1){
+            (@open(tcons/to-premises)(@arg-x1, (@open(fact/to-premises))));
+          }), (@open(fact/to-fact))));
+      }), (@open(to-list))));
+  }))<<[@arg-x1]:::[]:::Top>>
+
+"]
+ 0 [label="Start"]
+
+}

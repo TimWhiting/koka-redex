@@ -1,0 +1,37 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 7
+2 -> 3
+2 -> 7
+3 -> 4
+3 -> 6
+3 -> 7
+4 -> 5
+4 -> 7
+5 -> 7
+6 -> 7
+7 [label="Env Refinements: <<[]:::Top>>
+
+⊥"]
+5 [label="Eval: ExprBasic @open<<[]:::Top>>
+
+"]
+6 [label="Eval: AppParam evaluator-demo:334 0 string/println<<[]:::Top>>
+
+"]
+4 [label="Eval: AppLambda @open<<[]:::Top>>
+
+"]
+3 [label="Eval: AppLambda @open(string/println)<<[]:::Top>>
+
+"]
+1 [label="Eval: ExprBasic _<<[]:::Top>>
+
+"]
+2 [label="Eval: LetDef val _ : ();<<[]:::Top>>
+
+"]
+ 0 [label="Start"]
+
+}

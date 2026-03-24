@@ -1,0 +1,23 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 4
+2 -> 3
+2 -> 4
+4 [label="Env Refinements: <<[goal,base-facts,rel,policies,max-depth,@implicit/relation/to-search-rules,@implicit/as-fact]:::Top>>
+
+⊥"]
+1 [label="Eval: ExprBasic ?relation/to-search-rules<<[goal,base-facts,rel,policies,max-depth,@implicit/relation/to-search-rules,@implicit/as-fact]:::Top>>
+
+⊥"]
+3 [label="Expr: DefNonRec pub fun search-all-memo/relation : forall<a,b> (goal : a, base-facts : list<a>, rel : koka-redex2/syntax/relation-def<b>, policies : ? (list<koka-redex2/proof-search/relation-policy>), max-depth : ? int, ?relation/to-search-rules : (koka-redex2/syntax/relation-def<b>) -> list<koka-redex2/proof-search/rule>, ?as-fact : (a) -> koka-redex2/proof-search/fact) -> <exn,div> list<koka-redex2/proof-search/proof>;<<Top>>
+
+⊥"]
+2 [label="Call: LamBody [goal,base-facts,rel,policies,max-depth,@implicit/relation/to-search-rules,@implicit/as-fact] val @uniq-policies@847 : list<koka-redex2/proof-search/relation-policy>;
+val @uniq-max-depth@851 : int;
+@open(search-all-memo)((@open(?as-fact)(goal)), (map(base-facts, (@open(?as-fact)))), (@open(?relation/to-search-rules)(rel)), (@Optional(@uniq-policies@847)), (@Optional(@uniq-max-depth@851)))<<[goal,base-facts,rel,policies,max-depth,@implicit/relation/to-search-rules,@implicit/as-fact]:::Top>>
+
+⊥"]
+ 0 [label="Start"]
+
+}

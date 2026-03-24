@@ -1,0 +1,25 @@
+digraph G {
+0 -> 1
+1 -> 2
+1 -> 4
+2 -> 3
+2 -> 4
+4 [label="Env Refinements: <<[@implicit/(==)]:::Top>>
+
+⊥"]
+1 [label="Eval: ExprBasic ?(==)<<[@implicit/(==)]:::Top>>
+
+⊥"]
+3 [label="Expr: DefNonRec pub fun list/change-lattice : forall<a> (?(==) : (a, a) -> pure bool) -> pure std/fixpoint/lattice/change-lattice<list<a>,a>;<<Top>>
+
+⊥"]
+2 [label="Call: LamBody [@implicit/(==)] Change-lattice(Nil, (fn(r, c){
+    (@open(list/join)(r, c, (@open(?(==)))));
+  }), (fn(x){
+    x;
+  }))<<[@implicit/(==)]:::Top>>
+
+⊥"]
+ 0 [label="Start"]
+
+}

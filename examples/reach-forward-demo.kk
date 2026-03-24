@@ -7,6 +7,7 @@ module examples/reach-forward-demo
 //   3. Open query: reach(?, ?) — full saturation from base facts
 
 import koka-redex/forward
+import std/core/unsafe
 
 // ---------------------------------------------------------------------------
 // Relations
@@ -57,10 +58,8 @@ fun full-key(f: fact): div string
 // ---------------------------------------------------------------------------
 
 fun show-table(table: list<(string, list<fact>)>)
-  table.foreach fn((key, results))
-    if results.length > 0 then
-      val vals = results.map(fn(f) f.show).list/joinsep/join(", ")
-      println("  " ++ key ++ " => {" ++ vals ++ "}")
+  println("  (" ++ table.length.show ++ " entries)")
+  table.map(fst).foreach(println)
 
 pub fun main()
   val rules = all-rules()

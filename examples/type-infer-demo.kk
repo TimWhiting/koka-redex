@@ -136,7 +136,7 @@ fun apply-type-subst(t: term, s: list<binding>): div term
     TNode(n, args) -> TNode(n, args.map(fn(a) apply-type-subst(a, s)))
     TInt(i) -> TInt(i)
 
-fun external(goal: fact): div maybe<list<fact>>
+fun external(goal: fact): <logic,div> maybe<list<fact>>
   match goal
     Fact("lookup", [store, name, _]) ->
       val results = store-lookup-all(store, name)

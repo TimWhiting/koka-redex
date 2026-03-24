@@ -69,7 +69,7 @@ fun store-lookup-all(store: term, name: term): div list<term>
       found ++ store-lookup-all(rest, name)
     _ -> []
 
-fun external(goal: fact): div maybe<list<fact>>
+fun external(goal: fact): <logic,div> maybe<list<fact>>
   match goal
     Fact("lookup", [store, name, _value]) ->
       val results = store-lookup-all(store, name)

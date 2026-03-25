@@ -16,6 +16,44 @@ pub import type-level/nil
 import std/core/undiv
 
 // ----------------------------------------------------------------------------
+// Implicit chains for external solver input/output conversion
+// ----------------------------------------------------------------------------
+
+// from-inputs: convert list<term> to a type-cons chain of domain values
+pub fun tcons/from-inputs(
+  args: list<term>,
+  ?from-term: term -> exn a,
+  ?from-inputs: list<term> -> exn b
+): exn type-cons<a, b>
+  match args
+    Cons(t, rest) -> TCons(t.from-term, rest.from-inputs)
+    _ -> throw("from-inputs: not enough args for type-cons")
+
+// Base: single remaining input (bare value)
+pub fun end/from-inputs(
+  args: list<term>,
+  ?from-term: term -> exn a
+): exn a
+  match args
+    Cons(t, _) -> t.from-term
+    _ -> throw("from-inputs: not enough args for base")
+
+// to-outputs: convert domain output value(s) to list<term>
+pub fun tcons/to-outputs(
+  TCons(h, t): type-cons<a, b>,
+  ?to-term: a -> term,
+  ?to-outputs: b -> list<term>
+): list<term>
+  Cons(h.to-term, t.to-outputs)
+
+// Base: single output value
+pub fun end/to-outputs(
+  v: a,
+  ?to-term: a -> term
+): list<term>
+  [v.to-term]
+
+// ----------------------------------------------------------------------------
 // Built-in to-term converters
 // ----------------------------------------------------------------------------
 
@@ -208,7 +246,7 @@ pub fun compose-memo-keys(keys: list<(string, (fact) -> string)>): ((fact) -> st
 // ----------------------------------------------------------------------------
 
 pub fun compose-externals(
-  solvers: list<(string, (fact) -> <logic,div> maybe<list<fact>>)>
+  solvers: list<(string, (fact) -> <logic,div,exn> maybe<list<fact>>)>
 )
   fn(goal)
     match goal
@@ -252,31 +290,67 @@ pub fun keys-to-memo-key(keys: list<key-info>): ((fact) -> string)
   compose-memo-keys(keys.map(fn(k) (k.pred, make-memo-key(k.pred, k.n-inputs))))
 
 // ----------------------------------------------------------------------------
-// Typed forward-search
+// relation-entry: sum type for mixed rule/external type-struct traversal
 // ----------------------------------------------------------------------------
 
-// Full forward-search: derives memo-key from the relation structure.
-// Requires ?to-fact-args on the conclusion type (for input counting).
+pub type relation-entry
+  RuleEntry(r: koka-redex/term/rule)
+  ExtEntry(ext-pred: string, ext-n-inputs: int, ext-solver: (fact) -> <logic,div,exn> maybe<list<fact>>)
+
+// map-field: rule -> relation-entry
+pub fun rule-entry/map-field(
+  r: koka-redex/syntax/rule<n, p, c>,
+  ?name/show: n -> div string,
+  ?to-premises: p -> div list<fact>,
+  ?to-fact: c -> div fact
+): div relation-entry
+  RuleEntry(r.rule/to-forward-rule)
+
+// map-field: external-entry -> relation-entry
+pub fun ext-entry/map-field(e: external-entry): div relation-entry
+  ExtEntry(e.ext-pred, e.ext-n-inputs, e.ext-solver)
+
+// key map-field: external-entry -> key-info
+pub fun ext-key/map-field(e: external-entry): div key-info
+  Key-info(e.ext-pred, e.ext-n-inputs)
+
+// Partition relation-entries into rules and external solvers
+fun partition-entries(entries: list<relation-entry>): (list<koka-redex/term/rule>, list<(string, (fact) -> <logic,div,exn> maybe<list<fact>>)>)
+  match entries
+    Nil -> ([], [])
+    Cons(RuleEntry(r), rest) ->
+      val (rules, exts) = partition-entries(rest)
+      (Cons(r, rules), exts)
+    Cons(ExtEntry(pred, _, solver), rest) ->
+      val (rules, exts) = partition-entries(rest)
+      (rules, Cons((pred, solver), exts))
+
+// ----------------------------------------------------------------------------
+// Typed forward-search (unified: rules + externals from relation-def)
+// ----------------------------------------------------------------------------
+
+// Unified forward-search: extracts rules AND externals from relation-def,
+// auto-derives memo-key from relation structure.
 pub fun forward-search(
   goal: g,
   rel: relation-def<r>,
   ?to-fact: g -> div fact,
-  ?to-list: r -> div list<koka-redex/term/rule>,
-  ?derive-keys: relation-def<r> -> div list<key-info>,
-  ?external: (fact) -> <logic,div> maybe<list<fact>>
+  ?to-list: r -> div list<relation-entry>,
+  ?derive-keys: relation-def<r> -> div list<key-info>
 ): <div,exn> list<(string, list<fact>)>
-  val rules = to-list(rel.rules)
-  val goal-fact = goal.to-fact
+  val entries = to-list(rel.rules)
+  val (rules, ext-pairs) = partition-entries(entries)
+  val ext = compose-externals(ext-pairs)
   val mk = keys-to-memo-key(rel.derive-keys)
-  koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=mk)
+  koka-redex/forward/forward-search(goal.to-fact, rules, ?external=ext, ?memo-key=mk)
 
-// Stepping-stone: user provides memo-key explicitly.
+// Stepping-stone: user provides memo-key and external explicitly.
 pub fun search(
   goal: g,
   rel: relation-def<r>,
   ?to-fact: g -> div fact,
   ?to-list: r -> div list<koka-redex/term/rule>,
-  ?external: (fact) -> <logic,div> maybe<list<fact>>,
+  ?external: (fact) -> <logic,div,exn> maybe<list<fact>>,
   ?memo-key: (fact) -> div string
 ): <div,exn> list<(string, list<fact>)>
   val rules = to-list(rel.rules)

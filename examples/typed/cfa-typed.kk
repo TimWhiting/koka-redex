@@ -69,6 +69,8 @@ fun cfa-relation()
     axiom
     --- "E-Lam" -->
     ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
+  with external-rule(sv("s") \ ev("x") |- RLookup \ ev("v")) fn(TCons(s-val, x-val)) 
+    store-lookup-all(s-val, x-val)
   with rule(
     sv("s") \ x |- RLookup \ ev("val")
     --- "E-Var" -->
@@ -81,23 +83,35 @@ fun cfa-relation()
     EApp(ev("e1"), ev("e2")) \ sv("s0") |- REval \ ev("v") \ sv("s3"))
 
 // ----------------------------------------------------------------------------
-// External solver + memo-key
+// from-term (for typed external solver)
 // ----------------------------------------------------------------------------
 
-fun store-lookup-all(s: term, nm: term): div list<term>
+pub fun expr/from-term(t: term): exn expr
+  match t
+    TVar(p, i) -> EAny(p, i)
+    TAtom(n) -> EAtom(n)
+    TNode("var", [n]) -> EVar(n.from-term)
+    TNode("app", [e1, e2]) -> EApp(e1.from-term, e2.from-term)
+    TNode("lam", [x, body]) -> ELam(x.from-term, body.from-term)
+    _ -> throw("cannot convert to expr: " ++ t.show)
+
+pub fun store/from-term(t: term): exn store
+  match t
+    TVar(p, i) -> SAny(p, i)
+    TNode("snil", []) -> SNil
+    TNode("scons", [n, v, rest]) -> SCons(n.from-term, v.from-term, rest.from-term)
+    _ -> throw("cannot convert to store: " ++ t.show)
+
+// ----------------------------------------------------------------------------
+// Typed external solver (domain-level!)
+// ----------------------------------------------------------------------------
+
+fun store-lookup-all(s: store, nm: expr): div list<expr>
   match s
-    TNode("scons", [n, vl, rest]) ->
-      val found = if term/eq(n, nm) then [vl] else []
+    SCons(n, vl, rest) ->
+      val found = if n.to-term.show == nm.to-term.show then [vl] else []
       found ++ store-lookup-all(rest, nm)
     _ -> []
-
-val lookup-solver = make-external("lookup") fn(args)
-  match args
-    Cons(s, Cons(nm, _)) ->
-      store-lookup-all(s, nm).map(fn(vl) [s, nm, vl])
-    _ -> []
-
-val cfa/external = compose-externals([lookup-solver])
 
 // ----------------------------------------------------------------------------
 // Run — memo-key auto-derived from relation structure

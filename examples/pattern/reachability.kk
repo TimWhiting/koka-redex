@@ -17,12 +17,7 @@ pub type r-reach
 pub fun r-reach/pred-name(_: r-reach): string
   "reach"
 
-// Judgement constructors using pattern<int> for node IDs
-fun edge-j(a: pattern<int>, b: pattern<int>)
-  a \ REdge \ b
-
-fun reach-j(a: pattern<int>, b: pattern<int>)
-  a \ RReach \ b
+// (judgement helpers removed — inline syntax is clear enough)
 
 // Concrete node IDs
 fun n(i: int): pattern<int>
@@ -39,17 +34,18 @@ fun reach-relation()
   val z = pv("z", 3)
 
   with relation-def
-  with rule(TNil, "edge-1-2", edge-j(n(1), n(2)))
-  with rule(TNil, "edge-2-3", edge-j(n(2), n(3)))
-  with rule(TNil, "edge-3-4", edge-j(n(3), n(4)))
+  with rule(axiom === "edge-1-2" ==> n(1) |- REdge \ n(2))
+  with rule(axiom === "edge-2-3" ==> n(2) |- REdge \ n(3))
+  with rule(axiom === "edge-3-4" ==> n(3) |- REdge \ n(4))
   with rule(
-    edge-j(x, y),
-    "reach-edge",
-    reach-j(x, y))
+    x |- REdge \ y
+    === "reach-edge" ==>
+    x |- RReach \ y)
   single/rule(
-    edge-j(x, y) \ reach-j(y, z),
-    "reach-step",
-    reach-j(x, z))
+    x |- REdge \ y \\
+    y |- RReach \ z
+    === "reach-step" ==>
+    x |- RReach \ z)
 
 pub fun main()
   val rel = reach-relation()
@@ -61,7 +57,6 @@ pub fun main()
   println("\n=== reach(1, ?) ===")
   val goal = Fact("reach", [TInt(1), TVar("target", 0)])
   val table = koka-redex/forward/forward-search(goal, rules,
-    ?external = default-external,
     ?memo-key = fn(f) f.show)
   val results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])
   results.map(fn(f) f.show).foreach(println)

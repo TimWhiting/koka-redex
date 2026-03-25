@@ -1,4 +1,4 @@
-module examples/cfa-store
+module examples/term/cfa-store
 
 // 0CFA with store-passing using the forward engine + logic effect.
 // Demonstrates over-approximation via shared variable bindings.

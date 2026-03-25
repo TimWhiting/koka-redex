@@ -27,13 +27,21 @@ pub fun reach(a: int, b: int)
   a \ "reach" \ b 
 
 pub fun relation()
-  relation-def(
-    cons/rule(RuleEdge12, edge(1, 2), reach(1, 2), fn()
-      cons/rule(RuleEdge23, edge(2, 3), reach(2, 3), fn()
-        single/rule(RuleTrans, reach(1, 2) \ reach(2, 3), reach(1, 3))
-      )
-    )
-  )
+  with relation-def
+  with rule(
+    edge(1, 2) 
+    === RuleEdge12 ==> 
+    reach(1, 2))
+  with rule(
+    edge(2, 3) 
+    === RuleEdge23 ==> 
+    reach(2, 3))
+  rule(
+    reach(1, 2) \\ 
+    reach(2, 3) 
+    === RuleTrans ==> 
+    reach(1, 3))
+      
 
 pub fun main()
   val rules = [

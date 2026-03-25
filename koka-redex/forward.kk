@@ -34,7 +34,7 @@ val result-lattice : change-lattice<list<search-result>, search-result> = Change
 
 pub alias external-solver = (fact) -> <logic,div> maybe<list<fact>>
 
-pub fun default-external(_goal: fact): <logic,div> maybe<list<fact>>
+pub fun default/external(_goal: fact): <logic,div> maybe<list<fact>>
   Nothing
 
 // ---------------------------------------------------------------------------

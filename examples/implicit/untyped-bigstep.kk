@@ -134,15 +134,15 @@ pub effect terms
 // Judgements as Type Lists:
 // e \Downarrow v
 fun (~>)(expr-left: expr, expr-right: expr)
-  expr-left \ REval \ expr-right
+  expr-left |- REval \ expr-right
 
 // e[x -> v] = result
 fun subst(expr-in: expr, x-target: string, expr-val: expr, result: expr)
-  expr-in \ x-target \ RSubst \ expr-val \ result
+  expr-in \ x-target |- RSubst \ expr-val \ result
 
 // t1 \neq t2
 fun neq(t1: string, t2: string)
-  t1 \ RNeq \ t2
+  t1 |- RNeq \ t2
 
 fun eval-rules()
   val x-var = x();
@@ -151,41 +151,43 @@ fun eval-rules()
   val (v1, v2) = fresh2(v)
 
   with rule(
-    TNil, 
-    // ---------------
-    RuleEvalLam, 
+    TNil
+    === RuleEvalLam ==>
     ELam(x-var, e-body) ~> ELam(x-var, e-body))
   rule(
-    (e1 ~> ELam(x-var, e3)) \
-    (e2 ~> v1) \
-    subst(e3, x-var, v1, e4) \
-    (e4 ~> v2),
-    // --------------
-    RuleEvalApp,
-    EApp(e1, e2) ~> v2
-  )
+    (e1 ~> ELam(x-var, e3)) \\
+    (e2 ~> v1) \\
+    subst(e3, x-var, v1, e4) \\
+    (e4 ~> v2)
+    === RuleEvalApp ==>
+    EApp(e1, e2) ~> v2)
 
 pub fun subst-rules()
   val (x-var, y-var) = fresh2(x)
   val (e0, w-var, e-body, e') = fresh4(e)
   val (e1, e1', e2, e2') = fresh4(e)
-  with rule(TNil, RuleSubstVarEq, subst(EVar(x-var), x-var, w-var, w-var))
-  with rule(neq(x-var, y-var), RuleSubstVarNeq, subst(EVar(y-var), x-var, w-var, EVar(y-var)))
   with rule(
-    subst(e1, x-var, w-var, e1') \
-    subst(e2, x-var, w-var, e2'),
-    // ---------------
-    RuleSubstApp,
-    subst(EApp(e1, e2), x-var, w-var, EApp(e1', e2'))
-  )
-  with rule(TNil, RuleSubstLamEq, subst(ELam(x-var, e-body), x-var, w-var, ELam(x-var, e-body)))
+    TNil
+    === RuleSubstVarEq ==>
+    subst(EVar(x-var), x-var, w-var, w-var))
+  with rule(
+    neq(x-var, y-var)
+    === RuleSubstVarNeq ==>
+    subst(EVar(y-var), x-var, w-var, EVar(y-var)))
+  with rule(
+    subst(e1, x-var, w-var, e1') \\
+    subst(e2, x-var, w-var, e2')
+    === RuleSubstApp ==>
+    subst(EApp(e1, e2), x-var, w-var, EApp(e1', e2')))
+  with rule(
+    TNil
+    === RuleSubstLamEq ==>
+    subst(ELam(x-var, e-body), x-var, w-var, ELam(x-var, e-body)))
   rule(
-    neq(x-var, y-var) \
-    subst(e0, x-var, w-var, e'),
-    // ---------------
-    RuleSubstLamNeq,
-    subst(ELam(y-var, e0), x-var, w-var, ELam(y-var, e'))
-  )
+    neq(x-var, y-var) \\
+    subst(e0, x-var, w-var, e')
+    === RuleSubstLamNeq ==>
+    subst(ELam(y-var, e0), x-var, w-var, ELam(y-var, e')))
 
 pub fun main()
   with e-fresh <- with-fresh-expr("e")

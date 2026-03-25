@@ -52,18 +52,6 @@ pub fun r-lookup/pred-name(_: r-lookup): string
   "lookup"
 
 // ============================================================================
-// Judgement constructors — type-cons chains via \
-// ============================================================================
-
-// eval(expr, store) => (expr, store)
-fun eval-j(e: expr, s: store, v: expr, s2: store)
-  e \ s \ REval \ v \ s2
-
-// lookup(store, name) => expr
-fun lookup-j(s: store, x: expr, v: expr)
-  s \ x \ RLookup \ v
-
-// ============================================================================
 // Metavariable helpers
 // ============================================================================
 
@@ -78,23 +66,22 @@ fun sv(nm: string): store
 // ============================================================================
 
 fun cfa-relation()
-  val x = ev("x")  // metavariable for param name
+  val x = ev("x")
   with relation-def
-  // E-Lam: λ values evaluate to themselves
-  with rule(TNil, "E-Lam",
-    eval-j(ELam(x, ev("e")), sv("s"), ELam(x, ev("e")), sv("s")))
-  // E-Var: variable lookup (external)
   with rule(
-    lookup-j(sv("s"), x, ev("val")),
-    "E-Var",
-    eval-j(EVar(x), sv("s"), ev("val"), sv("s")))
-  // E-App: application with store threading
+    TNil
+    === "E-Lam" ==>
+    ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
+  with rule(
+    sv("s") \ x |- RLookup \ ev("val")
+    === "E-Var" ==>
+    EVar(x) \ sv("s") |- REval \ ev("val") \ sv("s"))
   single/rule(
-    eval-j(ev("e1"), sv("s0"), ELam(x, ev("e3")), sv("s1")) \
-    eval-j(ev("e2"), sv("s1"), ev("v2"), sv("s2")) \
-    eval-j(ev("e3"), SCons(x, ev("v2"), sv("s2")), ev("v"), sv("s3")),
-    "E-App",
-    eval-j(EApp(ev("e1"), ev("e2")), sv("s0"), ev("v"), sv("s3")))
+    ev("e1") \ sv("s0") |- REval \ ELam(x, ev("e3")) \ sv("s1") \\
+    ev("e2") \ sv("s1") |- REval \ ev("v2") \ sv("s2") \\
+    ev("e3") \ SCons(x, ev("v2"), sv("s2")) |- REval \ ev("v") \ sv("s3")
+    === "E-App" ==>
+    EApp(ev("e1"), ev("e2")) \ sv("s0") |- REval \ ev("v") \ sv("s3"))
 
 // ============================================================================
 // External solver + policy (still at term level for now)
@@ -113,7 +100,7 @@ val lookup-solver = make-external("lookup") fn(args)
       store-lookup-all(s, nm).map(fn(vl) [s, nm, vl])
     _ -> []
 
-fun cfa-memo-key(): div ((fact) -> div string)
+fun cfa-memo-key(): ((fact) -> string)
   compose-memo-keys([
     ("eval", make-memo-key("eval", 2)),
     ("lookup", make-memo-key("lookup", 2))
@@ -135,7 +122,7 @@ pub fun main()
   // Example 1: (λx.x)(λz.z) — concrete programs use EAtom for literal names
   println("\n=== (λx.x)(λz.z) ===")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
-  val goal1 = eval-j(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z")))), SNil, ev("v"), sv("s"))
+  val goal1 = EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z")))) \ SNil |- REval \ ev("v") \ sv("s")
   val goal1-fact = chain/to-fact(goal1)
   val table1 = koka-redex/forward/forward-search(goal1-fact, rules, ?external=ext, ?memo-key=mk)
   println("Entries: " ++ table1.length.show)
@@ -146,7 +133,7 @@ pub fun main()
   val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
   val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
-  val goal2 = eval-j(prog2, SNil, ev("v"), sv("s"))
+  val goal2 = prog2 \ SNil |- REval \ ev("v") \ sv("s")
   val goal2-fact = chain/to-fact(goal2)
   val table2 = koka-redex/forward/forward-search(goal2-fact, rules, ?external=ext, ?memo-key=mk)
   println("Entries: " ++ table2.length.show)

@@ -1,7 +1,7 @@
 module examples/implicit/bigstep-forward
 
 // Bigstep evaluation using domain types + forward engine via the bridge.
-// Uses the relation marker pattern: e \ REval \ v
+// Uses the relation marker pattern: e |- REval \ v
 // The bridge detects REval via ?pred-name and splits inputs/outputs.
 
 import koka-redex/forward-bridge
@@ -39,7 +39,7 @@ pub fun r-eval/pred-name(_: r-eval): string
 // ============================================================================
 
 fun (~>)(e: expr, v: expr)
-  e \ REval \ v
+  e |- REval \ v
 
 // ============================================================================
 // Rules
@@ -59,16 +59,14 @@ fun eval-rules()
 
   with relation-def
   with rule(
-    TNil,
-    "E-Lam",
-    ELam("x", e) ~> ELam("x", e)
-  )
+    TNil
+    === "E-Lam" ==>
+    ELam("x", e) ~> ELam("x", e))
   single/rule(
-    (e1 ~> ELam("x", e3)) \
-    (e2 ~> v1),
-    "E-App",
-    EApp(e1, e2) ~> v2
-  )
+    (e1 ~> ELam("x", e3)) \\
+    (e2 ~> v1)
+    === "E-App" ==>
+    EApp(e1, e2) ~> v2)
 
 pub fun main()
   val rules = relation/to-rules(eval-rules())
@@ -81,6 +79,5 @@ pub fun main()
   val id-fn = ELam("x", EVar("x"))
   val goal = Fact("eval", [id-fn.to-term, TVar("result", 0)])
   val table = forward-search(goal, rules,
-    ?external = default-external,
     ?memo-key = fn(f: fact) match f { Fact(p, args) -> Fact(p, args.take(1)).show })
   table.map(fst).foreach(println)

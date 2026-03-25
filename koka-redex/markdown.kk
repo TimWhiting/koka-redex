@@ -13,29 +13,52 @@ pub fun math(s: string): string
 // Formatting Type-Classes
 // -----------------------------------------------------------------------------
 
-// Format `type-nil` of premises
-pub fun tnil/show-markdown(l: type-nil): e list<string>
+// ---- Premise-level rendering (returns list<string>, one per premise) ----
+
+// No premises
+pub fun tnil/show-md-premises(_l: type-nil): e list<string>
   Nil
 
-// Format `type-cons` of premises, recursively formatting the head and tail
+// Skip premise-sep marker
+pub fun sep/show-md-premises(TCons(_sep, t): type-cons<premise-sep, b>, ?show-md-premises: b -> e list<string>): e list<string>
+  t.show-md-premises
+
+// Premise whose head is a judgement chain (type-cons)
+pub fun tcons-prem/show-md-premises(TCons(h, t): type-cons<type-cons<a1, a2>, b>,
+  ?show-md: type-cons<a1, a2> -> e string,
+  ?show-md-premises: b -> e list<string>): e list<string>
+  Cons(h.show-md, t.show-md-premises)
+
+// Single premise (bare value)
+pub fun default/show-md-premises(a: a, ?show-md: a -> e string): e list<string>
+  Cons(show-md(a), Nil)
+
+// ---- Within-judgement rendering ----
+
+// Format `type-nil`
+pub fun tnil/show-markdown(_l: type-nil): e list<string>
+  Nil
+
+// Format `type-cons` within a judgement
 pub fun tcons/show-markdown(TCons(h, t): type-cons<a, b>, ?show-md: a -> e string, ?show-markdown: b -> e list<string>): e list<string>
   Cons(show-md(h), t.show-markdown)
 
-// Format a single item (terminal element that is not type-nil or type-cons)
+// Single element
 pub fun default/show-markdown(a: a, ?show-md: a -> e string): e list<string>
   Cons(show-md(a), Nil)
 
-// A single judgement is a type-list, so we provide `show-md` for it which joins the parts with spaces.
+// A judgement (type-cons chain) as a single string
 pub fun tcons/show-md(l: type-cons<a, b>, ?show-markdown: type-cons<a, b> -> e list<string>): e string
   l.show-markdown.join(" ")
 
-// Format a single rule 
-pub fun rule/show-markdown(Rule(name, premises, conclusion): rule<n, p, c>, ?show-markdown: p -> e list<string>, ?conclusion/show-md: c -> e string, ?name/show-md: n -> e string): e string
-  val premises-md = premises.show-markdown.map(fn(s) "- " ++ math(s)).join("\n")
+// ---- Rule rendering ----
+
+pub fun rule/show-markdown(Rule(name, premises, conclusion): rule<n, p, c>, ?show-md-premises: p -> e list<string>, ?conclusion/show-md: c -> e string, ?name/show-md: n -> e string): e string
+  val premises-md = premises.show-md-premises.map(fn(s) "- " ++ math(s)).join("\n")
   val conc-md = "- " ++ math(conclusion.show-md)
-  
-  "**" ++ name.show-md ++ "**\n" ++ 
-  (if premises-md.is-empty then "" else premises-md ++ "\n--------\n") ++ 
+
+  "**" ++ name.show-md ++ "**\n" ++
+  (if premises-md.is-empty then "" else premises-md ++ "\n--------\n") ++
   conc-md ++ "\n"
 
 pub value struct mdstr( s: string )

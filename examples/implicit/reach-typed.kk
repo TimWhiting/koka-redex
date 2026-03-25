@@ -21,19 +21,17 @@ fun reach(a: term, b: term): fact
 // Typed rules using syntax.kk
 fun reach-relation()
   with relation-def
-  with rule(TNil, "edge-1-2", edge(n(1), n(2)))
-  with rule(TNil, "edge-2-3", edge(n(2), n(3)))
-  with rule(TNil, "edge-3-4", edge(n(3), n(4)))
+  with rule(TNil === "edge-1-2" ==> edge(n(1), n(2)))
+  with rule(TNil === "edge-2-3" ==> edge(n(2), n(3)))
+  with rule(TNil === "edge-3-4" ==> edge(n(3), n(4)))
   with rule(
-    edge(v("x"), v("y")),
-    "reach-edge",
-    reach(v("x"), v("y"))
-  )
+    edge(v("x"), v("y"))
+    === "reach-edge" ==>
+    reach(v("x"), v("y")))
   single/rule(
-    edge(v("x"), v("y")) \ reach(v("y"), v("z")),
-    "reach-step",
-    reach(v("x"), v("z"))
-  )
+    edge(v("x"), v("y")) \\ reach(v("y"), v("z"))
+    === "reach-step" ==>
+    reach(v("x"), v("z")))
 
 pub fun main()
   val rules = relation/to-rules(reach-relation())
@@ -43,7 +41,6 @@ pub fun main()
   val table = forward-search(
     reach(n(1), v("target")),
     rules,
-    ?external = default-external,
     ?memo-key = fn(f) f.show
   )
   val reach-results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])

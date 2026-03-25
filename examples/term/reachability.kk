@@ -1,4 +1,4 @@
-module examples/reachability
+module examples/term/reachability
 
 // Reachability: ground, partial, and open queries
 // Demonstrates the forward engine on simple Horn clauses.
@@ -45,13 +45,10 @@ pub fun main()
   val rules = all-rules()
 
   show-results("reach(1, 4)",
-    forward-search(reach(n(1), n(4)), rules,
-      ?external=default-external, ?memo-key=full-key))
+    forward-search(reach(n(1), n(4)), rules, ?memo-key=full-key))
 
   show-results("reach(1, ?)",
-    forward-search(reach(n(1), v("target")), rules,
-      ?external=default-external, ?memo-key=full-key))
+    forward-search(reach(n(1), v("target")), rules, ?memo-key=full-key))
 
   show-results("reach(?, ?)",
-    forward-search(reach(v("src"), v("dst")), rules,
-      ?external=default-external, ?memo-key=full-key))
+    forward-search(reach(v("src"), v("dst")), rules, ?memo-key=full-key))

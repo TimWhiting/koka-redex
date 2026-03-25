@@ -1,4 +1,6 @@
 module koka-redex/term
+import std/core/undiv
+import type-level/nil
 
 // Core types for the rule-based framework.
 // These are the foundation that all engines, bridges, and renderers build on.
@@ -6,6 +8,8 @@ module koka-redex/term
 // ---------------------------------------------------------------------------
 // Terms: the universal value representation
 // ---------------------------------------------------------------------------
+
+pub val axiom = TNil
 
 pub type term
   TVar(name: string, id: int)
@@ -29,14 +33,14 @@ pub type proof
 // Show
 // ---------------------------------------------------------------------------
 
-pub fun term/show(t: term): div string
+pub fun term/show(t: term): string
   match t
     TVar(name, id) -> name ++ "_" ++ id.show
     TAtom(name) -> name
     TInt(i) -> i.show
-    TNode(name, args) -> name ++ "(" ++ args.map(term/show).join(",") ++ ")"
+    TNode(name, args) -> name ++ "(" ++ args.map(fn(t') term/show(t'.pretend-decreasing)).join(",") ++ ")"
 
-pub fun fact/show(Fact(pred, args): fact): div string
+pub fun fact/show(Fact(pred, args): fact): string
   pred ++ "(" ++ args.map(term/show).join(",") ++ ")"
 
 pub fun proof/show(pf: proof, indent: string = ""): div string

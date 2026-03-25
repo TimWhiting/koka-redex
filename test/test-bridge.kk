@@ -101,10 +101,10 @@ pub fun main()
     test("relation/to-rules extracts correct count")
       fun rel()
         with relation-def
-        with rule(TNil, "edge-1-2", edge(n(1), n(2)))
+        with rule(TNil === "edge-1-2" ==> edge(n(1), n(2)))
         single/rule(
-          edge(v("x"), v("y")),
-          "reach-edge",
+          edge(v("x"), v("y"))
+          === "reach-edge" ==>
           reach(v("x"), v("y")))
       val rules = relation/to-rules(rel())
       expect(2) { rules.length }
@@ -112,15 +112,15 @@ pub fun main()
     test("reachability via typed relation-def")
       fun rel()
         with relation-def
-        with rule(TNil, "edge-1-2", edge(n(1), n(2)))
-        with rule(TNil, "edge-2-3", edge(n(2), n(3)))
+        with rule(TNil === "edge-1-2" ==> edge(n(1), n(2)))
+        with rule(TNil === "edge-2-3" ==> edge(n(2), n(3)))
         with rule(
-          edge(v("x"), v("y")),
-          "reach-edge",
+          edge(v("x"), v("y"))
+          === "reach-edge" ==>
           reach(v("x"), v("y")))
         single/rule(
-          edge(v("x"), v("y")) \ reach(v("y"), v("z")),
-          "reach-step",
+          edge(v("x"), v("y")) \\ reach(v("y"), v("z"))
+          === "reach-step" ==>
           reach(v("x"), v("z")))
       val rules = relation/to-rules(rel())
       val table = forward-search(reach(n(1), v("t")), rules,
@@ -130,17 +130,17 @@ pub fun main()
       expect(2) { results.length }
 
   group("Bridge: chain/to-fact")
-    test("simple chain e \\ REval \\ v")
+    test("simple chain e |- REval \\ v")
       val e = EVar("x")
       val vl = ELam("y", EVar("y"))
-      val chain = e \ REval \ vl
+      val chain = e |- REval \ vl
       val f = chain/to-fact(chain)
       expect("eval") { match f { Fact(p, _) -> p } }
 
     test("chain to-fact-info gives num-inputs")
       val e = EVar("x")
       val vl = ELam("y", EVar("y"))
-      val chain = e \ REval \ vl
+      val chain = e |- REval \ vl
       val info = chain/to-fact-info(chain)
       expect(1) { info.snd }  // 1 input (e), 1 output (v)
 
@@ -165,18 +165,20 @@ pub fun main()
     test("identity application")
       fun cfa-rel()
         with relation-def
-        with rule(TNil, "E-Lam",
+        with rule(
+          TNil
+          === "E-Lam" ==>
           eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
                     TNode("lam", [tv("x"), tv("e")]), tv("s")))
         with rule(
-          Fact("lookup", [tv("s"), tv("x"), tv("val")]),
-          "E-Var",
+          Fact("lookup", [tv("s"), tv("x"), tv("val")])
+          === "E-Var" ==>
           eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s")))
         single/rule(
-          eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \
-          eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \
-          eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3")),
-          "E-App",
+          eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \\
+          eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \\
+          eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3"))
+          === "E-App" ==>
           eval-fact(TNode("app", [tv("e1"), tv("e2")]), tv("s0"), tv("v"), tv("s3")))
       val rules = relation/to-rules(cfa-rel())
       val mk = compose-memo-keys([("eval", make-memo-key("eval", 2)), ("lookup", make-memo-key("lookup", 2))])
@@ -189,18 +191,20 @@ pub fun main()
     test("over-approximation: let f = id in (f a)(f b)")
       fun cfa-rel()
         with relation-def
-        with rule(TNil, "E-Lam",
+        with rule(
+          TNil
+          === "E-Lam" ==>
           eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
                     TNode("lam", [tv("x"), tv("e")]), tv("s")))
         with rule(
-          Fact("lookup", [tv("s"), tv("x"), tv("val")]),
-          "E-Var",
+          Fact("lookup", [tv("s"), tv("x"), tv("val")])
+          === "E-Var" ==>
           eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s")))
         single/rule(
-          eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \
-          eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \
-          eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3")),
-          "E-App",
+          eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \\
+          eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \\
+          eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3"))
+          === "E-App" ==>
           eval-fact(TNode("app", [tv("e1"), tv("e2")]), tv("s0"), tv("v"), tv("s3")))
       val rules = relation/to-rules(cfa-rel())
       val mk = compose-memo-keys([("eval", make-memo-key("eval", 2)), ("lookup", make-memo-key("lookup", 2))])

@@ -1,4 +1,4 @@
-module examples/type-infer
+module examples/term/type-infer
 
 // Type inference for simply-typed lambda calculus.
 // Forward rule selection + backward unification as external relation.

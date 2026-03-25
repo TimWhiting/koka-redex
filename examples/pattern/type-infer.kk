@@ -1,59 +1,91 @@
-module examples/implicit/type-infer-typed
+module examples/pattern/type-infer
 
-// Type inference using DOMAIN TYPES via the forward bridge.
+// Type inference using pattern<a> metavariables.
 // Demonstrates forward + backward reasoning:
-//   Forward: syntax-directed rule selection (T-Int, T-Var, T-Lam, T-App)
-//   Backward: unification as external relation (T-App's unify premise)
+//   Forward: syntax-directed rule selection
+//   Backward: unification as external relation
 
 import koka-redex/forward-bridge
+import koka-redex/pattern
 
 // ============================================================================
-// Domain types
+// Clean domain types
 // ============================================================================
 
-// Expressions
 pub type expr
-  XAny(pre: string, i: int)  // metavariable (matches anything)
-  XAtom(nm: string)           // literal name
+  XAtom(nm: string)
   XVar(nm: expr)
   XApp(e1: expr, e2: expr)
   XLam(x: expr, body: expr)
   XInt(n: int)
-  XIntAny(pre: string, i: int)  // metavariable matching any int node
 
+pub type ty
+  TArrow(t1: ty, t2: ty)
+  TBase(nm: string)
+
+pub type tenv
+  TENil
+  TECons(nm: expr, typ: ty, rest: tenv)
+
+// to-term converters
 pub fun expr/to-term(e: expr): term
   match e
-    XAny(p, i) -> TVar(p, i)
     XAtom(n) -> TAtom(n)
     XVar(n) -> TNode("var", [n.to-term])
     XApp(e1, e2) -> TNode("app", [e1.to-term, e2.to-term])
     XLam(x, body) -> TNode("lam", [x.to-term, body.to-term])
     XInt(n) -> TNode("int", [TInt(n)])
-    XIntAny(p, i) -> TNode("int", [TVar(p, i)])
-
-// Types
-pub type ty
-  TAny(pre: string, i: int)  // metavariable (type variable)
-  TArrow(t1: ty, t2: ty)
-  TBase(nm: string)           // base type like "Int"
 
 pub fun ty/to-term(t: ty): term
   match t
-    TAny(p, i) -> TVar(p, i)
     TArrow(t1, t2) -> TNode("arrow", [t1.to-term, t2.to-term])
     TBase(n) -> TAtom(n)
-
-// Type environments
-pub type tenv
-  TENil
-  TEAny(pre: string, i: int)  // metavariable
-  TECons(nm: expr, typ: ty, rest: tenv)
 
 pub fun tenv/to-term(e: tenv): term
   match e
     TENil -> TNode("snil", [])
-    TEAny(p, i) -> TVar(p, i)
     TECons(n, t, rest) -> TNode("scons", [n.to-term, t.to-term, rest.to-term])
+
+// ============================================================================
+// Pattern constructors
+// ============================================================================
+
+fun p-atom(nm: string): pattern<expr>
+  PatTerm(TAtom(nm))
+
+fun p-var(nm: pattern<expr>): pattern<expr>
+  PatTerm(TNode("var", [nm.to-term]))
+
+fun p-app(e1: pattern<expr>, e2: pattern<expr>): pattern<expr>
+  PatTerm(TNode("app", [e1.to-term, e2.to-term]))
+
+fun p-lam(x: pattern<expr>, body: pattern<expr>): pattern<expr>
+  PatTerm(TNode("lam", [x.to-term, body.to-term]))
+
+fun p-int(p: pattern<int>): pattern<expr>
+  PatTerm(TNode("int", [p.to-term]))
+
+fun p-arrow(t1: pattern<ty>, t2: pattern<ty>): pattern<ty>
+  PatTerm(TNode("arrow", [t1.to-term, t2.to-term]))
+
+fun p-base(nm: string): pattern<ty>
+  PatTerm(TAtom(nm))
+
+fun p-tnil(): pattern<tenv>
+  PatTerm(TNode("snil", []))
+
+fun p-tcons(nm: pattern<expr>, typ: pattern<ty>, rest: pattern<tenv>): pattern<tenv>
+  PatTerm(TNode("scons", [nm.to-term, typ.to-term, rest.to-term]))
+
+// Lift concrete values
+fun pe(e: expr): pattern<expr>
+  PatTerm(e.to-term)
+
+fun pt(t: ty): pattern<ty>
+  PatTerm(t.to-term)
+
+fun penv(e: tenv): pattern<tenv>
+  PatTerm(e.to-term)
 
 // ============================================================================
 // Relation markers
@@ -75,43 +107,41 @@ pub fun r-unify/pred-name(_: r-unify): string
   "unify-types"
 
 // ============================================================================
-// Metavariable helpers
-// ============================================================================
-
-fun xv(nm: string): expr
-  XAny(nm, 0)
-
-fun tv(nm: string): ty
-  TAny(nm, 0)
-
-fun ev(nm: string): tenv
-  TEAny(nm, 0)
-
-// ============================================================================
-// Rules — in domain types
+// Rules
 // ============================================================================
 
 fun type-relation()
-  val x = xv("x")
+  with with-pats
+  val x   : pattern<expr> = fresh-pat("x")
+  val e   : pattern<expr> = fresh-pat("e")
+  val e1  : pattern<expr> = fresh-pat("e1")
+  val e2  : pattern<expr> = fresh-pat("e2")
+  val n   : pattern<int> = fresh-pat("n")
+  val env : pattern<tenv> = fresh-pat("env")
+  val t   : pattern<ty> = fresh-pat("t")
+  val t1  : pattern<ty> = fresh-pat("t1")
+  val t2  : pattern<ty> = fresh-pat("t2")
+  val a   : pattern<ty> = fresh-pat("a")
+
   with relation-def
   with rule(
-    TNil
+    axiom
     === "T-Int" ==>
-    XIntAny("n", 0) \ ev("env") |- RInfer \ TBase("Int"))
+    p-int(n) \ env |- RInfer \ p-base("Int"))
   with rule(
-    ev("env") \ x |- RLookup \ tv("t")
+    env \ x |- RLookup \ t
     === "T-Var" ==>
-    XVar(x) \ ev("env") |- RInfer \ tv("t"))
+    p-var(x) \ env |- RInfer \ t)
   with rule(
-    xv("e") \ TECons(x, tv("a"), ev("env")) |- RInfer \ tv("t")
+    e \ p-tcons(x, a, env) |- RInfer \ t
     === "T-Lam" ==>
-    XLam(x, xv("e")) \ ev("env") |- RInfer \ TArrow(tv("a"), tv("t")))
+    p-lam(x, e) \ env |- RInfer \ p-arrow(a, t))
   single/rule(
-    xv("e1") \ ev("env") |- RInfer \ tv("t1") \\
-    xv("e2") \ ev("env") |- RInfer \ tv("t2") \\
-    tv("t1") |- RUnify \ TArrow(tv("t2"), tv("a"))
+    e1 \ env |- RInfer \ t1 \\
+    e2 \ env |- RInfer \ t2 \\
+    t1 |- RUnify \ p-arrow(t2, a)
     === "T-App" ==>
-    XApp(xv("e1"), xv("e2")) \ ev("env") |- RInfer \ tv("a"))
+    p-app(e1, e2) \ env |- RInfer \ a)
 
 // ============================================================================
 // External solvers
@@ -165,11 +195,13 @@ fun show-type(t: term): div string
 
 fun run-infer(nm: string, program: expr)
   println("  " ++ nm ++ " : ")
-  val goal = program \ TENil |- RInfer \ tv("result")
+  with with-pats
+  val goal = pe(program) \ penv(TENil) |- RInfer \ (fresh-pat("result") : pattern<ty>)
   val goal-fact = chain/to-fact(goal)
   val ext = ti-ext()
   val table = koka-redex/forward/forward-search(goal-fact,
-    relation/to-rules(type-relation()), ?external=ext)
+    relation/to-rules(type-relation()),
+    ?external=ext)
   val top-key = memo-key(goal-fact)
   table.foreach fn(kv)
     if kv.fst == top-key then
@@ -180,8 +212,7 @@ fun run-infer(nm: string, program: expr)
             println("    " ++ show-type(typ))
 
 pub fun main()
-  println("=== Type Inference (typed rules) ===")
-  // Use XAtom for concrete names in programs
+  println("=== Type Inference (pattern<a>) ===")
   fun va(n: string): expr
     XVar(XAtom(n))
   fun la(x: string, body: expr): expr

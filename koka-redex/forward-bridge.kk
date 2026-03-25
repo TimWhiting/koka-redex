@@ -3,7 +3,7 @@ module koka-redex/forward-bridge
 // Bridge from typed rules (syntax.kk) to the forward engine (forward.kk).
 //
 // The key mechanism: relation markers in type-cons chains.
-// Users write `e \ REval \ v` where REval carries ?pred-name.
+// Users write `e |- REval \ v` where REval carries ?pred-name.
 // Elements before the marker are inputs, after are outputs.
 // The bridge builds Fact(pred-name, inputs ++ outputs).
 
@@ -13,6 +13,7 @@ pub import koka-redex/forward
 pub import type-level/structs
 pub import type-level/list
 pub import type-level/nil
+import std/core/undiv
 
 // ============================================================================
 // Built-in to-term converters
@@ -103,36 +104,42 @@ pub fun fact/to-fact(f: fact): div fact
 // Premise chain conversion
 // ============================================================================
 
-// Fact-level: single fact
-pub fun fact/to-premises(f: fact): list<fact>
-  [f]
-
-// Fact-level: cons of facts
-pub fun fact-tcons/to-premises(
-  TCons(h, t): type-cons<fact, b>,
-  ?to-premises: b -> list<fact>
-): list<fact>
-  Cons(h, t.to-premises)
-
 // Nil: no premises
 pub fun tnil/to-premises(_: type-nil): list<fact>
   Nil
 
-// Domain-type: single judgement chain → convert to fact
-pub fun default/to-premises(
-  c: a,
-  ?to-fact: a -> div fact
-): div list<fact>
-  [c.to-fact]
+// Fact-level: single fact (base case)
+pub fun fact/to-premises(f: fact): list<fact>
+  [f]
 
-// Domain-type: cons of judgement chains
-// The head is a type-cons (a judgement chain), distinguished from fact
+// Skip premise-sep marker, continue with tail
+pub fun sep/to-premises(
+  TCons(_sep, t): type-cons<premise-sep, b>,
+  ?to-premises: b -> div list<fact>
+): div list<fact>
+  t.to-premises
+
+// Fact-level: fact followed by premise-sep + more facts
+pub fun fact-sep/to-premises(
+  TCons(h, t): type-cons<fact, type-cons<premise-sep, b>>,
+  ?to-premises: type-cons<premise-sep, b> -> div list<fact>
+): div list<fact>
+  Cons(h, t.to-premises)
+
+// Premise whose head is a judgement chain (type-cons), followed by more premises
 pub fun chain-tcons/to-premises(
   TCons(h, t): type-cons<type-cons<a1, a2>, b>,
   ?to-fact: type-cons<a1, a2> -> div fact,
   ?to-premises: b -> div list<fact>
 ): div list<fact>
   Cons(h.to-fact, t.to-premises)
+
+// Domain-type: single judgement chain → convert to fact (base case)
+pub fun default/to-premises(
+  c: a,
+  ?to-fact: a -> div fact
+): div list<fact>
+  [c.to-fact]
 
 // ============================================================================
 // Rule conversion
@@ -170,33 +177,30 @@ pub fun relation/to-rules(
 // ============================================================================
 
 // Create a memo-key function that projects only the first n args
-pub fun make-memo-key(pred: string, n-inputs: int): div ((fact) -> div string)
-  val n = n-inputs
+pub fun make-memo-key(pred: string, n-inputs: int): ((fact) -> string)
   fn(f)
     match f
       Fact(p, args) ->
-        if p == pred then Fact(p, args.take(n)).show
+        if p == pred then Fact(p, args.take(n-inputs)).show
         else f.show
 
 // Derive a (pred-name, memo-key) pair from a sample judgement chain.
 // The chain is traversed via to-fact-args to count input positions.
-// Usage: derive-key(e \ REval \ v) gives ("eval", key-fn-that-takes-1-input)
+// Usage: derive-key(e |- REval \ v) gives ("eval", key-fn-that-takes-1-input)
 pub fun derive-key(
   sample: a,
-  ?to-fact-args: a -> div (list<term>, string, list<term>)
-): div (string, (fact) -> div string)
+  ?to-fact-args: a -> (list<term>, string, list<term>)
+): (string, (fact) -> string)
   val (inputs, pred, _) = sample.to-fact-args
   (pred, make-memo-key(pred, inputs.length))
 
 // Compose memo-keys for multiple relations
-pub fun compose-memo-keys(
-  keys: list<(string, (fact) -> div string)>
-)
-  fn(f)
+pub fun compose-memo-keys(keys: list<(string, (fact) -> string)>): ((fact) -> string)
+  fn(f: fact)
     match f
       Fact(pred, _) ->
         match keys.find(fn(p) p.fst == pred)
-          Just(kv) -> (kv.snd)(f)
+          Just((_, snd)) -> snd(f.pretend-decreasing)
           Nothing -> f.show
 
 // ============================================================================
@@ -218,7 +222,7 @@ pub fun compose-externals(
 // ============================================================================
 
 // Search with a typed relation and typed goal.
-// The goal is a judgement chain (e.g., e \ REval \ v) that gets converted to a fact.
+// The goal is a judgement chain (e.g., e |- REval \ v) that gets converted to a fact.
 // The relation-def is converted to rules via implicits.
 // Memo-key is derived from the goal's chain structure (inputs before marker).
 pub fun typed/forward-search(
@@ -239,8 +243,8 @@ pub fun typed/forward-search(
 pub fun auto/forward-search(
   goal: g,
   rel: relation-def<r>,
-  ?to-fact: g -> div fact,
-  ?to-fact-args: g -> div (list<term>, string, list<term>),
+  ?to-fact: g -> fact,
+  ?to-fact-args: g -> (list<term>, string, list<term>),
   ?to-list: r -> div list<koka-redex/term/rule>,
   ?external: (fact) -> <logic,div> maybe<list<fact>>
 ): <div,exn> list<(string, list<fact>)>

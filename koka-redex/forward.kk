@@ -17,16 +17,16 @@ import std/core/unsafe
 // Result lattice
 // ---------------------------------------------------------------------------
 
-pub alias result = fact
+pub alias search-result = fact
 
-fun result/(==)(a: result, b: result): div bool
+fun search-result/(==)(a: search-result, b: search-result): div bool
   fact/eq(a, b)
 
-fun result-join(old: list<result>, new: result): pure (bool, list<result>)
-  if old.any(fn(r) unsafe-total({result/(==)(r, new)})) then (False, old)
+fun result-join(old: list<search-result>, new: search-result): pure (bool, list<search-result>)
+  if old.any(fn(r) unsafe-total({search-result/(==)(r, new)})) then (False, old)
   else (True, Cons(new, old))
 
-val result-lattice : change-lattice<list<result>, result> = Change-lattice([], result-join, fn(x) x)
+val result-lattice : change-lattice<list<search-result>, search-result> = Change-lattice([], result-join, fn(x) x)
 
 // ---------------------------------------------------------------------------
 // External relation solver
@@ -46,7 +46,7 @@ pub fun forward-eval(
   rules: list<rule>,
   ?external: external-solver,
   ?memo-key: (fact) -> div string
-): <cache<string, result>, logic, div> result
+): <cache<string, search-result>, logic, div> search-result
   val key = memo-key(goal)
   with each <- memo(key)
   // Each rule is a branch. Unification failure calls none() via on-fail,
@@ -57,7 +57,7 @@ pub fun forward-eval(
       unify-facts(goal, rf.conclusion)
       forward-premises(rf.premises, rules, ?external=external, ?memo-key=memo-key)
       resolve-fact(rf.conclusion)
-  val ext-branches : list<() -> <cache<string,result>,logic,div> result> = match external(goal)
+  val ext-branches : list<() -> <cache<string,search-result>,logic,div> search-result> = match external(goal)
     Just(results) -> results.map(fn(r) fn() r)
     Nothing -> []
   val all = rule-branches ++ ext-branches
@@ -70,7 +70,7 @@ fun forward-premises(
   rules: list<rule>,
   ?external: external-solver,
   ?memo-key: (fact) -> div string
-): <cache<string, result>, logic, div> ()
+): <cache<string, search-result>, logic, div> ()
   match premises
     Nil -> ()
     Cons(p, ps) ->
@@ -94,7 +94,7 @@ pub fun forward-search(
   rules: list<rule>,
   ?external: external-solver,
   ?memo-key: (fact) -> div string
-): <div,exn> list<(string, list<result>)>
+): <div,exn> list<(string, list<search-result>)>
   val table =
     with cache(?change-lattice = result-lattice,
                ?order2 = string/order2,
@@ -103,3 +103,5 @@ pub fun forward-search(
     with-logic({none()})
       forward-eval(goal, rules, ?external=external, ?memo-key=memo-key)
   table.list
+// test comment
+// kki test

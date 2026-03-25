@@ -8,9 +8,9 @@ module examples/pattern/type-infer
 import koka-redex/forward-bridge
 import koka-redex/pattern
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Clean domain types
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type expr
   XAtom(nm: string)
@@ -46,9 +46,9 @@ pub fun tenv/to-term(e: tenv): term
     TENil -> TNode("snil", [])
     TECons(n, t, rest) -> TNode("scons", [n.to-term, t.to-term, rest.to-term])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Pattern constructors
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun p-atom(nm: string): pattern<expr>
   PatTerm(TAtom(nm))
@@ -87,9 +87,9 @@ fun pt(t: ty): pattern<ty>
 fun penv(e: tenv): pattern<tenv>
   PatTerm(e.to-term)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Relation markers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type r-infer
   RInfer
@@ -106,9 +106,9 @@ pub type r-unify
 pub fun r-unify/pred-name(_: r-unify): string
   "unify-types"
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Rules
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun type-relation()
   with with-pats
@@ -126,26 +126,26 @@ fun type-relation()
   with relation-def
   with rule(
     axiom
-    === "T-Int" ==>
+    --- "T-Int" -->
     p-int(n) \ env |- RInfer \ p-base("Int"))
   with rule(
     env \ x |- RLookup \ t
-    === "T-Var" ==>
+    --- "T-Var" -->
     p-var(x) \ env |- RInfer \ t)
   with rule(
     e \ p-tcons(x, a, env) |- RInfer \ t
-    === "T-Lam" ==>
+    --- "T-Lam" -->
     p-lam(x, e) \ env |- RInfer \ p-arrow(a, t))
   single/rule(
     e1 \ env |- RInfer \ t1 \\
     e2 \ env |- RInfer \ t2 \\
     t1 |- RUnify \ p-arrow(t2, a)
-    === "T-App" ==>
+    --- "T-App" -->
     p-app(e1, e2) \ env |- RInfer \ a)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // External solvers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun store-lookup-all(s: term, nm: term): div list<term>
   match s
@@ -170,9 +170,9 @@ val unify-ext = ("unify-types", fn(goal: fact): <logic,div> maybe<list<fact>>
 
 val ti/external = compose-externals([lookup-ext, unify-ext])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Run
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun show-type(t: term): div string
   match t
@@ -199,7 +199,7 @@ fun run-infer(nm: string, program: expr)
             println("    " ++ show-type(typ))
 
 pub fun main()
-  println("=== Type Inference (pattern<a>) ===")
+  println("--- Type Inference (pattern<a>) ---")
   fun va(n: string): expr
     XVar(XAtom(n))
   fun la(x: string, body: expr): expr

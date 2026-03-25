@@ -137,7 +137,7 @@ fun eval(e: expr, s: store): <cache<string, result>, div> result
 // ---------------------------------------------------------------------------
 
 fun run-cfa(name: string, program: expr)
-  println("\n=== " ++ name ++ " ===")
+  println("\n--- " ++ name ++ " ---")
   println("Program: " ++ unsafe-total({program.show}))
   val table =
     with cache(?change-lattice = result-lattice,

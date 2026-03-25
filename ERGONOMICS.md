@@ -106,6 +106,6 @@ relation-def(r-eval)
 *Note: Koka allows identifier names like `---` if defined as operators.*
 
 ## Action Items
-1. Define a `(---)` or `(==>)` operator in `syntax.kk` that takes the current effect state of premises and registers the conclusion.
+1. Define a `(---)` or `(-->)` operator in `syntax.kk` that takes the current effect state of premises and registers the conclusion.
 2. Provide overloaded helpers to lift strings automatically to `TVar` (using implicits or simply smart constructors like `v("x")`).
 3. Refactor `examples/untyped-bigstep.kk` to use this much cleaner syntax and see if it feels close to Redex.

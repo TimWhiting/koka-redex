@@ -9,9 +9,9 @@ import koka-redex/pattern
 import koka-redex/latex
 import koka-redex/markdown
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Clean domain types — no metavariable constructors!
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type expr
   EAtom(nm: string)
@@ -35,9 +35,9 @@ pub fun store/to-term(s: store): term
     SNil -> TNode("snil", [])
     SCons(n, v, rest) -> TNode("scons", [n.to-term, v.to-term, rest.to-term])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // LaTeX/Markdown formatters
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub fun expr/show-md(e: expr): div string
   match e
@@ -64,9 +64,9 @@ pub fun store/show-latex-j(s: store): div string
     SCons(n, v, rest) -> rest.show-latex-j ++ "[" ++ n.show-latex-j ++ " \\mapsto " ++ v.show-latex-j ++ "]"
 
 // Pattern formatters: delegate to inner type or show metavar name
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Term-level renderers (interpret term structure back to readable form)
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun show-term-expr-md(t: term): div string
   match t
@@ -121,9 +121,9 @@ pub fun pstore/show-latex-j(p: pattern<store>): div string
     PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
     PatTerm(t) -> show-term-store-latex(t)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Relation markers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type r-eval
   REval
@@ -149,10 +149,10 @@ pub fun default/show-md(a: a, ?show: a -> string): string
 pub fun default/show-latex-j(a: a, ?show: a -> string): string
   show(a)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Pattern constructors: build compound patterns from pattern parts
 // These mirror the domain type constructors but work on patterns.
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun p-atom(nm: string): pattern<expr>
   PatTerm(TAtom(nm))
@@ -179,9 +179,9 @@ fun pe(e: expr): pattern<expr>
 fun ps(s: store): pattern<store>
   PatTerm(s.to-term)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Rules — using fresh-pat for metavariables
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun cfa-relation()
   with with-pats
@@ -203,24 +203,24 @@ fun cfa-relation()
   // E-Lam: λ values evaluate to themselves
   with rule(
     axiom
-    === "E-Lam" ==>
+    --- "E-Lam" -->
     p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
   // E-Var: variable lookup (external)
   with rule(
     s \ x |- RLookup \ vl
-    === "E-Var" ==>
+    --- "E-Var" -->
     p-var(x) \ s |- REval \ vl \ s)
   // E-App: application with store threading
   single/rule(
     e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
     e2 \ s1 |- REval \ v2 \ s2 \\
     e3 \ p-scons(x, v2, s2) |- REval \ v \ s3
-    === "E-App" ==>
+    --- "E-App" -->
     p-app(e1, e2) \ s0 |- REval \ v \ s3)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // External solver + policy
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun store-lookup-all(s: term, nm: term): div list<term>
   match s
@@ -237,29 +237,29 @@ val lookup-solver = make-external("lookup") fn(args)
 
 val cfa/external = compose-externals([lookup-solver])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Run
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub fun main()
   with with-pats
   val rel = cfa-relation()
 
   // LaTeX rendering
-  println("=== LaTeX ===")
+  println("--- LaTeX ---")
   println(rel.relation-to-latex)
-  println("\n=== Markdown ===")
+  println("\n--- Markdown ---")
   println(rel.relation-to-md("eval/lookup"))
 
   // Example 1: (λx.x)(λz.z)
-  println("\n=== (λx.x)(λz.z) ===")
+  println("\n--- (λx.x)(λz.z) ---")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
   val goal1 = pe(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pattern<store>)
   val table1 = forward-search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
   // Example 2: let f = λx.x in (f λa.a)(f λb.b)
-  println("\n=== let f = λx.x in (f λa.a)(f λb.b) ===")
+  println("\n--- let f = λx.x in (f λa.a)(f λb.b) ---")
   val lam-a = ELam(EAtom("a"), EVar(EAtom("a")))
   val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))

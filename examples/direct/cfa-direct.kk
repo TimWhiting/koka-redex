@@ -111,7 +111,7 @@ fun eval(e: expr): <cache<string, cvalue>, div> cvalue
 // ---------------------------------------------------------------------------
 
 fun run-cfa(name: string, program: expr)
-  println("\n=== " ++ name ++ " ===")
+  println("\n--- " ++ name ++ " ---")
   println("Program: " ++ program.show)
   val table =
     with cache(?change-lattice = value-lattice,

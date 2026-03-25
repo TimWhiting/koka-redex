@@ -15,9 +15,9 @@ pub import type-level/list
 pub import type-level/nil
 import std/core/undiv
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Built-in to-term converters
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub fun term/to-term(t: term): term
   t
@@ -28,9 +28,9 @@ pub fun string/to-term(s: string): term
 pub fun int/to-term(i: int): term
   TInt(i)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Output-arg collection (after the relation marker)
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Recursive: head is a value, tail is more cons
 pub fun tcons/to-output-args(
@@ -48,9 +48,9 @@ pub fun end/to-output-args(
 ): list<term>
   [h.to-term, t.tail/to-term]
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Chain → fact conversion (with input/output split)
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Pre-marker recursive: head is a value, tail has more (including marker)
 pub fun tcons/to-fact-args(
@@ -93,16 +93,16 @@ pub fun chain/to-fact-info(
   val (inputs, pred, outputs) = chain.to-fact-args
   (Fact(pred, inputs ++ outputs), inputs.length)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Fact-level identity converters (for rules already using fact/term)
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub fun fact/to-fact(f: fact): div fact
   f
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Premise chain conversion
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Nil: no premises
 pub fun tnil/to-premises(_: type-nil): list<fact>
@@ -141,9 +141,9 @@ pub fun default/to-premises(
 ): div list<fact>
   [c.to-fact]
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Rule conversion
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Convert a typed rule to a forward-engine rule
 pub fun rule/to-forward-rule(
@@ -172,9 +172,9 @@ pub fun relation/to-rules(
 ): div list<koka-redex/term/rule>
   rules.to-list
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Memo-key derivation
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Create a memo-key function that projects only the first n args
 pub fun make-memo-key(pred: string, n-inputs: int): ((fact) -> string)
@@ -203,9 +203,9 @@ pub fun compose-memo-keys(keys: list<(string, (fact) -> string)>): ((fact) -> st
           Just((_, snd)) -> snd(f.pretend-decreasing)
           Nothing -> f.show
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // External solver composition
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub fun compose-externals(
   solvers: list<(string, (fact) -> <logic,div> maybe<list<fact>>)>
@@ -217,9 +217,9 @@ pub fun compose-externals(
           Just(kv) -> (kv.snd)(goal)
           Nothing -> Nothing
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Key-info: per-relation memo-key derivation from relation structure
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Key info for one relation: predicate name + number of input args
 pub value struct key-info
@@ -251,9 +251,9 @@ fun unique-by-pred(keys: list<key-info>): div list<key-info>
 pub fun keys-to-memo-key(keys: list<key-info>): ((fact) -> string)
   compose-memo-keys(keys.map(fn(k) (k.pred, make-memo-key(k.pred, k.n-inputs))))
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Typed forward-search
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Full forward-search: derives memo-key from the relation structure.
 // Requires ?to-fact-args on the conclusion type (for input counting).
@@ -283,9 +283,9 @@ pub fun search(
   val goal-fact = goal.to-fact
   koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=memo-key)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Typed external solvers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 // Simple wrapper: pair a predicate name with a solver function
 pub fun wrap-external(

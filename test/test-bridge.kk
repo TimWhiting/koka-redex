@@ -3,9 +3,9 @@ module test/test-bridge
 import std/test
 import koka-redex/forward-bridge
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Helpers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun v(nm: string): term
   TVar(nm, 0)
@@ -22,9 +22,9 @@ fun reach(a: term, b: term): fact
 fun full-key(f: fact): div string
   f.show
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Domain types for chain/to-fact tests
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type expr
   EAny(pre: string, i: int)
@@ -49,9 +49,9 @@ pub type r-reach2
 pub fun r-reach2/pred-name(_: r-reach2): string
   "reach"
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // CFA helpers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun eval-fact(e: term, s: term, vl: term, s2: term): fact
   Fact("eval", [e, s, vl, s2])
@@ -86,9 +86,9 @@ fun elam-t(x: string, body: term): term
 fun eapp-t(e1: term, e2: term): term
   TNode("app", [e1, e2])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Tests
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun get-results(table: list<(string, list<fact>)>, pred: string): list<fact>
   table.flatmap fn(kv)
@@ -101,10 +101,10 @@ pub fun main()
     test("relation/to-rules extracts correct count")
       fun rel()
         with relation-def
-        with rule(axiom === "edge-1-2" ==> edge(n(1), n(2)))
+        with rule(axiom --- "edge-1-2" --> edge(n(1), n(2)))
         single/rule(
           edge(v("x"), v("y"))
-          === "reach-edge" ==>
+          --- "reach-edge" -->
           reach(v("x"), v("y")))
       val rules = relation/to-rules(rel())
       expect(2) { rules.length }
@@ -112,15 +112,15 @@ pub fun main()
     test("reachability via typed relation-def")
       fun rel()
         with relation-def
-        with rule(axiom === "edge-1-2" ==> edge(n(1), n(2)))
-        with rule(axiom === "edge-2-3" ==> edge(n(2), n(3)))
+        with rule(axiom --- "edge-1-2" --> edge(n(1), n(2)))
+        with rule(axiom --- "edge-2-3" --> edge(n(2), n(3)))
         with rule(
           edge(v("x"), v("y"))
-          === "reach-edge" ==>
+          --- "reach-edge" -->
           reach(v("x"), v("y")))
         single/rule(
           edge(v("x"), v("y")) \\ reach(v("y"), v("z"))
-          === "reach-step" ==>
+          --- "reach-step" -->
           reach(v("x"), v("z")))
       val rules = relation/to-rules(rel())
       val table = forward-search(reach(n(1), v("t")), rules)
@@ -166,18 +166,18 @@ pub fun main()
         with relation-def
         with rule(
           axiom
-          === "E-Lam" ==>
+          --- "E-Lam" -->
           eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
                     TNode("lam", [tv("x"), tv("e")]), tv("s")))
         with rule(
           Fact("lookup", [tv("s"), tv("x"), tv("val")])
-          === "E-Var" ==>
+          --- "E-Var" -->
           eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s")))
         single/rule(
           eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \\
           eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \\
           eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3"))
-          === "E-App" ==>
+          --- "E-App" -->
           eval-fact(TNode("app", [tv("e1"), tv("e2")]), tv("s0"), tv("v"), tv("s3")))
       val rules = relation/to-rules(cfa-rel())
       val mk = compose-memo-keys([("eval", make-memo-key("eval", 2)), ("lookup", make-memo-key("lookup", 2))])
@@ -192,18 +192,18 @@ pub fun main()
         with relation-def
         with rule(
           axiom
-          === "E-Lam" ==>
+          --- "E-Lam" -->
           eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
                     TNode("lam", [tv("x"), tv("e")]), tv("s")))
         with rule(
           Fact("lookup", [tv("s"), tv("x"), tv("val")])
-          === "E-Var" ==>
+          --- "E-Var" -->
           eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s")))
         single/rule(
           eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \\
           eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \\
           eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3"))
-          === "E-App" ==>
+          --- "E-App" -->
           eval-fact(TNode("app", [tv("e1"), tv("e2")]), tv("s0"), tv("v"), tv("s3")))
       val rules = relation/to-rules(cfa-rel())
       val mk = compose-memo-keys([("eval", make-memo-key("eval", 2)), ("lookup", make-memo-key("lookup", 2))])

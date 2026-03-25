@@ -32,7 +32,7 @@ fun full-key(f: fact): div string
   f.show
 
 fun show-results(name: string, table: list<(string, list<fact>)>)
-  println("=== " ++ name ++ " ===")
+  println("--- " ++ name ++ " ---")
   val reach-entries = table.flatmap fn(kv)
     match kv
       (key, results) ->

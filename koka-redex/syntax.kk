@@ -6,8 +6,8 @@ import type-level/list
 pub infixr 5 (\)
 pub infixr 5 (|-)
 pub infixr 3 (\\)
-pub infixl 2 (===)
-pub infixl 1 (==>)
+pub infixl 2 (---)
+pub infixl 1 (-->)
 
 // -----------------------------------------------------------------------------
 // AST Definition
@@ -27,11 +27,11 @@ pub type premise-sep
 pub fun cons/(\\)(h: a, t: b): type-cons<a, type-cons<premise-sep, b>>
   TCons(h, TCons(PremiseSep, t))
 
-// Rule line: premises === "name" ==> conclusion
-pub fun named/(===)(premises: p, name: n): (p, n)
+// Rule line: premises --- "name" --> conclusion
+pub fun named/(---)(premises: p, name: n): (p, n)
   (premises, name)
 
-pub fun concluded/(==>)(pn: (p, n), conclusion: c): rule<n, p, c>
+pub fun concluded/(-->)(pn: (p, n), conclusion: c): rule<n, p, c>
   Rule(pn.snd, pn.fst, conclusion)
 
 // Builders for type-struct rule collections

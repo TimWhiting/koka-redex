@@ -34,21 +34,21 @@ fun reach-relation()
   val z = pv("z", 3)
 
   with relation-def
-  with rule(axiom === "edge-1-2" ==> n(1) |- REdge \ n(2))
-  with rule(axiom === "edge-2-3" ==> n(2) |- REdge \ n(3))
-  with rule(axiom === "edge-3-4" ==> n(3) |- REdge \ n(4))
+  with rule(axiom --- "edge-1-2" --> n(1) |- REdge \ n(2))
+  with rule(axiom --- "edge-2-3" --> n(2) |- REdge \ n(3))
+  with rule(axiom --- "edge-3-4" --> n(3) |- REdge \ n(4))
   with rule(
     x |- REdge \ y
-    === "reach-edge" ==>
+    --- "reach-edge" -->
     x |- RReach \ y)
   single/rule(
     x |- REdge \ y \\
     y |- RReach \ z
-    === "reach-step" ==>
+    --- "reach-step" -->
     x |- RReach \ z)
 
 pub fun main()
-  println("=== reach(1, ?) ===")
+  println("--- reach(1, ?) ---")
   val goal = Fact("reach", [TInt(1), TVar("target", 0)])
   val table = search(goal, reach-relation())
   val results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])

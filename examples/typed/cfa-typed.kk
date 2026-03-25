@@ -4,9 +4,9 @@ module examples/typed/cfa-typed
 
 import koka-redex/forward-bridge
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Domain types — EAny/SAny for metavariables in rules
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type expr
   EAny(pre: string, i: int)
@@ -34,9 +34,9 @@ pub fun store/to-term(s: store): term
     SNil -> TNode("snil", [])
     SCons(n, v, rest) -> TNode("scons", [n.to-term, v.to-term, rest.to-term])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Relation markers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub type r-eval
   REval
@@ -48,9 +48,9 @@ pub type r-lookup
 pub fun r-lookup/pred-name(_: r-lookup): string
   "lookup"
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Metavariable helpers
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun ev(nm: string): expr
   EAny(nm, 0)
@@ -58,31 +58,31 @@ fun ev(nm: string): expr
 fun sv(nm: string): store
   SAny(nm, 0)
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Rules
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun cfa-relation()
   val x = ev("x")
   with relation-def
   with rule(
     axiom
-    === "E-Lam" ==>
+    --- "E-Lam" -->
     ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
   with rule(
     sv("s") \ x |- RLookup \ ev("val")
-    === "E-Var" ==>
+    --- "E-Var" -->
     EVar(x) \ sv("s") |- REval \ ev("val") \ sv("s"))
   single/rule(
     ev("e1") \ sv("s0") |- REval \ ELam(x, ev("e3")) \ sv("s1") \\
     ev("e2") \ sv("s1") |- REval \ ev("v2") \ sv("s2") \\
     ev("e3") \ SCons(x, ev("v2"), sv("s2")) |- REval \ ev("v") \ sv("s3")
-    === "E-App" ==>
+    --- "E-App" -->
     EApp(ev("e1"), ev("e2")) \ sv("s0") |- REval \ ev("v") \ sv("s3"))
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // External solver + memo-key
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 fun store-lookup-all(s: term, nm: term): div list<term>
   match s
@@ -99,20 +99,20 @@ val lookup-solver = make-external("lookup") fn(args)
 
 val cfa/external = compose-externals([lookup-solver])
 
-// ============================================================================
+// ----------------------------------------------------------------------------
 // Run — memo-key auto-derived from relation structure
-// ============================================================================
+// ----------------------------------------------------------------------------
 
 pub fun main()
   val rel = cfa-relation()
 
-  println("=== (λx.x)(λz.z) ===")
+  println("--- (λx.x)(λz.z) ---")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
   val goal1 = EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z")))) \ SNil |- REval \ ev("v") \ sv("s")
   val table1 = forward-search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
-  println("\n=== let f = λx.x in (f λa.a)(f λb.b) ===")
+  println("\n--- let f = λx.x in (f λa.a)(f λb.b) ---")
   val lam-a = ELam(EAtom("a"), EVar(EAtom("a")))
   val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))

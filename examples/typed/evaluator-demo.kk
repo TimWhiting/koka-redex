@@ -30,16 +30,16 @@ pub fun relation()
   with relation-def
   with rule(
     edge(1, 2) 
-    === RuleEdge12 ==> 
+    --- RuleEdge12 --> 
     reach(1, 2))
   with rule(
     edge(2, 3) 
-    === RuleEdge23 ==> 
+    --- RuleEdge23 --> 
     reach(2, 3))
   rule(
     reach(1, 2) \\ 
     reach(2, 3) 
-    === RuleTrans ==> 
+    --- RuleTrans --> 
     reach(1, 3))
       
 

@@ -153,14 +153,14 @@ fun eval-rules()
 
   with rule(
     axiom
-    === RuleEvalLam ==>
+    --- RuleEvalLam -->
     ELam(x-var, e-body) ~> ELam(x-var, e-body))
   rule(
     (e1 ~> ELam(x-var, e3)) \\
     (e2 ~> v1) \\
     subst(e3, x-var, v1, e4) \\
     (e4 ~> v2)
-    === RuleEvalApp ==>
+    --- RuleEvalApp -->
     EApp(e1, e2) ~> v2)
 
 pub fun subst-rules()
@@ -169,25 +169,25 @@ pub fun subst-rules()
   val (e1, e1', e2, e2') = fresh4(e)
   with rule(
     axiom
-    === RuleSubstVarEq ==>
+    --- RuleSubstVarEq -->
     subst(EVar(x-var), x-var, w-var, w-var))
   with rule(
     neq(x-var, y-var)
-    === RuleSubstVarNeq ==>
+    --- RuleSubstVarNeq -->
     subst(EVar(y-var), x-var, w-var, EVar(y-var)))
   with rule(
     subst(e1, x-var, w-var, e1') \\
     subst(e2, x-var, w-var, e2')
-    === RuleSubstApp ==>
+    --- RuleSubstApp -->
     subst(EApp(e1, e2), x-var, w-var, EApp(e1', e2')))
   with rule(
     axiom
-    === RuleSubstLamEq ==>
+    --- RuleSubstLamEq -->
     subst(ELam(x-var, e-body), x-var, w-var, ELam(x-var, e-body)))
   rule(
     neq(x-var, y-var) \\
     subst(e0, x-var, w-var, e')
-    === RuleSubstLamNeq ==>
+    --- RuleSubstLamNeq -->
     subst(ELam(y-var, e0), x-var, w-var, ELam(y-var, e')))
 
 pub fun main()

@@ -101,7 +101,7 @@ fun run-infer(nm: string, program: term)
             println("    " ++ show-type(typ))
 
 pub fun main()
-  println("=== Type Inference ===")
+  println("--- Type Inference ---")
   run-infer("42", eint(42))
   run-infer("\\x.x", elam("x", evar("x")))
   run-infer("(\\x.x) 42", eapp(elam("x", evar("x")), eint(42)))

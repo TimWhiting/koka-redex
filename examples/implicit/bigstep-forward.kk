@@ -59,7 +59,7 @@ fun eval-rules()
 
   with relation-def
   with rule(
-    TNil
+    axiom
     === "E-Lam" ==>
     ELam("x", e) ~> ELam("x", e))
   single/rule(

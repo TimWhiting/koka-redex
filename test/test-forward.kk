@@ -100,21 +100,18 @@ pub fun main()
 
   group("Reachability")
     test("ground query reach(1,4)")
-      val table = forward-search(reach(n(1), n(4)), reach-rules(),
-        ?external=default-external, ?memo-key=full-key)
+      val table = forward-search(reach(n(1), n(4)), reach-rules())
       val reach-results = get-results(table, "reach(1,4)")
       expect(1) { reach-results.length }
 
     test("partial query reach(1,?)")
-      val table = forward-search(reach(n(1), v("t")), reach-rules(),
-        ?external=default-external, ?memo-key=full-key)
+      val table = forward-search(reach(n(1), v("t")), reach-rules())
       val reach-results = get-results(table, "reach(1,")
       // reach(1,2), reach(1,3), reach(1,4)
       expect(3) { reach-results.length }
 
     test("open query reach(?,?)")
-      val table = forward-search(reach(v("s"), v("d")), reach-rules(),
-        ?external=default-external, ?memo-key=full-key)
+      val table = forward-search(reach(v("s"), v("d")), reach-rules())
       val reach-results = get-results(table, "reach(")
       // 6 reachable pairs from 3 edges
       // Some may be duplicated due to freshening — check at least 6

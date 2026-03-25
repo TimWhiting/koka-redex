@@ -101,7 +101,7 @@ pub fun main()
     test("relation/to-rules extracts correct count")
       fun rel()
         with relation-def
-        with rule(TNil === "edge-1-2" ==> edge(n(1), n(2)))
+        with rule(axiom === "edge-1-2" ==> edge(n(1), n(2)))
         single/rule(
           edge(v("x"), v("y"))
           === "reach-edge" ==>
@@ -112,8 +112,8 @@ pub fun main()
     test("reachability via typed relation-def")
       fun rel()
         with relation-def
-        with rule(TNil === "edge-1-2" ==> edge(n(1), n(2)))
-        with rule(TNil === "edge-2-3" ==> edge(n(2), n(3)))
+        with rule(axiom === "edge-1-2" ==> edge(n(1), n(2)))
+        with rule(axiom === "edge-2-3" ==> edge(n(2), n(3)))
         with rule(
           edge(v("x"), v("y"))
           === "reach-edge" ==>
@@ -123,8 +123,7 @@ pub fun main()
           === "reach-step" ==>
           reach(v("x"), v("z")))
       val rules = relation/to-rules(rel())
-      val table = forward-search(reach(n(1), v("t")), rules,
-        ?external=default-external, ?memo-key=full-key)
+      val table = forward-search(reach(n(1), v("t")), rules)
       val results = get-results(table, "reach(1,")
       // 2 edges: 1→2, 2→3. Reachable from 1: {2, 3}
       expect(2) { results.length }
@@ -166,7 +165,7 @@ pub fun main()
       fun cfa-rel()
         with relation-def
         with rule(
-          TNil
+          axiom
           === "E-Lam" ==>
           eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
                     TNode("lam", [tv("x"), tv("e")]), tv("s")))
@@ -192,7 +191,7 @@ pub fun main()
       fun cfa-rel()
         with relation-def
         with rule(
-          TNil
+          axiom
           === "E-Lam" ==>
           eval-fact(TNode("lam", [tv("x"), tv("e")]), tv("s"),
                     TNode("lam", [tv("x"), tv("e")]), tv("s")))

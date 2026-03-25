@@ -95,7 +95,7 @@ fun type-relation()
   val x = xv("x")
   with relation-def
   with rule(
-    TNil
+    axiom
     === "T-Int" ==>
     XIntAny("n", 0) \ ev("env") |- RInfer \ TBase("Int"))
   with rule(

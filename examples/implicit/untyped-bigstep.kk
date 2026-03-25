@@ -1,5 +1,6 @@
 module examples/implicit/untyped-bigstep
 
+import koka-redex/term
 import koka-redex/syntax
 import koka-redex/markdown
 import koka-redex/latex
@@ -151,7 +152,7 @@ fun eval-rules()
   val (v1, v2) = fresh2(v)
 
   with rule(
-    TNil
+    axiom
     === RuleEvalLam ==>
     ELam(x-var, e-body) ~> ELam(x-var, e-body))
   rule(
@@ -167,7 +168,7 @@ pub fun subst-rules()
   val (e0, w-var, e-body, e') = fresh4(e)
   val (e1, e1', e2, e2') = fresh4(e)
   with rule(
-    TNil
+    axiom
     === RuleSubstVarEq ==>
     subst(EVar(x-var), x-var, w-var, w-var))
   with rule(
@@ -180,7 +181,7 @@ pub fun subst-rules()
     === RuleSubstApp ==>
     subst(EApp(e1, e2), x-var, w-var, EApp(e1', e2')))
   with rule(
-    TNil
+    axiom
     === RuleSubstLamEq ==>
     subst(ELam(x-var, e-body), x-var, w-var, ELam(x-var, e-body)))
   rule(

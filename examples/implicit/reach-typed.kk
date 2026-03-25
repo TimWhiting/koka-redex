@@ -21,9 +21,9 @@ fun reach(a: term, b: term): fact
 // Typed rules using syntax.kk
 fun reach-relation()
   with relation-def
-  with rule(TNil === "edge-1-2" ==> edge(n(1), n(2)))
-  with rule(TNil === "edge-2-3" ==> edge(n(2), n(3)))
-  with rule(TNil === "edge-3-4" ==> edge(n(3), n(4)))
+  with rule(axiom === "edge-1-2" ==> edge(n(1), n(2)))
+  with rule(axiom === "edge-2-3" ==> edge(n(2), n(3)))
+  with rule(axiom === "edge-3-4" ==> edge(n(3), n(4)))
   with rule(
     edge(v("x"), v("y"))
     === "reach-edge" ==>

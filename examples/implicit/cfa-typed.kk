@@ -69,7 +69,7 @@ fun cfa-relation()
   val x = ev("x")
   with relation-def
   with rule(
-    TNil
+    axiom
     === "E-Lam" ==>
     ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
   with rule(

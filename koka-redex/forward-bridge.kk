@@ -218,11 +218,59 @@ pub fun compose-externals(
           Nothing -> Nothing
 
 // ============================================================================
-// Typed forward-search: takes relation-def and typed goal
+// Key-info: per-relation memo-key derivation from relation structure
 // ============================================================================
 
+// Key info for one relation: predicate name + number of input args
+pub value struct key-info
+  pred: string
+  n-inputs: int
+
+// map-field for key extraction: extract key info from a rule's conclusion
+pub fun key/map-field(
+  Rule(_name, _premises, conclusion): koka-redex/syntax/rule<n, p, c>,
+  ?to-fact-args: c -> div (list<term>, string, list<term>)
+): div key-info
+  val (inputs, pred, _outputs) = conclusion.to-fact-args
+  Key-info(pred, inputs.length)
+
+// Derive key-infos from a relation-def, one per unique predicate
+pub fun relation/derive-keys(
+  RelationDef(rules): relation-def<r>,
+  ?to-list: r -> div list<key-info>
+): div list<key-info>
+  rules.to-list.unique-by-pred
+
+fun unique-by-pred(keys: list<key-info>): div list<key-info>
+  match keys
+    Nil -> Nil
+    Cons(k, rest) ->
+      Cons(k, rest.filter(fn(k2) k2.pred != k.pred).unique-by-pred)
+
+// Convert key-infos into a composed memo-key function
+pub fun keys-to-memo-key(keys: list<key-info>): ((fact) -> string)
+  compose-memo-keys(keys.map(fn(k) (k.pred, make-memo-key(k.pred, k.n-inputs))))
+
+// ============================================================================
+// Typed forward-search
+// ============================================================================
+
+// Full forward-search: derives memo-key from the relation structure.
+// Requires ?to-fact-args on the conclusion type (for input counting).
+pub fun forward-search(
+  goal: g,
+  rel: relation-def<r>,
+  ?to-fact: g -> div fact,
+  ?to-list: r -> div list<koka-redex/term/rule>,
+  ?derive-keys: relation-def<r> -> div list<key-info>,
+  ?external: (fact) -> <logic,div> maybe<list<fact>>
+): <div,exn> list<(string, list<fact>)>
+  val rules = to-list(rel.rules)
+  val goal-fact = goal.to-fact
+  val mk = keys-to-memo-key(rel.derive-keys)
+  koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=mk)
+
 // Stepping-stone: user provides memo-key explicitly.
-// Eventually forward-search will derive memo-key from the relation structure.
 pub fun search(
   goal: g,
   rel: relation-def<r>,

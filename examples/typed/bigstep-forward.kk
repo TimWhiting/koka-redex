@@ -62,11 +62,9 @@ fun eval-rules()
     === "E-App" ==>
     EApp(e1, e2) ~> v2)
 
-val bigstep/memo-key = make-memo-key("eval", 1)
-
 pub fun main()
   println("=== λx.x ⇓ ? ===")
   val id-fn = ELam("x", EVar("x"))
   val goal = id-fn ~> v("result")
-  val table = search(goal, eval-rules())
+  val table = forward-search(goal, eval-rules())
   table.map(fst).foreach(println)

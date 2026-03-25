@@ -168,17 +168,10 @@ val unify-ext = ("unify-types", fn(goal: fact): <logic,div> maybe<list<fact>>
     _ -> Nothing
 )
 
-val ti/memo-key: ((fact) -> string) =
-  compose-memo-keys([
-    ("infer", make-memo-key("infer", 2)),
-    ("lookup", make-memo-key("lookup", 2)),
-    ("unify-types", make-memo-key("unify-types", 2))
-  ])
-
 val ti/external = compose-externals([lookup-ext, unify-ext])
 
 // ============================================================================
-// Pretty-print types from term representation
+// Run
 // ============================================================================
 
 fun show-type(t: term): div string
@@ -188,17 +181,15 @@ fun show-type(t: term): div string
     TVar(n, i) -> n ++ "_" ++ i.show
     _ -> t.show
 
-// ============================================================================
-// Run
-// ============================================================================
-
 fun run-infer(nm: string, program: expr)
   println("  " ++ nm ++ " : ")
   with with-pats
   val goal = pe(program) \ penv(TENil) |- RInfer \ (fresh-pat("result") : pattern<ty>)
-  val table = search(goal, type-relation())
+  val rel = type-relation()
+  val table = forward-search(goal, rel)
+  val mk = keys-to-memo-key(rel.derive-keys)
   val goal-fact = chain/to-fact(goal)
-  val top-key = memo-key(goal-fact)
+  val top-key = mk(goal-fact)
   table.foreach fn(kv)
     if kv.fst == top-key then
       kv.snd.foreach fn(f)

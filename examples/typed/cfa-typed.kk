@@ -97,16 +97,10 @@ val lookup-solver = make-external("lookup") fn(args)
       store-lookup-all(s, nm).map(fn(vl) [s, nm, vl])
     _ -> []
 
-val cfa/memo-key : ((fact) -> string) =
-  compose-memo-keys([
-    ("eval", make-memo-key("eval", 2)),
-    ("lookup", make-memo-key("lookup", 2))
-  ])
-
 val cfa/external = compose-externals([lookup-solver])
 
 // ============================================================================
-// Run
+// Run — memo-key auto-derived from relation structure
 // ============================================================================
 
 pub fun main()
@@ -115,7 +109,7 @@ pub fun main()
   println("=== (λx.x)(λz.z) ===")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
   val goal1 = EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z")))) \ SNil |- REval \ ev("v") \ sv("s")
-  val table1 = search(goal1, rel)
+  val table1 = forward-search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
   println("\n=== let f = λx.x in (f λa.a)(f λb.b) ===")
@@ -124,7 +118,7 @@ pub fun main()
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
   val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
   val goal2 = prog2 \ SNil |- REval \ ev("v") \ sv("s")
-  val table2 = search(goal2, rel)
+  val table2 = forward-search(goal2, rel)
   println("Entries: " ++ table2.length.show)
 
   println("\nOver-approximation:")

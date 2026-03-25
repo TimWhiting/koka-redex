@@ -77,28 +77,28 @@ fun store/(==)(a: store, b: store): div bool
     _ -> False
 
 // ---------------------------------------------------------------------------
-// Result: (value, store') pair
+// d-Result: (value, store') pair
 // ---------------------------------------------------------------------------
 
-struct result
+struct d-result
   value: cvalue
   store_: store
 
-fun result/show(r: result): div string
+fun d-result/show(r: d-result): div string
   "(" ++ r.value.show ++ ", [" ++ store/show(r.store_) ++ "])"
 
-fun result/(==)(a: result, b: result): div bool
+fun d-result/(==)(a: d-result, b: d-result): div bool
   cvalue/(==)(a.value, b.value) && store/(==)(a.store_, b.store_)
 
 // ---------------------------------------------------------------------------
-// Lattice: set of results
+// Lattice: set of d-results
 // ---------------------------------------------------------------------------
 
-fun result-join(old: list<result>, new: result): pure (bool, list<result>)
-  if old.any(fn(r) unsafe-total({result/(==)(r, new)})) then (False, old)
+fun d-result-join(old: list<d-result>, new: d-result): pure (bool, list<d-result>)
+  if old.any(fn(r) unsafe-total({d-result/(==)(r, new)})) then (False, old)
   else (True, Cons(new, old))
 
-val result-lattice : change-lattice<list<result>, result> = Change-lattice([], result-join, fn(x) x)
+val d-result-lattice : change-lattice<list<d-result>, d-result> = Change-lattice([], d-result-join, fn(x) x)
 
 // ---------------------------------------------------------------------------
 // Memo key: (expr, store) as string
@@ -111,20 +111,20 @@ fun eval-key(e: expr, s: store): div string
 // The interpreter — store-passing
 // ---------------------------------------------------------------------------
 
-fun eval(e: expr, s: store): <cache<string, result>, div> result
+fun eval(e: expr, s: store): <cache<string, d-result>, div> d-result
   with each <- memo(eval-key(e, s))
   match e
     ELam(x, body) ->
-      each([fn() Result(ClosV(x, body), s)])
+      each([fn() D-result(ClosV(x, body), s)])
     EVar(x) ->
       // Look up ALL bindings for x in the store
       val vals = s.lookup-all(x)
-      each(vals.map(fn(v) fn() Result(v, s)))
+      each(vals.map(fn(v) fn() D-result(v, s)))
     EApp(f, a) ->
       // Evaluate function
-      val Result(fv, s1) = eval(f, s)
+      val D-result(fv, s1) = eval(f, s)
       // Evaluate argument
-      val Result(av, s2) = eval(a, s1)
+      val D-result(av, s2) = eval(a, s1)
       match fv
         ClosV(x, body) ->
           // Extend store with binding
@@ -140,21 +140,21 @@ fun run-cfa(name: string, program: expr)
   println("\n--- " ++ name ++ " ---")
   println("Program: " ++ unsafe-total({program.show}))
   val table =
-    with cache(?change-lattice = result-lattice,
+    with cache(?change-lattice = d-result-lattice,
                ?order2 = string/order2,
                ?k/show = fn(s) s,
-               ?r/show = fn(r: result) unsafe-total({r.show}))
+               ?r/show = fn(r: d-result) unsafe-total({r.show}))
     eval(program, [])
-  // Show entries with results
+  // Show entries with d-results
   println("Memo table (" ++ table.list.length.show ++ " entries):")
-  table.list.foreach fn((key, results))
-    if results.length > 0 then
-      val vs = results.map(fn(r) unsafe-total({r.value.show})).list/joinsep/join(", ")
+  table.list.foreach fn((key, d-results))
+    if d-results.length > 0 then
+      val vs = d-results.map(fn(r) unsafe-total({r.value.show})).list/joinsep/join(", ")
       println("  " ++ key ++ " => {" ++ vs ++ "}")
   // Highlight over-approximation
-  table.list.foreach fn((key, results))
-    if results.length > 1 then
-      println("  ** OVER-APPROX: " ++ key ++ " has " ++ results.length.show ++ " values **")
+  table.list.foreach fn((key, d-results))
+    if d-results.length > 1 then
+      println("  ** OVER-APPROX: " ++ key ++ " has " ++ d-results.length.show ++ " values **")
 
 pub fun main()
   val id-fn = ELam("x", EVar("x"))

@@ -48,15 +48,8 @@ fun reach-relation()
     x |- RReach \ z)
 
 pub fun main()
-  val rel = reach-relation()
-  val rules = relation/to-rules(rel)
-  println("Rules: " ++ rules.length.show)
-  rules.foreach fn(r)
-    println("  " ++ r.koka-redex/term/rule/name ++ ": " ++ r.conclusion.show)
-
-  println("\n=== reach(1, ?) ===")
+  println("=== reach(1, ?) ===")
   val goal = Fact("reach", [TInt(1), TVar("target", 0)])
-  val table = koka-redex/forward/forward-search(goal, rules,
-    ?memo-key = fn(f) f.show)
+  val table = search(goal, reach-relation())
   val results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])
   results.map(fn(f) f.show).foreach(println)

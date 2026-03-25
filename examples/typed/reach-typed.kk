@@ -1,8 +1,6 @@
-module examples/implicit/reach-typed
+module examples/typed/reach-typed
 
 // Reachability using typed rules via the forward bridge.
-// Fact-level: premises and conclusions are already fact values.
-// Uses string names for simplicity.
 
 import koka-redex/forward-bridge
 
@@ -18,7 +16,6 @@ fun edge(a: term, b: term): fact
 fun reach(a: term, b: term): fact
   Fact("reach", [a, b])
 
-// Typed rules using syntax.kk
 fun reach-relation()
   with relation-def
   with rule(axiom === "edge-1-2" ==> edge(n(1), n(2)))
@@ -34,14 +31,7 @@ fun reach-relation()
     reach(v("x"), v("z")))
 
 pub fun main()
-  val rules = relation/to-rules(reach-relation())
-  println("Rules: " ++ rules.length.show)
-
-  println("\n=== reach(1, ?) ===")
-  val table = forward-search(
-    reach(n(1), v("target")),
-    rules,
-    ?memo-key = fn(f) f.show
-  )
-  val reach-results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])
-  reach-results.map(fn(f) f.show).foreach(println)
+  println("=== reach(1, ?) ===")
+  val table = search(reach(n(1), v("target")), reach-relation())
+  val results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])
+  results.map(fn(f) f.show).foreach(println)

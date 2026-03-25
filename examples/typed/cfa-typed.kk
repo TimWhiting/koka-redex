@@ -1,25 +1,22 @@
-module examples/implicit/cfa-typed
+module examples/typed/cfa-typed
 
 // 0CFA with store-passing using DOMAIN TYPES via the forward bridge.
-// Rules are written over expr/store types. The bridge converts to fact/term.
 
 import koka-redex/forward-bridge
 
 // ============================================================================
-// Domain types — note EAny/SAny for metavariables in rules
+// Domain types — EAny/SAny for metavariables in rules
 // ============================================================================
 
-// Domain types. EAny/SAny are metavariables (for use in rules).
-// Name positions (EVar, ELam, SCons) take `expr` so metavariables work there.
 pub type expr
-  EAny(pre: string, i: int)  // metavariable → TVar
-  EAtom(nm: string)           // literal name → TAtom
-  EVar(nm: expr)              // var(name)
+  EAny(pre: string, i: int)
+  EAtom(nm: string)
+  EVar(nm: expr)
   EApp(e1: expr, e2: expr)
-  ELam(x: expr, body: expr)   // lam(name, body)
+  ELam(x: expr, body: expr)
 
 pub type store
-  SAny(pre: string, i: int)  // metavariable → TVar
+  SAny(pre: string, i: int)
   SNil
   SCons(nm: expr, vl: expr, rest: store)
 
@@ -62,7 +59,7 @@ fun sv(nm: string): store
   SAny(nm, 0)
 
 // ============================================================================
-// Rules — ENTIRELY in domain types
+// Rules
 // ============================================================================
 
 fun cfa-relation()
@@ -84,7 +81,7 @@ fun cfa-relation()
     EApp(ev("e1"), ev("e2")) \ sv("s0") |- REval \ ev("v") \ sv("s3"))
 
 // ============================================================================
-// External solver + policy (still at term level for now)
+// External solver + memo-key
 // ============================================================================
 
 fun store-lookup-all(s: term, nm: term): div list<term>
@@ -100,42 +97,34 @@ val lookup-solver = make-external("lookup") fn(args)
       store-lookup-all(s, nm).map(fn(vl) [s, nm, vl])
     _ -> []
 
-fun cfa-memo-key(): ((fact) -> string)
+val cfa/memo-key : ((fact) -> string) =
   compose-memo-keys([
     ("eval", make-memo-key("eval", 2)),
     ("lookup", make-memo-key("lookup", 2))
   ])
 
-fun cfa-ext()
-  compose-externals([lookup-solver])
+val cfa/external = compose-externals([lookup-solver])
 
 // ============================================================================
-// Run — goals use domain types, bridge converts
+// Run
 // ============================================================================
 
 pub fun main()
-  val rules = relation/to-rules(cfa-relation())
-  val mk = cfa-memo-key()
-  val ext = cfa-ext()
-  println("Rules: " ++ rules.length.show)
+  val rel = cfa-relation()
 
-  // Example 1: (λx.x)(λz.z) — concrete programs use EAtom for literal names
-  println("\n=== (λx.x)(λz.z) ===")
+  println("=== (λx.x)(λz.z) ===")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
   val goal1 = EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z")))) \ SNil |- REval \ ev("v") \ sv("s")
-  val goal1-fact = chain/to-fact(goal1)
-  val table1 = koka-redex/forward/forward-search(goal1-fact, rules, ?external=ext, ?memo-key=mk)
+  val table1 = search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
-  // Example 2: let f = λx.x in (f λa.a)(f λb.b)
   println("\n=== let f = λx.x in (f λa.a)(f λb.b) ===")
   val lam-a = ELam(EAtom("a"), EVar(EAtom("a")))
   val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
   val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
   val goal2 = prog2 \ SNil |- REval \ ev("v") \ sv("s")
-  val goal2-fact = chain/to-fact(goal2)
-  val table2 = koka-redex/forward/forward-search(goal2-fact, rules, ?external=ext, ?memo-key=mk)
+  val table2 = search(goal2, rel)
   println("Entries: " ++ table2.length.show)
 
   println("\nOver-approximation:")

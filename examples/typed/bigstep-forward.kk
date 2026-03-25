@@ -1,8 +1,7 @@
-module examples/implicit/bigstep-forward
+module examples/typed/bigstep-forward
 
 // Bigstep evaluation using domain types + forward engine via the bridge.
 // Uses the relation marker pattern: e |- REval \ v
-// The bridge detects REval via ?pred-name and splits inputs/outputs.
 
 import koka-redex/forward-bridge
 
@@ -16,7 +15,6 @@ pub type expr
   EApp(e1: expr, e2: expr)
   ELam(x: string, body: expr)
 
-// to-term for the engine
 pub fun expr/to-term(e: expr): term
   match e
     EAny(p, i) -> TVar(p, i)
@@ -25,19 +23,15 @@ pub fun expr/to-term(e: expr): term
     ELam(x, body) -> TNode("lam", [TAtom(x), body.to-term])
 
 // ============================================================================
-// Relation markers
+// Relation marker
 // ============================================================================
 
 pub type r-eval
   REval
-
 pub fun r-eval/pred-name(_: r-eval): string
   "eval"
 
-// ============================================================================
-// Judgement constructor: e ⇓ v
-// ============================================================================
-
+// e ⇓ v
 fun (~>)(e: expr, v: expr)
   e |- REval \ v
 
@@ -68,16 +62,11 @@ fun eval-rules()
     === "E-App" ==>
     EApp(e1, e2) ~> v2)
 
-pub fun main()
-  val rules = relation/to-rules(eval-rules())
-  println("Rules: " ++ rules.length.show)
-  rules.foreach fn(r)
-    println("  " ++ r.koka-redex/term/rule/name ++ ": " ++ r.premises.length.show ++ " premises")
+val bigstep/memo-key = make-memo-key("eval", 1)
 
-  // Test: λx.x ⇓ λx.x (E-Lam, no premises)
-  println("\n=== λx.x ⇓ ? ===")
+pub fun main()
+  println("=== λx.x ⇓ ? ===")
   val id-fn = ELam("x", EVar("x"))
-  val goal = Fact("eval", [id-fn.to-term, TVar("result", 0)])
-  val table = forward-search(goal, rules,
-    ?memo-key = fn(f: fact) match f { Fact(p, args) -> Fact(p, args.take(1)).show })
+  val goal = id-fn ~> v("result")
+  val table = search(goal, eval-rules())
   table.map(fst).foreach(println)

@@ -241,8 +241,7 @@ val cfa/memo-key : ((fact) -> string) =
     ("lookup", make-memo-key("lookup", 2))
   ])
 
-fun cfa-ext()
-  compose-externals([lookup-solver])
+val cfa/external = compose-externals([lookup-solver])
 
 // ============================================================================
 // Run
@@ -250,24 +249,19 @@ fun cfa-ext()
 
 pub fun main()
   with with-pats
+  val rel = cfa-relation()
 
   // LaTeX rendering
   println("=== LaTeX ===")
-  println(cfa-relation().relation-to-latex)
+  println(rel.relation-to-latex)
   println("\n=== Markdown ===")
-  println(cfa-relation().relation-to-md("eval/lookup"))
-
-  // Forward engine execution
-  val rules = relation/to-rules(cfa-relation())
-  val ext = cfa-ext()
-  println("Rules: " ++ rules.length.show)
+  println(rel.relation-to-md("eval/lookup"))
 
   // Example 1: (λx.x)(λz.z)
   println("\n=== (λx.x)(λz.z) ===")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
   val goal1 = pe(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pattern<store>)
-  val goal1-fact = chain/to-fact(goal1)
-  val table1 = koka-redex/forward/forward-search(goal1-fact, rules, ?external=ext)
+  val table1 = search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
   // Example 2: let f = λx.x in (f λa.a)(f λb.b)
@@ -277,8 +271,7 @@ pub fun main()
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
   val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
   val goal2 = pe(prog2) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pattern<store>)
-  val goal2-fact = chain/to-fact(goal2)
-  val table2 = koka-redex/forward/forward-search(goal2-fact, rules, ?external=ext)
+  val table2 = search(goal2, rel)
   println("Entries: " ++ table2.length.show)
 
   println("\nOver-approximation:")

@@ -175,8 +175,7 @@ val ti/memo-key: ((fact) -> string) =
     ("unify-types", make-memo-key("unify-types", 2))
   ])
 
-fun ti-ext()
-  compose-externals([lookup-ext, unify-ext])
+val ti/external = compose-externals([lookup-ext, unify-ext])
 
 // ============================================================================
 // Pretty-print types from term representation
@@ -197,11 +196,8 @@ fun run-infer(nm: string, program: expr)
   println("  " ++ nm ++ " : ")
   with with-pats
   val goal = pe(program) \ penv(TENil) |- RInfer \ (fresh-pat("result") : pattern<ty>)
+  val table = search(goal, type-relation())
   val goal-fact = chain/to-fact(goal)
-  val ext = ti-ext()
-  val table = koka-redex/forward/forward-search(goal-fact,
-    relation/to-rules(type-relation()),
-    ?external=ext)
   val top-key = memo-key(goal-fact)
   table.foreach fn(kv)
     if kv.fst == top-key then

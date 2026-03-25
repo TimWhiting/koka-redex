@@ -1,9 +1,8 @@
-module examples/implicit/type-infer-typed
+module examples/typed/type-infer-typed
 
 // Type inference using DOMAIN TYPES via the forward bridge.
-// Demonstrates forward + backward reasoning:
-//   Forward: syntax-directed rule selection (T-Int, T-Var, T-Lam, T-App)
-//   Backward: unification as external relation (T-App's unify premise)
+// Forward: syntax-directed rule selection
+// Backward: unification as external relation
 
 import koka-redex/forward-bridge
 
@@ -11,15 +10,14 @@ import koka-redex/forward-bridge
 // Domain types
 // ============================================================================
 
-// Expressions
 pub type expr
-  XAny(pre: string, i: int)  // metavariable (matches anything)
-  XAtom(nm: string)           // literal name
+  XAny(pre: string, i: int)
+  XAtom(nm: string)
   XVar(nm: expr)
   XApp(e1: expr, e2: expr)
   XLam(x: expr, body: expr)
   XInt(n: int)
-  XIntAny(pre: string, i: int)  // metavariable matching any int node
+  XIntAny(pre: string, i: int)
 
 pub fun expr/to-term(e: expr): term
   match e
@@ -31,11 +29,10 @@ pub fun expr/to-term(e: expr): term
     XInt(n) -> TNode("int", [TInt(n)])
     XIntAny(p, i) -> TNode("int", [TVar(p, i)])
 
-// Types
 pub type ty
-  TAny(pre: string, i: int)  // metavariable (type variable)
+  TAny(pre: string, i: int)
   TArrow(t1: ty, t2: ty)
-  TBase(nm: string)           // base type like "Int"
+  TBase(nm: string)
 
 pub fun ty/to-term(t: ty): term
   match t
@@ -43,10 +40,9 @@ pub fun ty/to-term(t: ty): term
     TArrow(t1, t2) -> TNode("arrow", [t1.to-term, t2.to-term])
     TBase(n) -> TAtom(n)
 
-// Type environments
 pub type tenv
   TENil
-  TEAny(pre: string, i: int)  // metavariable
+  TEAny(pre: string, i: int)
   TECons(nm: expr, typ: ty, rest: tenv)
 
 pub fun tenv/to-term(e: tenv): term
@@ -88,7 +84,7 @@ fun ev(nm: string): tenv
   TEAny(nm, 0)
 
 // ============================================================================
-// Rules — in domain types
+// Rules
 // ============================================================================
 
 fun type-relation()
@@ -114,7 +110,7 @@ fun type-relation()
     XApp(xv("e1"), xv("e2")) \ ev("env") |- RInfer \ tv("a"))
 
 // ============================================================================
-// External solvers
+// External solvers + memo-key
 // ============================================================================
 
 fun store-lookup-all(s: term, nm: term): div list<term>
@@ -145,11 +141,10 @@ val ti/memo-key: ((fact) -> string) =
     ("unify-types", make-memo-key("unify-types", 2))
   ])
 
-fun ti-ext()
-  compose-externals([lookup-ext, unify-ext])
+val ti/external = compose-externals([lookup-ext, unify-ext])
 
 // ============================================================================
-// Pretty-print types from term representation
+// Run
 // ============================================================================
 
 fun show-type(t: term): div string
@@ -159,17 +154,11 @@ fun show-type(t: term): div string
     TVar(n, i) -> n ++ "_" ++ i.show
     _ -> t.show
 
-// ============================================================================
-// Run
-// ============================================================================
-
 fun run-infer(nm: string, program: expr)
   println("  " ++ nm ++ " : ")
   val goal = program \ TENil |- RInfer \ tv("result")
+  val table = search(goal, type-relation())
   val goal-fact = chain/to-fact(goal)
-  val ext = ti-ext()
-  val table = koka-redex/forward/forward-search(goal-fact,
-    relation/to-rules(type-relation()), ?external=ext)
   val top-key = memo-key(goal-fact)
   table.foreach fn(kv)
     if kv.fst == top-key then
@@ -181,7 +170,6 @@ fun run-infer(nm: string, program: expr)
 
 pub fun main()
   println("=== Type Inference (typed rules) ===")
-  // Use XAtom for concrete names in programs
   fun va(n: string): expr
     XVar(XAtom(n))
   fun la(x: string, body: expr): expr

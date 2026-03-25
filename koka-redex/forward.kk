@@ -53,7 +53,7 @@ pub fun forward-eval(
   rules: list<rule>,
   ?external: external-solver,
   ?memo-key: (fact) -> div string
-): <cache<string, search-result>, logic, div> search-result
+): <cache<string, search-result>, logic, div, exn> search-result
   val key = memo-key(goal)
   with each <- memo(key)
   // Each rule is a branch. Unification failure calls none() via on-fail,
@@ -64,7 +64,7 @@ pub fun forward-eval(
       unify-facts(goal, rf.conclusion)
       forward-premises(rf.premises, rules, ?external=external, ?memo-key=memo-key)
       resolve-fact(rf.conclusion)
-  val ext-branches : list<() -> <cache<string,search-result>,logic,div> search-result> = match external(goal)
+  val ext-branches : list<() -> <cache<string,search-result>,logic,div,exn> search-result> = match external(goal)
     Just(results) -> results.map(fn(r) fn() r)
     Nothing -> []
   val all = rule-branches ++ ext-branches
@@ -77,7 +77,7 @@ fun forward-premises(
   rules: list<rule>,
   ?external: external-solver,
   ?memo-key: (fact) -> div string
-): <cache<string, search-result>, logic, div> ()
+): <cache<string, search-result>, logic, div, exn> ()
   match premises
     Nil -> ()
     Cons(p, ps) ->

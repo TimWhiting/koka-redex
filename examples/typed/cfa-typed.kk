@@ -59,31 +59,7 @@ fun sv(nm: string): store
   SAny(nm, 0)
 
 // ----------------------------------------------------------------------------
-// Rules
-// ----------------------------------------------------------------------------
-
-fun cfa-relation()
-  val x = ev("x")
-  with relation-def
-  with rule(
-    axiom
-    --- "E-Lam" -->
-    ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
-  with external-rule(sv("s") \ ev("x") |- RLookup \ ev("v")) fn(TCons(s-val, x-val)) 
-    store-lookup-all(s-val, x-val)
-  with rule(
-    sv("s") \ x |- RLookup \ ev("val")
-    --- "E-Var" -->
-    EVar(x) \ sv("s") |- REval \ ev("val") \ sv("s"))
-  single/rule(
-    ev("e1") \ sv("s0") |- REval \ ELam(x, ev("e3")) \ sv("s1") \\
-    ev("e2") \ sv("s1") |- REval \ ev("v2") \ sv("s2") \\
-    ev("e3") \ SCons(x, ev("v2"), sv("s2")) |- REval \ ev("v") \ sv("s3")
-    --- "E-App" -->
-    EApp(ev("e1"), ev("e2")) \ sv("s0") |- REval \ ev("v") \ sv("s3"))
-
-// ----------------------------------------------------------------------------
-// from-term (for typed external solver)
+// from-term (needed by typed external solver)
 // ----------------------------------------------------------------------------
 
 pub fun expr/from-term(t: term): exn expr
@@ -112,6 +88,30 @@ fun store-lookup-all(s: store, nm: expr): div list<expr>
       val found = if n.to-term.show == nm.to-term.show then [vl] else []
       found ++ store-lookup-all(rest, nm)
     _ -> []
+
+// ----------------------------------------------------------------------------
+// Rules
+// ----------------------------------------------------------------------------
+
+fun cfa-relation()
+  val x = ev("x")
+  with relation-def
+  with rule(
+    axiom
+    --- "E-Lam" -->
+    ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
+  with external-rule(sv("s") \ ev("x") |- RLookup \ ev("v"),
+    fn(TCons(s-val, x-val) : type-cons<store, expr>) store-lookup-all(s-val, x-val))
+  with rule(
+    sv("s") \ x |- RLookup \ ev("val")
+    --- "E-Var" -->
+    EVar(x) \ sv("s") |- REval \ ev("val") \ sv("s"))
+  single/rule(
+    ev("e1") \ sv("s0") |- REval \ ELam(x, ev("e3")) \ sv("s1") \\
+    ev("e2") \ sv("s1") |- REval \ ev("v2") \ sv("s2") \\
+    ev("e3") \ SCons(x, ev("v2"), sv("s2")) |- REval \ ev("v") \ sv("s3")
+    --- "E-App" -->
+    EApp(ev("e1"), ev("e2")) \ sv("s0") |- REval \ ev("v") \ sv("s3"))
 
 // ----------------------------------------------------------------------------
 // Run — memo-key auto-derived from relation structure

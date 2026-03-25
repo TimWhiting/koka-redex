@@ -160,7 +160,7 @@ val lookup-ext = make-external("lookup") fn(args)
       store-lookup-all(store, nm).map(fn(vl) [store, nm, vl])
     _ -> []
 
-val unify-ext = ("unify-types", fn(goal: fact): <logic,div> maybe<list<fact>>
+val unify-ext = ("unify-types", fn(goal: fact): <logic,div,exn> maybe<list<fact>>
   match goal
     Fact("unify-types", [t1, t2]) ->
       unify(t1, t2)

@@ -364,8 +364,8 @@ pub fun search(
 // Simple wrapper: pair a predicate name with a solver function
 pub fun wrap-external(
   pred: string,
-  solver: (fact) -> <logic,div> maybe<list<fact>>
-): (string, (fact) -> <logic,div> maybe<list<fact>>)
+  solver: (fact) -> <logic,div,exn> maybe<list<fact>>
+): (string, (fact) -> <logic,div,exn> maybe<list<fact>>)
   (pred, solver)
 
 // Make an external solver for a relation where the solver operates
@@ -374,8 +374,8 @@ pub fun wrap-external(
 // lists of complete arg-lists for each solution.
 pub fun make-external(
   pred: string,
-  solver: (list<term>) -> <logic,div> list<list<term>>
-): (string, (fact) -> <logic,div> maybe<list<fact>>)
+  solver: (list<term>) -> <logic,div,exn> list<list<term>>
+): (string, (fact) -> <logic,div,exn> maybe<list<fact>>)
   (pred, fn(goal)
     match goal
       Fact(p, args) ->

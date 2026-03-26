@@ -38,10 +38,10 @@ pub fun concluded/(-->)(pn: (p, n), conclusion: c): rule<n, p, c>
 
 // Builders for type-struct rule collections
 pub fun single/rule(r: rule<n, p, c>): type-struct<n, rule<n, p, c>, type-nil>
-  any/mk-field(r) + TNil
+  any/mk-field(r) *: TNil
 
 pub fun cons/rule(r: rule<n, p, c>, rest: () -> e type-struct<_, _, _>): e type-struct<n, rule<n, p, c>, type-struct<_, _, _>>
-  any/mk-field(r) + rest()
+  any/mk-field(r) *: rest()
 
 // Within-judgement chaining (elements of one judgement)
 pub fun cons/(\)(h: a, t: b): type-cons<a, b>
@@ -84,7 +84,7 @@ pub fun cons/external-rule(
             Ok(facts) -> Just(facts)
             Error(_) -> Nothing
         else Nothing
-  any/mk-field(MkExternalEntry(pred, n, wrapped-solver)) + rest()
+  any/mk-field(MkExternalEntry(pred, n, wrapped-solver)) *: rest()
 
 pub fun single/external-rule(
   shape: s,
@@ -109,7 +109,7 @@ pub fun single/external-rule(
             Ok(facts) -> Just(facts)
             Error(_) -> Nothing
         else Nothing
-  any/mk-field(MkExternalEntry(pred, n, wrapped-solver)) + TNil
+  any/mk-field(MkExternalEntry(pred, n, wrapped-solver)) *: TNil
 
 pub fun default/relation-def(rules: r): relation-def<r>
   RelationDef(rules)

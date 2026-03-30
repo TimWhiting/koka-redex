@@ -26,9 +26,12 @@
 		},
 		{
 			"path": "../../timwhitingdev"
+		},
+		{
+			"path": "../../koka/.worktrees/redex"
 		}
 	],
 	"settings": {
-		"koka.dev.developmentPath": ""
+		"koka.dev.developmentPath": "/Users/timwhiting/koka/.worktrees/redex"
 	}
 }

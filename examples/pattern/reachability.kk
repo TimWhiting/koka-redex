@@ -1,6 +1,6 @@
 module examples/pattern/reachability
 
-// Reachability using pattern<a> metavariables.
+// Reachability using pat<a> metavariables.
 // Tests: rule construction, forward engine execution.
 
 import koka-redex/forward-bridge
@@ -9,22 +9,22 @@ import koka-redex/pattern
 // Relations
 pub type r-edge
   REdge
-pub fun r-edge/pred-name(_: r-edge): string
+pub fun r-edge/judgment-name(_: r-edge): string
   "edge"
 
 pub type r-reach
   RReach
-pub fun r-reach/pred-name(_: r-reach): string
+pub fun r-reach/judgment-name(_: r-reach): string
   "reach"
 
 // (judgement helpers removed — inline syntax is clear enough)
 
 // Concrete node IDs
-fun n(i: int): pattern<int>
+fun n(i: int): pat<int>
   PatTerm(TInt(i))
 
 // Pattern variable constructors (manual fresh IDs for now — codegen bug with effect handler)
-fun pv(nm: string, id: int): pattern<int>
+fun pv(nm: string, id: int): pat<int>
   PatVar(nm, id)
 
 // Rules

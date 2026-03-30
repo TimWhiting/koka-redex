@@ -1,8 +1,8 @@
 module examples/pattern/cfa
 
-// 0CFA with store-passing using pattern<a> metavariables.
+// 0CFA with store-passing using `pat<a>` metavariables.
 // Domain types are CLEAN — no Any/metavar constructors needed.
-// Metavariables come from pattern<a> with fresh-pat.
+// Metavariables come from `pat<a>` with fresh-pat.
 
 import koka-redex/forward-bridge
 import koka-redex/pattern
@@ -101,22 +101,22 @@ fun show-term-store-latex(t: term): div string
     _ -> t.show
 
 // Pattern renderers: delegate to term-level renderers
-pub fun pexpr/show-md(p: pattern<expr>): div string
+pub fun pexpr/show-md(p: pat<expr>): div string
   match p
     PatVar(nm, _id) -> nm
     PatTerm(t) -> show-term-expr-md(t)
 
-pub fun pexpr/show-latex-j(p: pattern<expr>): div string
+pub fun pexpr/show-latex-j(p: pat<expr>): div string
   match p
     PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
     PatTerm(t) -> show-term-expr-latex(t)
 
-pub fun pstore/show-md(p: pattern<store>): div string
+pub fun pstore/show-md(p: pat<store>): div string
   match p
     PatVar(nm, _id) -> nm
     PatTerm(t) -> show-term-store-md(t)
 
-pub fun pstore/show-latex-j(p: pattern<store>): div string
+pub fun pstore/show-latex-j(p: pat<store>): div string
   match p
     PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
     PatTerm(t) -> show-term-store-latex(t)
@@ -127,7 +127,7 @@ pub fun pstore/show-latex-j(p: pattern<store>): div string
 
 pub type r-eval
   REval
-pub fun r-eval/pred-name(_: r-eval): string
+pub fun r-eval/judgment-name(_: r-eval): string
   "eval"
 pub fun r-eval/show-md(_: r-eval): string
   "\\Downarrow"
@@ -136,7 +136,7 @@ pub fun r-eval/show-latex-j(_: r-eval): string
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/pred-name(_: r-lookup): string
+pub fun r-lookup/judgment-name(_: r-lookup): string
   "lookup"
 pub fun r-lookup/show-md(_: r-lookup): string
   "\\in"
@@ -154,29 +154,29 @@ pub fun default/show-latex-j(a: a, ?show: a -> string): string
 // These mirror the domain type constructors but work on patterns.
 // ----------------------------------------------------------------------------
 
-fun p-atom(nm: string): pattern<expr>
+fun p-atom(nm: string): pat<expr>
   PatTerm(TAtom(nm))
 
-fun p-var(nm: pattern<expr>): pattern<expr>
+fun p-var(nm: pat<expr>): pat<expr>
   PatTerm(TNode("var", [nm.to-term]))
 
-fun p-app(e1: pattern<expr>, e2: pattern<expr>): pattern<expr>
+fun p-app(e1: pat<expr>, e2: pat<expr>): pat<expr>
   PatTerm(TNode("app", [e1.to-term, e2.to-term]))
 
-fun p-lam(x: pattern<expr>, body: pattern<expr>): pattern<expr>
+fun p-lam(x: pat<expr>, body: pat<expr>): pat<expr>
   PatTerm(TNode("lam", [x.to-term, body.to-term]))
 
-fun p-snil(): pattern<store>
+fun p-snil(): pat<store>
   PatTerm(TNode("snil", []))
 
-fun p-scons(nm: pattern<expr>, vl: pattern<expr>, rest: pattern<store>): pattern<store>
+fun p-scons(nm: pat<expr>, vl: pat<expr>, rest: pat<store>): pat<store>
   PatTerm(TNode("scons", [nm.to-term, vl.to-term, rest.to-term]))
 
 // Lift concrete values into patterns (for goals)
-fun pe(e: expr): pattern<expr>
+fun pe(e: expr): pat<expr>
   PatTerm(e.to-term)
 
-fun ps(s: store): pattern<store>
+fun ps(s: store): pat<store>
   PatTerm(s.to-term)
 
 // ----------------------------------------------------------------------------
@@ -185,19 +185,19 @@ fun ps(s: store): pattern<store>
 
 fun cfa-relation()
   with with-pats
-  val x  : pattern<expr> = fresh-pat("x")
-  val e  : pattern<expr> = fresh-pat("e")
-  val e1 : pattern<expr> = fresh-pat("e1")
-  val e2 : pattern<expr> = fresh-pat("e2")
-  val e3 : pattern<expr> = fresh-pat("e3")
-  val s  : pattern<store> = fresh-pat("s")
-  val s0 : pattern<store> = fresh-pat("s0")
-  val s1 : pattern<store> = fresh-pat("s1")
-  val s2 : pattern<store> = fresh-pat("s2")
-  val s3 : pattern<store> = fresh-pat("s3")
-  val v  : pattern<expr> = fresh-pat("v")
-  val v2 : pattern<expr> = fresh-pat("v2")
-  val vl : pattern<expr> = fresh-pat("val")
+  val x  : pat<expr> = fresh-pat("x")
+  val e  : pat<expr> = fresh-pat("e")
+  val e1 : pat<expr> = fresh-pat("e1")
+  val e2 : pat<expr> = fresh-pat("e2")
+  val e3 : pat<expr> = fresh-pat("e3")
+  val s  : pat<store> = fresh-pat("s")
+  val s0 : pat<store> = fresh-pat("s0")
+  val s1 : pat<store> = fresh-pat("s1")
+  val s2 : pat<store> = fresh-pat("s2")
+  val s3 : pat<store> = fresh-pat("s3")
+  val v  : pat<expr> = fresh-pat("v")
+  val v2 : pat<expr> = fresh-pat("v2")
+  val vl : pat<expr> = fresh-pat("val")
 
   with relation-def
   // E-Lam: λ values evaluate to themselves
@@ -254,7 +254,7 @@ pub fun main()
   // Example 1: (λx.x)(λz.z)
   println("\n--- (λx.x)(λz.z) ---")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
-  val goal1 = pe(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pattern<store>)
+  val goal1 = pe(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
   val table1 = forward-search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
@@ -264,7 +264,7 @@ pub fun main()
   val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
   val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
-  val goal2 = pe(prog2) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pattern<store>)
+  val goal2 = pe(prog2) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
   val table2 = forward-search(goal2, rel)
   println("Entries: " ++ table2.length.show)
 

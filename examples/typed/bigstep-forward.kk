@@ -28,7 +28,7 @@ pub fun expr/to-term(e: expr): term
 
 pub type r-eval
   REval
-pub fun r-eval/pred-name(_: r-eval): string
+pub fun r-eval/judgment-name(_: r-eval): string
   "eval"
 
 // e ⇓ v

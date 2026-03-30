@@ -3,9 +3,9 @@ module koka-redex/forward-bridge
 // Bridge from typed rules (syntax.kk) to the forward engine (forward.kk).
 //
 // The key mechanism: relation markers in type-cons chains.
-// Users write `e |- REval \ v` where REval carries ?pred-name.
+// Users write `e |- REval \ v` where REval carries `?judgment-name`.
 // Elements before the marker are inputs, after are outputs.
-// The bridge builds Fact(pred-name, inputs ++ outputs).
+// The bridge builds `Fact(judgment-name, inputs ++ outputs)`.
 
 pub import koka-redex/term
 pub import koka-redex/syntax
@@ -99,21 +99,21 @@ pub fun tcons/to-fact-args(
   val (inputs, pred, outputs) = t.to-fact-args
   (Cons(h.to-term, inputs), pred, outputs)
 
-// Marker in middle: head has ?pred-name, tail is cons of outputs
+// Marker in middle: head has ?judgment-name, tail is cons of outputs
 pub fun marker/to-fact-args(
   TCons(h, t): type-cons<a, b>,
-  ?pred-name: a -> string,
+  ?judgment-name: a -> string,
   ?to-output-args: b -> list<term>
 ): div (list<term>, string, list<term>)
-  ([], h.pred-name, t.to-output-args)
+  ([], h.judgment-name, t.to-output-args)
 
-// Marker near end: head has ?pred-name, tail is a single bare value
+// Marker near end: head has ?judgment-name, tail is a single bare value
 pub fun marker-end/to-fact-args(
   TCons(h, t): type-cons<a, b>,
-  ?pred-name: a -> string,
+  ?judgment-name: a -> string,
   ?to-term: b -> term
 ): div (list<term>, string, list<term>)
-  ([], h.pred-name, [t.to-term])
+  ([], h.judgment-name, [t.to-term])
 
 // Convert a typed judgement chain to a fact
 pub fun chain/to-fact(
@@ -222,7 +222,7 @@ pub fun make-memo-key(pred: string, n-inputs: int): ((fact) -> string)
         if p == pred then Fact(p, args.take(n-inputs)).show
         else f.show
 
-// Derive a (pred-name, memo-key) pair from a sample judgement chain.
+// Derive a (judgment-name, memo-key) pair from a sample judgement chain.
 // The chain is traversed via to-fact-args to count input positions.
 // Usage: derive-key(e |- REval \ v) gives ("eval", key-fn-that-takes-1-input)
 pub fun derive-key(

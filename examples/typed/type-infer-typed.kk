@@ -57,17 +57,17 @@ pub fun tenv/to-term(e: tenv): term
 
 pub type r-infer
   RInfer
-pub fun r-infer/pred-name(_: r-infer): string
+pub fun r-infer/judgment-name(_: r-infer): string
   "infer"
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/pred-name(_: r-lookup): string
+pub fun r-lookup/judgment-name(_: r-lookup): string
   "lookup"
 
 pub type r-unify
   RUnify
-pub fun r-unify/pred-name(_: r-unify): string
+pub fun r-unify/judgment-name(_: r-unify): string
   "unify-types"
 
 // ----------------------------------------------------------------------------

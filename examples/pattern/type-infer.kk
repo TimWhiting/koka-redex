@@ -1,6 +1,6 @@
 module examples/pattern/type-infer
 
-// Type inference using pattern<a> metavariables.
+// Type inference using pat<a> metavariables.
 // Demonstrates forward + backward reasoning:
 //   Forward: syntax-directed rule selection
 //   Backward: unification as external relation
@@ -50,41 +50,41 @@ pub fun tenv/to-term(e: tenv): term
 // Pattern constructors
 // ----------------------------------------------------------------------------
 
-fun p-atom(nm: string): pattern<expr>
+fun p-atom(nm: string): pat<expr>
   PatTerm(TAtom(nm))
 
-fun p-var(nm: pattern<expr>): pattern<expr>
+fun p-var(nm: pat<expr>): pat<expr>
   PatTerm(TNode("var", [nm.to-term]))
 
-fun p-app(e1: pattern<expr>, e2: pattern<expr>): pattern<expr>
+fun p-app(e1: pat<expr>, e2: pat<expr>): pat<expr>
   PatTerm(TNode("app", [e1.to-term, e2.to-term]))
 
-fun p-lam(x: pattern<expr>, body: pattern<expr>): pattern<expr>
+fun p-lam(x: pat<expr>, body: pat<expr>): pat<expr>
   PatTerm(TNode("lam", [x.to-term, body.to-term]))
 
-fun p-int(p: pattern<int>): pattern<expr>
+fun p-int(p: pat<int>): pat<expr>
   PatTerm(TNode("int", [p.to-term]))
 
-fun p-arrow(t1: pattern<ty>, t2: pattern<ty>): pattern<ty>
+fun p-arrow(t1: pat<ty>, t2: pat<ty>): pat<ty>
   PatTerm(TNode("arrow", [t1.to-term, t2.to-term]))
 
-fun p-base(nm: string): pattern<ty>
+fun p-base(nm: string): pat<ty>
   PatTerm(TAtom(nm))
 
-fun p-tnil(): pattern<tenv>
+fun p-tnil(): pat<tenv>
   PatTerm(TNode("snil", []))
 
-fun p-tcons(nm: pattern<expr>, typ: pattern<ty>, rest: pattern<tenv>): pattern<tenv>
+fun p-tcons(nm: pat<expr>, typ: pat<ty>, rest: pat<tenv>): pat<tenv>
   PatTerm(TNode("scons", [nm.to-term, typ.to-term, rest.to-term]))
 
 // Lift concrete values
-fun pe(e: expr): pattern<expr>
+fun pe(e: expr): pat<expr>
   PatTerm(e.to-term)
 
-fun pt(t: ty): pattern<ty>
+fun pt(t: ty): pat<ty>
   PatTerm(t.to-term)
 
-fun penv(e: tenv): pattern<tenv>
+fun penv(e: tenv): pat<tenv>
   PatTerm(e.to-term)
 
 // ----------------------------------------------------------------------------
@@ -93,17 +93,17 @@ fun penv(e: tenv): pattern<tenv>
 
 pub type r-infer
   RInfer
-pub fun r-infer/pred-name(_: r-infer): string
+pub fun r-infer/judgment-name(_: r-infer): string
   "infer"
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/pred-name(_: r-lookup): string
+pub fun r-lookup/judgment-name(_: r-lookup): string
   "lookup"
 
 pub type r-unify
   RUnify
-pub fun r-unify/pred-name(_: r-unify): string
+pub fun r-unify/judgment-name(_: r-unify): string
   "unify-types"
 
 // ----------------------------------------------------------------------------
@@ -112,16 +112,16 @@ pub fun r-unify/pred-name(_: r-unify): string
 
 fun type-relation()
   with with-pats
-  val x   : pattern<expr> = fresh-pat("x")
-  val e   : pattern<expr> = fresh-pat("e")
-  val e1  : pattern<expr> = fresh-pat("e1")
-  val e2  : pattern<expr> = fresh-pat("e2")
-  val n   : pattern<int> = fresh-pat("n")
-  val env : pattern<tenv> = fresh-pat("env")
-  val t   : pattern<ty> = fresh-pat("t")
-  val t1  : pattern<ty> = fresh-pat("t1")
-  val t2  : pattern<ty> = fresh-pat("t2")
-  val a   : pattern<ty> = fresh-pat("a")
+  val x   : pat<expr> = fresh-pat("x")
+  val e   : pat<expr> = fresh-pat("e")
+  val e1  : pat<expr> = fresh-pat("e1")
+  val e2  : pat<expr> = fresh-pat("e2")
+  val n   : pat<int> = fresh-pat("n")
+  val env : pat<tenv> = fresh-pat("env")
+  val t   : pat<ty> = fresh-pat("t")
+  val t1  : pat<ty> = fresh-pat("t1")
+  val t2  : pat<ty> = fresh-pat("t2")
+  val a   : pat<ty> = fresh-pat("a")
 
   with relation-def
   with rule(
@@ -184,7 +184,7 @@ fun show-type(t: term): div string
 fun run-infer(nm: string, program: expr)
   println("  " ++ nm ++ " : ")
   with with-pats
-  val goal = pe(program) \ penv(TENil) |- RInfer \ (fresh-pat("result") : pattern<ty>)
+  val goal = pe(program) \ penv(TENil) |- RInfer \ (fresh-pat("result") : pat<ty>)
   val rel = type-relation()
   val table = forward-search(goal, rel)
   val mk = keys-to-memo-key(rel.derive-keys)
@@ -199,7 +199,7 @@ fun run-infer(nm: string, program: expr)
             println("    " ++ show-type(typ))
 
 pub fun main()
-  println("--- Type Inference (pattern<a>) ---")
+  println("--- Type Inference (pat<a>) ---")
   fun va(n: string): expr
     XVar(XAtom(n))
   fun la(x: string, body: expr): expr

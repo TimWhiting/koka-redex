@@ -40,12 +40,12 @@ pub fun store/to-term(s: store): term
 
 pub type r-eval
   REval
-pub fun r-eval/pred-name(_: r-eval): string
+pub fun r-eval/judgment-name(_: r-eval): string
   "eval"
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/pred-name(_: r-lookup): string
+pub fun r-lookup/judgment-name(_: r-lookup): string
   "lookup"
 
 // ----------------------------------------------------------------------------

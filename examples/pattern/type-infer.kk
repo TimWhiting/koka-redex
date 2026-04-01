@@ -77,16 +77,6 @@ fun p-tnil(): pat<tenv>
 fun p-tcons(nm: pat<expr>, typ: pat<ty>, rest: pat<tenv>): pat<tenv>
   PatTerm(TNode("scons", [nm.to-term, typ.to-term, rest.to-term]))
 
-// Lift concrete values
-fun pe(e: expr): pat<expr>
-  PatTerm(e.to-term)
-
-fun pt(t: ty): pat<ty>
-  PatTerm(t.to-term)
-
-fun penv(e: tenv): pat<tenv>
-  PatTerm(e.to-term)
-
 // ----------------------------------------------------------------------------
 // Relation markers
 // ----------------------------------------------------------------------------
@@ -109,6 +99,13 @@ pub fun r-unify/judgment-name(_: r-unify): string
 // ----------------------------------------------------------------------------
 // Rules
 // ----------------------------------------------------------------------------
+
+fun store-lookup-all(s: tenv, nm: expr): div list<ty>
+  match s
+    TECons(n, t, rest) ->
+      val found = if n.to-term.show == nm.to-term.show then [t] else []
+      found ++ store-lookup-all(rest, nm)
+    TENil -> []
 
 fun type-relation()
   with with-pats
@@ -136,39 +133,17 @@ fun type-relation()
     e \ p-tcons(x, a, env) |- RInfer \ t
     --- "T-Lam" -->
     p-lam(x, e) \ env |- RInfer \ p-arrow(a, t))
+  with cons/external-rule(env \ x |- RLookup \ t) fn(TCons(env-val: tenv, x-val: expr))
+    store-lookup-all(env-val, x-val)
+  with external-term-rule(t1 \ t2 |- RUnify \ TNil) fn([t1', t2'])
+    unify(t1', t2')
+    [Fact("unify-types", [resolve(t1'), resolve(t2')])]
   single/rule(
     e1 \ env |- RInfer \ t1 \\
     e2 \ env |- RInfer \ t2 \\
-    t1 |- RUnify \ p-arrow(t2, a)
+    t1 \ p-arrow(t2, a) |- RUnify \ TNil
     --- "T-App" -->
     p-app(e1, e2) \ env |- RInfer \ a)
-
-// ----------------------------------------------------------------------------
-// External solvers
-// ----------------------------------------------------------------------------
-
-fun store-lookup-all(s: term, nm: term): div list<term>
-  match s
-    TNode("scons", [n, vl, rest]) ->
-      val found = if term/eq(n, nm) then [vl] else []
-      found ++ store-lookup-all(rest, nm)
-    _ -> []
-
-val lookup-ext = make-external("lookup") fn(args)
-  match args
-    Cons(store, Cons(nm, _)) ->
-      store-lookup-all(store, nm).map(fn(vl) [store, nm, vl])
-    _ -> []
-
-val unify-ext = ("unify-types", fn(goal: fact): <logic,div,exn> maybe<list<fact>>
-  match goal
-    Fact("unify-types", [t1, t2]) ->
-      unify(t1, t2)
-      Just([Fact("unify-types", [resolve(t1), resolve(t2)])])
-    _ -> Nothing
-)
-
-val ti/external = compose-externals([lookup-ext, unify-ext])
 
 // ----------------------------------------------------------------------------
 // Run
@@ -184,7 +159,7 @@ fun show-type(t: term): div string
 fun run-infer(nm: string, program: expr)
   println("  " ++ nm ++ " : ")
   with with-pats
-  val goal = pe(program) \ penv(TENil) |- RInfer \ (fresh-pat("result") : pat<ty>)
+  val goal = pat(program) \ pat(TENil) |- RInfer \ (fresh-pat("result") : pat<ty>)
   val rel = type-relation()
   val table = forward-search(goal, rel)
   val mk = keys-to-memo-key(rel.derive-keys)

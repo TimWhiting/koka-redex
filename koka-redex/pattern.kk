@@ -16,6 +16,9 @@ pub type pat<a>
   PatVar(nm: string, id: int)
   PatTerm(t: term)
 
+pub fun term/pat(t: a, ?to-term: a -> term): pat<term>
+  PatTerm(to-term(t))
+
 pub fun pattern/to-term(p: pat<a>): term
   match p
     PatVar(nm, id) -> TVar(nm, id)
@@ -45,17 +48,17 @@ pub fun with-pats(action: () -> <pat-fresh|e> a): e a
 // Lifting concrete values to patterns
 // ----------------------------------------------------------------------------
 
-// The user provides to-pattern for their domain types, e.g.:
-//   fun expr/to-pattern(e: expr): div pat<expr>
+// The user provides `pat` for their domain types, e.g.:
+//   fun expr/pat(e: expr): div pat<expr>
 //     PatTerm(e.to-term)
 //
 // Built-in lifts for primitives:
 
-pub fun string/to-pattern(s: string): pat<string>
+pub fun string/pat(s: string): pat<string>
   PatTerm(TAtom(s))
 
-pub fun int/to-pattern(n: int): pat<int>
+pub fun int/pat(n: int): pat<int>
   PatTerm(TInt(n))
 
-pub fun term/to-pattern(t: term): pat<term>
+pub fun default/term/pat(t: term): pat<term>
   PatTerm(t)

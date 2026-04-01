@@ -25,8 +25,8 @@ pub type relation-def<r>
 pub type premise-sep
   PremiseSep
 
-// Chain premises: inserts a premise-sep marker between them in the type-cons chain
-pub fun cons/(\\)(h: a, t: b): type-cons<a, type-cons<premise-sep, b>>
+// Chain premises: inserts a premise-sep marker between them in the tcons chain
+pub fun cons/(\\)(h: a, t: b): t-cons<a, t-cons<premise-sep, b>>
   TCons(h, TCons(PremiseSep, t))
 
 // Rule line: premises --- "name" --> conclusion
@@ -36,22 +36,22 @@ pub fun named/(---)(premises: p, name: n): (p, n)
 pub fun concluded/(-->)(pn: (p, n), conclusion: c): rule<n, p, c>
   Rule(pn.snd, pn.fst, conclusion)
 
-// Builders for type-struct rule collections
-pub fun single/rule(r: rule<n, p, c>): type-struct<n, rule<n, p, c>, type-nil>
+// Builders for t-struct rule collections
+pub fun single/rule(r: rule<n, p, c>): t-struct<n, rule<n, p, c>, t-nil>
   any/mk-field(r) *: TNil
 
-pub fun cons/rule(r: rule<n, p, c>, rest: () -> e type-struct<_, _, _>): e type-struct<n, rule<n, p, c>, type-struct<_, _, _>>
+pub fun cons/rule(r: rule<n, p, c>, rest: () -> e t-struct<_, _, _>): e t-struct<n, rule<n, p, c>, t-struct<_, _, _>>
   any/mk-field(r) *: rest()
 
 // Within-judgement chaining (elements of one judgement)
-pub fun cons/(\)(h: a, t: b): type-cons<a, b>
+pub fun cons/(\)(h: a, t: b): t-cons<a, b>
   h +: t
 
 // Turnstile: visual marker before relation name (same as \, just for readability)
-pub fun turnstile/(|-)(h: a, t: b): type-cons<a, b>
+pub fun turnstile/(|-)(h: a, t: b): t-cons<a, b>
   h +: t
 
-// External solver entry (stored in type-struct alongside rules)
+// External solver entry (stored in t-struct alongside rules)
 pub type external-entry
   MkExternalEntry(
     ext-pred: string,
@@ -63,11 +63,11 @@ pub type external-entry
 pub fun cons/external-rule(
   shape: s,
   solver: (i) -> <logic,div,exn> list<o>,
-  rest: () -> <div|e> type-struct<_, _, _>,
+  rest: () -> <div|e> t-struct<_, _, _>,
   ?to-fact-args: s -> div (list<term>, string, list<term>),
   ?from-inputs: list<term> -> exn i,
   ?to-outputs: o -> list<term>
-): <div|e> type-struct<string, external-entry, type-struct<_, _, _>>
+): <div|e> t-struct<string, external-entry, t-struct<_, _, _>>
   val (input-terms, pred, _) = shape.to-fact-args
   val n = input-terms.length
   val wrapped-solver : ((fact) -> <logic,div> maybe<list<fact>>) = fn(goal)
@@ -86,13 +86,32 @@ pub fun cons/external-rule(
         else Nothing
   any/mk-field(MkExternalEntry(pred, n, wrapped-solver)) *: rest()
 
+
+// Builders for external solvers within relation-def
+pub fun cons/external-term-rule(
+  shape: s,
+  solver: (list<term>) -> <logic,div,exn> list<fact>,
+  rest: () -> <div|e> t-struct<_, _, _>,
+  ?to-fact-args: s -> div (list<term>, string, list<term>)
+): <div|e> t-struct<string, external-entry, t-struct<_, _, _>>
+  val (input-terms, pred, _) = shape.to-fact-args
+  val n = input-terms.length
+  val wrapped-solver : ((fact) -> <logic,div> maybe<list<fact>>) = fn(goal)
+    match goal
+      Fact(p, args) ->
+        if p == pred then
+          try { Just(solver(args.take(n))) } fn(err)
+            Nothing
+        else Nothing
+  any/mk-field(MkExternalEntry(pred, n, wrapped-solver)) *: rest()
+
 pub fun single/external-rule(
   shape: s,
   solver: (i) -> <logic,div,exn> list<o>,
   ?to-fact-args: s -> div (list<term>, string, list<term>),
   ?from-inputs: list<term> -> exn i,
   ?to-outputs: o -> list<term>
-): div type-struct<string, external-entry, type-nil>
+): div t-struct<string, external-entry, t-nil>
   val (input-terms, pred, _) = shape.to-fact-args
   val n = input-terms.length
   val wrapped-solver : ((fact) -> <logic,div> maybe<list<fact>>) = fn(goal)

@@ -13,35 +13,35 @@ import std/core/undiv
 // ---- Premise-level rendering (returns list<string>, one per premise) ----
 
 // No premises
-pub fun tnil/show-latex-premises(_l: type-nil): e list<string>
+pub fun tnil/show-latex-premises(_l: t-nil): e list<string>
   Nil
 
 // Skip premise-sep marker, continue with tail
-pub fun sep/show-latex-premises(TCons(_sep, t): type-cons<premise-sep, b>, ?show-latex-premises: b -> e list<string>): e list<string>
+pub fun sep/show-latex-premises(TCons(_sep, t): t-cons<premise-sep, b>, ?show-latex-premises: b -> e list<string>): e list<string>
   t.show-latex-premises
 
-// Premise whose head is a judgement chain (type-cons) — render as one joined string
-pub fun tcons-prem/show-latex-premises(TCons(h, t): type-cons<type-cons<a1, a2>, b>,
-  ?show-latex-j: type-cons<a1, a2> -> e string,
+// Premise whose head is a judgement chain (tcons) — render as one joined string
+pub fun tcons-prem/show-latex-premises(TCons(h, t): t-cons<t-cons<a1, a2>, b>,
+  ?show-latex-j: t-cons<a1, a2> -> e string,
   ?show-latex-premises: b -> e list<string>): e list<string>
   Cons(h.show-latex-j, t.show-latex-premises)
 
-// Single premise (bare value, not type-cons) — base case
+// Single premise (bare value, not tcons) — base case
 pub fun default/show-latex-premises(a: a, ?show-latex-j: a -> e string): e list<string>
   Cons(show-latex-j(a), Nil)
 
 // ---- Within-judgement rendering (flattens to list<string>, joined with spaces) ----
 
-// Format `type-nil`
-pub fun tnil/show-latex(_l: type-nil): e list<string>
+// Format `t-nil`
+pub fun tnil/show-latex(_l: t-nil): e list<string>
   Nil
 
-// Format `type-cons` within a judgement — each element is one token
-pub fun tcons/show-latex(TCons(h, t): type-cons<a, b>, ?show-latex-j: a -> e string, ?show-latex: b -> e list<string>): e list<string>
+// Format `tcons` within a judgement — each element is one token
+pub fun tcons/show-latex(TCons(h, t): t-cons<a, b>, ?show-latex-j: a -> e string, ?show-latex: b -> e list<string>): e list<string>
   Cons(show-latex-j(h), t.show-latex)
 
-// A judgement (type-cons chain) rendered as a single string by joining elements with spaces
-pub fun tcons/show-latex-j(l: type-cons<a, b>, ?show-latex: type-cons<a, b> -> e list<string>): e string
+// A judgement (tcons chain) rendered as a single string by joining elements with spaces
+pub fun tcons/show-latex-j(l: t-cons<a, b>, ?show-latex: t-cons<a, b> -> e list<string>): e string
   l.show-latex.join(" ")
 
 // Single element as list

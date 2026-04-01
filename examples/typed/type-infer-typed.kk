@@ -140,18 +140,17 @@ val ti/external = compose-externals([lookup-ext, unify-ext])
 // Run
 // ----------------------------------------------------------------------------
 
-fun show-type(t: term): div string
+fun show-type(t: term): pure string
   match t
     TAtom("Int") -> "Int"
     TNode("arrow", [a, b]) -> "(" ++ show-type(a) ++ " -> " ++ show-type(b) ++ ")"
     TVar(n, i) -> n ++ "_" ++ i.show
-    _ -> t.show
 
 fun run-infer(nm: string, program: expr)
-  println("  " ++ nm ++ " : ")
+  println("\n\n" ++ nm ++ " : ")
   val goal = program \ TENil |- RInfer \ tv("result")
   val rel = type-relation()
-  val table = forward-search(goal, rel)
+  val table = search(goal, rel)
   // Use derived keys for result lookup too
   val mk = keys-to-memo-key(rel.derive-keys)
   val goal-fact = chain/to-fact(goal)

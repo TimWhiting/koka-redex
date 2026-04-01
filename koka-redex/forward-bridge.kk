@@ -2,7 +2,7 @@ module koka-redex/forward-bridge
 
 // Bridge from typed rules (syntax.kk) to the forward engine (forward.kk).
 //
-// The key mechanism: relation markers in type-cons chains.
+// The key mechanism: relation markers in tcons chains.
 // Users write `e |- REval \ v` where REval carries `?judgment-name`.
 // Elements before the marker are inputs, after are outputs.
 // The bridge builds `Fact(judgment-name, inputs ++ outputs)`.
@@ -19,15 +19,15 @@ import std/core/undiv
 // Implicit chains for external solver input/output conversion
 // ----------------------------------------------------------------------------
 
-// from-inputs: convert list<term> to a type-cons chain of domain values
+// from-inputs: convert list<term> to a tcons chain of domain values
 pub fun tcons/from-inputs(
   args: list<term>,
   ?from-term: term -> exn a,
   ?from-inputs: list<term> -> exn b
-): exn type-cons<a, b>
+): exn t-cons<a, b>
   match args
     Cons(t, rest) -> TCons(t.from-term, rest.from-inputs)
-    _ -> throw("from-inputs: not enough args for type-cons")
+    _ -> throw("from-inputs: not enough args for tcons")
 
 // Base: single remaining input (bare value)
 pub fun end/from-inputs(
@@ -40,7 +40,7 @@ pub fun end/from-inputs(
 
 // to-outputs: convert domain output value(s) to list<term>
 pub fun tcons/to-outputs(
-  TCons(h, t): type-cons<a, b>,
+  TCons(h, t): t-cons<a, b>,
   ?to-term: a -> term,
   ?to-outputs: b -> list<term>
 ): list<term>
@@ -72,7 +72,7 @@ pub fun int/to-term(i: int): term
 
 // Recursive: head is a value, tail is more cons
 pub fun tcons/to-output-args(
-  TCons(h, t): type-cons<a, b>,
+  TCons(h, t): t-cons<a, b>,
   ?to-term: a -> term,
   ?to-output-args: b -> list<term>
 ): list<term>
@@ -80,7 +80,7 @@ pub fun tcons/to-output-args(
 
 // Base: two-element cons (last pair of outputs)
 pub fun end/to-output-args(
-  TCons(h, t): type-cons<a, b>,
+  TCons(h, t): t-cons<a, b>,
   ?to-term: a -> term,
   ?tail/to-term: b -> term
 ): list<term>
@@ -92,16 +92,35 @@ pub fun end/to-output-args(
 
 // Pre-marker recursive: head is a value, tail has more (including marker)
 pub fun tcons/to-fact-args(
-  TCons(h, t): type-cons<a, b>,
+  TCons(h, t): t-cons<a, b>,
   ?to-term: a -> term,
-  ?to-fact-args: b -> div (list<term>, string, list<term>)
+  ?to-fact-args: b -> div (list<term>, string, list<term>),
+  ?before-judgment: b -> ()
 ): div (list<term>, string, list<term>)
-  val (inputs, pred, outputs) = t.to-fact-args
-  (Cons(h.to-term, inputs), pred, outputs)
+  val (inputs, judgment, outputs) = t.to-fact-args
+  (Cons(h.to-term, inputs), judgment, outputs)
+
+// Pre-marker recursive: head is a value, tail has more (including marker)
+pub fun default/after/to-fact-args(
+  TCons(h, t): t-cons<a, b>,
+  ?to-term: a -> term,
+  ?to-fact-args: b -> div (list<term>, string, list<term>)): div (list<term>, string, list<term>)
+  val (inputs, judgment, outputs) = t.to-fact-args
+  (inputs, judgment, Cons(h.to-term, outputs))
+
+pub fun tnil/to-fact-args(tn: t-nil) : (list<term>, string, list<term>)
+  (Nil, "", Nil)
+pub fun tnil/to-output-args(tn: t-nil) : list<term>
+  Nil
+
+pub fun tcons/before-judgment(b: t-cons<a,b>, ?before-judgment: b -> ()): ()
+  ()
+pub fun judgement/before-judgment(j: t-cons<a,b>, ?judgment-name: a -> string): ()
+  ()
 
 // Marker in middle: head has ?judgment-name, tail is cons of outputs
 pub fun marker/to-fact-args(
-  TCons(h, t): type-cons<a, b>,
+  TCons(h, t): t-cons<a, b>,
   ?judgment-name: a -> string,
   ?to-output-args: b -> list<term>
 ): div (list<term>, string, list<term>)
@@ -109,7 +128,7 @@ pub fun marker/to-fact-args(
 
 // Marker near end: head has ?judgment-name, tail is a single bare value
 pub fun marker-end/to-fact-args(
-  TCons(h, t): type-cons<a, b>,
+  TCons(h, t): t-cons<a, b>,
   ?judgment-name: a -> string,
   ?to-term: b -> term
 ): div (list<term>, string, list<term>)
@@ -143,7 +162,7 @@ pub fun fact/to-fact(f: fact): div fact
 // ----------------------------------------------------------------------------
 
 // Nil: no premises
-pub fun tnil/to-premises(_: type-nil): list<fact>
+pub fun tnil/to-premises(_: t-nil): list<fact>
   Nil
 
 // Fact-level: single fact (base case)
@@ -152,22 +171,22 @@ pub fun fact/to-premises(f: fact): list<fact>
 
 // Skip premise-sep marker, continue with tail
 pub fun sep/to-premises(
-  TCons(_sep, t): type-cons<premise-sep, b>,
+  TCons(_sep, t): t-cons<premise-sep, b>,
   ?to-premises: b -> div list<fact>
 ): div list<fact>
   t.to-premises
 
 // Fact-level: fact followed by premise-sep + more facts
 pub fun fact-sep/to-premises(
-  TCons(h, t): type-cons<fact, type-cons<premise-sep, b>>,
-  ?to-premises: type-cons<premise-sep, b> -> div list<fact>
+  TCons(h, t): t-cons<fact, t-cons<premise-sep, b>>,
+  ?to-premises: t-cons<premise-sep, b> -> div list<fact>
 ): div list<fact>
   Cons(h, t.to-premises)
 
-// Premise whose head is a judgement chain (type-cons), followed by more premises
+// Premise whose head is a judgement chain (tcons), followed by more premises
 pub fun chain-tcons/to-premises(
-  TCons(h, t): type-cons<type-cons<a1, a2>, b>,
-  ?to-fact: type-cons<a1, a2> -> div fact,
+  TCons(h, t): t-cons<t-cons<a1, a2>, b>,
+  ?to-fact: t-cons<a1, a2> -> div fact,
   ?to-premises: b -> div list<fact>
 ): div list<fact>
   Cons(h.to-fact, t.to-premises)
@@ -194,7 +213,7 @@ pub fun rule/to-forward-rule(
     Rule(name, premises, conclusion) ->
       koka-redex/term/Rule(name.show, premises.to-premises, conclusion.to-fact)
 
-// map-field for type-struct traversal (used by to-list)
+// map-field for t-struct traversal (used by to-list)
 pub fun forward/map-field(
   r: koka-redex/syntax/rule<n, p, c>,
   ?name/show: n -> div string,
@@ -254,6 +273,7 @@ pub fun compose-externals(
         match solvers.find(fn(p) p.fst == pred)
           Just(kv) -> (kv.snd)(goal)
           Nothing -> Nothing
+            // throw("compose-externals: no solver found for predicate " ++ pred ++ " in " ++ solvers.map(fst).show)
 
 // ----------------------------------------------------------------------------
 // Key-info: per-relation memo-key derivation from relation structure
@@ -290,7 +310,7 @@ pub fun keys-to-memo-key(keys: list<key-info>): ((fact) -> string)
   compose-memo-keys(keys.map(fn(k) (k.pred, make-memo-key(k.pred, k.n-inputs))))
 
 // ----------------------------------------------------------------------------
-// relation-entry: sum type for mixed rule/external type-struct traversal
+// relation-entry: sum type for mixed rule/external t-struct traversal
 // ----------------------------------------------------------------------------
 
 pub type relation-entry
@@ -351,11 +371,12 @@ pub fun search(
   ?to-fact: g -> div fact,
   ?to-list: r -> div list<koka-redex/term/rule>,
   ?external: (fact) -> <logic,div,exn> maybe<list<fact>>,
-  ?memo-key: (fact) -> div string
+  ?derive-keys: relation-def<r> -> div list<key-info>
 ): <div,exn> list<(string, list<fact>)>
   val rules = to-list(rel.rules)
   val goal-fact = goal.to-fact
-  koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=memo-key)
+  val mk = keys-to-memo-key(rel.derive-keys)
+  koka-redex/forward/forward-search(goal-fact, rules, ?external=external, ?memo-key=mk)
 
 // ----------------------------------------------------------------------------
 // Typed external solvers

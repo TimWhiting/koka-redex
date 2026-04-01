@@ -16,16 +16,16 @@ pub fun math(s: string): string
 // ---- Premise-level rendering (returns list<string>, one per premise) ----
 
 // No premises
-pub fun tnil/show-md-premises(_l: type-nil): e list<string>
+pub fun tnil/show-md-premises(_l: t-nil): e list<string>
   Nil
 
 // Skip premise-sep marker
-pub fun sep/show-md-premises(TCons(_sep, t): type-cons<premise-sep, b>, ?show-md-premises: b -> e list<string>): e list<string>
+pub fun sep/show-md-premises(TCons(_sep, t): t-cons<premise-sep, b>, ?show-md-premises: b -> e list<string>): e list<string>
   t.show-md-premises
 
-// Premise whose head is a judgement chain (type-cons)
-pub fun tcons-prem/show-md-premises(TCons(h, t): type-cons<type-cons<a1, a2>, b>,
-  ?show-md: type-cons<a1, a2> -> e string,
+// Premise whose head is a judgement chain (tcons)
+pub fun tcons-prem/show-md-premises(TCons(h, t): t-cons<t-cons<a1, a2>, b>,
+  ?show-md: t-cons<a1, a2> -> e string,
   ?show-md-premises: b -> e list<string>): e list<string>
   Cons(h.show-md, t.show-md-premises)
 
@@ -35,20 +35,20 @@ pub fun default/show-md-premises(a: a, ?show-md: a -> e string): e list<string>
 
 // ---- Within-judgement rendering ----
 
-// Format `type-nil`
-pub fun tnil/show-markdown(_l: type-nil): e list<string>
+// Format `t-nil`
+pub fun tnil/show-markdown(_l: t-nil): e list<string>
   Nil
 
-// Format `type-cons` within a judgement
-pub fun tcons/show-markdown(TCons(h, t): type-cons<a, b>, ?show-md: a -> e string, ?show-markdown: b -> e list<string>): e list<string>
+// Format `tcons` within a judgement
+pub fun tcons/show-markdown(TCons(h, t): t-cons<a, b>, ?show-md: a -> e string, ?show-markdown: b -> e list<string>): e list<string>
   Cons(show-md(h), t.show-markdown)
 
 // Single element
 pub fun default/show-markdown(a: a, ?show-md: a -> e string): e list<string>
   Cons(show-md(a), Nil)
 
-// A judgement (type-cons chain) as a single string
-pub fun tcons/show-md(l: type-cons<a, b>, ?show-markdown: type-cons<a, b> -> e list<string>): e string
+// A judgement (tcons chain) as a single string
+pub fun tcons/show-md(l: t-cons<a, b>, ?show-markdown: t-cons<a, b> -> e list<string>): e string
   l.show-markdown.join(" ")
 
 // ---- Rule rendering ----

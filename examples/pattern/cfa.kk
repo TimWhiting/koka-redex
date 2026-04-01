@@ -35,6 +35,20 @@ pub fun store/to-term(s: store): term
     SNil -> TNode("snil", [])
     SCons(n, v, rest) -> TNode("scons", [n.to-term, v.to-term, rest.to-term])
 
+pub fun expr/from-term(t: term): exn expr
+  match t
+    TAtom(n) -> EAtom(n)
+    TNode("var", [n]) -> EVar(expr/from-term(n))
+    TNode("app", [e1, e2]) -> EApp(expr/from-term(e1), expr/from-term(e2))
+    TNode("lam", [x, body]) -> ELam(expr/from-term(x), expr/from-term(body))
+    _ -> throw("expr/from-term: invalid term " ++ t.show)
+
+pub fun store/from-term(t: term): exn store
+  match t
+    TNode("snil", []) -> SNil
+    TNode("scons", [n, v, rest]) -> SCons(expr/from-term(n), expr/from-term(v), store/from-term(rest))
+    _ -> throw("store/from-term: invalid term " ++ t.show)
+
 // ----------------------------------------------------------------------------
 // LaTeX/Markdown formatters
 // ----------------------------------------------------------------------------
@@ -84,20 +98,15 @@ fun show-term-store-md(t: term): div string
     TNode("scons", [n, v, rest]) -> show-term-store-md(rest) ++ "[" ++ show-term-expr-md(n) ++ " \\mapsto " ++ show-term-expr-md(v) ++ "]"
     _ -> t.show
 
-fun show-term-expr-latex(t: term): div string
+fun term/show-latex-j(t: term): div string
   match t
     TAtom(n) -> n
     TVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    TNode("var", [n]) -> show-term-expr-latex(n)
-    TNode("app", [e1, e2]) -> show-term-expr-latex(e1) ++ "\\; " ++ show-term-expr-latex(e2)
-    TNode("lam", [x, body]) -> "\\lambda " ++ show-term-expr-latex(x) ++ ".\\; " ++ show-term-expr-latex(body)
-    _ -> t.show
-
-fun show-term-store-latex(t: term): div string
-  match t
-    TVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
+    TNode("var", [n]) -> term/show-latex-j(n)
+    TNode("app", [e1, e2]) -> term/show-latex-j(e1) ++ "\\; " ++ term/show-latex-j(e2)
+    TNode("lam", [x, body]) -> "\\lambda " ++ term/show-latex-j(x) ++ ".\\; " ++ term/show-latex-j(body)
     TNode("snil", []) -> "\\emptyset"
-    TNode("scons", [n, v, rest]) -> show-term-store-latex(rest) ++ "[" ++ show-term-expr-latex(n) ++ " \\mapsto " ++ show-term-expr-latex(v) ++ "]"
+    TNode("scons", [n, v, rest]) -> term/show-latex-j(rest) ++ "[" ++ term/show-latex-j(n) ++ " \\mapsto " ++ term/show-latex-j(v) ++ "]"
     _ -> t.show
 
 // Pattern renderers: delegate to term-level renderers
@@ -109,7 +118,7 @@ pub fun pexpr/show-md(p: pat<expr>): div string
 pub fun pexpr/show-latex-j(p: pat<expr>): div string
   match p
     PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    PatTerm(t) -> show-term-expr-latex(t)
+    PatTerm(t) -> term/show-latex-j(t)
 
 pub fun pstore/show-md(p: pat<store>): div string
   match p
@@ -119,7 +128,7 @@ pub fun pstore/show-md(p: pat<store>): div string
 pub fun pstore/show-latex-j(p: pat<store>): div string
   match p
     PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    PatTerm(t) -> show-term-store-latex(t)
+    PatTerm(t) -> term/show-latex-j(t)
 
 // ----------------------------------------------------------------------------
 // Relation markers
@@ -172,16 +181,21 @@ fun p-snil(): pat<store>
 fun p-scons(nm: pat<expr>, vl: pat<expr>, rest: pat<store>): pat<store>
   PatTerm(TNode("scons", [nm.to-term, vl.to-term, rest.to-term]))
 
-// Lift concrete values into patterns (for goals)
-fun pe(e: expr): pat<expr>
-  PatTerm(e.to-term)
-
-fun ps(s: store): pat<store>
-  PatTerm(s.to-term)
-
 // ----------------------------------------------------------------------------
 // Rules — using fresh-pat for metavariables
 // ----------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------------------------
+// External solver + policy
+// ----------------------------------------------------------------------------
+
+fun store-lookup-all(s: store, nm: expr): div list<expr>
+  match s
+    SCons(n, vl, rest) ->
+      val found = if n.to-term.show == nm.to-term.show then [vl] else []
+      found ++ store-lookup-all(rest, nm)
+    _ -> []
 
 fun cfa-relation()
   with with-pats
@@ -206,6 +220,10 @@ fun cfa-relation()
     --- "E-Lam" -->
     p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
   // E-Var: variable lookup (external)
+  with external-rule(s \ x |- RLookup \ v,
+    fn(TCons(s-val: store, x-val : expr)) 
+      store-lookup-all(s-val, x-val)
+    )
   with rule(
     s \ x |- RLookup \ vl
     --- "E-Var" -->
@@ -219,25 +237,6 @@ fun cfa-relation()
     p-app(e1, e2) \ s0 |- REval \ v \ s3)
 
 // ----------------------------------------------------------------------------
-// External solver + policy
-// ----------------------------------------------------------------------------
-
-fun store-lookup-all(s: term, nm: term): div list<term>
-  match s
-    TNode("scons", [n, vl, rest]) ->
-      val found = if term/eq(n, nm) then [vl] else []
-      found ++ store-lookup-all(rest, nm)
-    _ -> []
-
-val lookup-solver = make-external("lookup") fn(args)
-  match args
-    Cons(s, Cons(nm, _)) ->
-      store-lookup-all(s, nm).map(fn(vl) [s, nm, vl])
-    _ -> []
-
-val cfa/external = compose-externals([lookup-solver])
-
-// ----------------------------------------------------------------------------
 // Run
 // ----------------------------------------------------------------------------
 
@@ -246,15 +245,15 @@ pub fun main()
   val rel = cfa-relation()
 
   // LaTeX rendering
-  println("--- LaTeX ---")
-  println(rel.relation-to-latex)
-  println("\n--- Markdown ---")
-  println(rel.relation-to-md("eval/lookup"))
+  // println("--- LaTeX ---")
+  // println(rel.relation-to-latex)
+  // println("\n--- Markdown ---")
+  // println(rel.relation-to-md("eval/lookup"))
 
   // Example 1: (λx.x)(λz.z)
   println("\n--- (λx.x)(λz.z) ---")
   val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
-  val goal1 = pe(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
+  val goal1 = pat(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ pat(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
   val table1 = forward-search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
@@ -264,7 +263,7 @@ pub fun main()
   val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
   val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
   val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
-  val goal2 = pe(prog2) \ ps(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
+  val goal2 = pat(prog2) \ pat(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
   val table2 = forward-search(goal2, rel)
   println("Entries: " ++ table2.length.show)
 

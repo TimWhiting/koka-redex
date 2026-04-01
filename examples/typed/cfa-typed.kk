@@ -3,6 +3,7 @@ module examples/typed/cfa-typed
 // 0CFA with store-passing using DOMAIN TYPES via the forward bridge.
 
 import koka-redex/forward-bridge
+import koka-redex/latex
 
 // ----------------------------------------------------------------------------
 // Domain types — EAny/SAny for metavariables in rules
@@ -101,7 +102,9 @@ fun cfa-relation()
     --- "E-Lam" -->
     ELam(x, ev("e")) \ sv("s") |- REval \ ELam(x, ev("e")) \ sv("s"))
   with external-rule(sv("s") \ ev("x") |- RLookup \ ev("v"),
-    fn(TCons(s-val, x-val) : type-cons<store, expr>) store-lookup-all(s-val, x-val))
+    fn(TCons(s-val, x-val: expr) : t-cons<store, expr>) 
+      store-lookup-all(s-val, x-val)
+    )
   with rule(
     sv("s") \ x |- RLookup \ ev("val")
     --- "E-Var" -->

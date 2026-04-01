@@ -178,3 +178,87 @@ pub fun generic-from-term<whole>(t: term, matchers: list<from-term-matcher<whole
 pub fun derive-from-term<whole>(t: term, info: s,
   ?from-matchers: s -> list<from-term-matcher<whole>>): <exn,div> whole
   generic-from-term(t, info.from-matchers)
+
+// ============================================================================
+// Term rendering: derive a (term -> string) renderer from type-info
+//
+// The user provides per-constructor-tag format functions:
+//   fun lam-expr/fmt-latex(rendered-fields: list<string>): string
+//     "\\lambda " ++ rendered-fields[0] ++ ".\\; " ++ rendered-fields[1]
+//
+// The framework builds a term renderer that:
+//   TVar(nm, id) → render metavar name
+//   TAtom(nm)    → render as-is
+//   TInt(n)      → render as number
+//   TNode(name, args) → dispatch to format function by con-name
+// ============================================================================
+
+// A render-entry maps a constructor name to its format function
+pub alias render-fmt = (list<string>) -> <div,exn> string
+pub alias render-entry = (string, render-fmt)
+
+// Per-tag format function implicit — the user provides these
+// Atom constructors: rendered as just the atom value (no name)
+pub fun atom/to-render-entry<tag, whole>(ci: con-info<tag, string, whole>,
+  ?name/show: () -> name<tag>
+): render-entry
+  (ci.con-name, fn(fs) fs[0].default(""))
+
+// Node constructors: user provides ?fmt per tag (resolved by tag type)
+pub fun node/to-render-entry<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
+  ?name/show: () -> name<tag>,
+  ?fmt: name<tag> -> render-fmt
+): render-entry
+  (ci.con-name, fmt(?name/show()))
+
+// Nullary constructors: use ?fmt if provided, otherwise render as con-name
+pub fun nullary/to-render-entry<tag, whole>(ci: con-info<tag, t-nil, whole>,
+  ?name/show: () -> name<tag>,
+  ?fmt: name<tag> -> render-fmt
+): render-entry
+  (ci.con-name, fmt(?name/show()))
+
+// Traversal: collect render-entries from type-info
+pub fun tstruct/to-render-entries<tag, tag1, fields, fields1, whole>(
+  s: t-struct<n, con-info<tag, fields, whole>, t-struct<n1, con-info<tag1, fields1, whole>, r>>,
+  ?to-render-entry: con-info<tag, fields, whole> -> render-entry,
+  ?to-render-entries: t-struct<n1, con-info<tag1, fields1, whole>, r> -> list<render-entry>
+): list<render-entry>
+  Cons(s.head-field.v.to-render-entry, s.rest.to-render-entries)
+
+pub fun nil/to-render-entries<tag, fields, whole>(
+  s: t-struct<n, con-info<tag, fields, whole>, t-nil>,
+  ?to-render-entry: con-info<tag, fields, whole> -> render-entry
+): list<render-entry>
+  [s.head-field.v.to-render-entry]
+
+pub alias term-renderer = (term) -> <div,exn> string
+
+// Build a term renderer from render-entries
+pub fun make-term-renderer(entries: list<render-entry>, ?var-render: (string, int) -> <div,exn> string): term-renderer
+  fn(t) render-term(t, entries, var-render)
+
+fun render-term(t: term, entries: list<render-entry>, var-render: (string, int) -> <div,exn> string): <div,exn> string
+  match t
+    TVar(nm, id) -> var-render(nm, id)
+    TAtom(nm) -> nm
+    TInt(n) -> n.show
+    TNode(name, args) ->
+      val rendered-args = args.map(fn(a) render-term(a, entries, var-render))
+      match entries.find(fn(e) e.fst == name)
+        Just((_, fmt)) -> fmt(rendered-args)
+        Nothing -> name ++ "(" ++ rendered-args.join(", ") ++ ")"
+
+// Derive a complete term renderer from type-info
+pub fun derive-term-renderer<whole>(info: s,
+  ?to-render-entries: s -> list<render-entry>,
+  ?var-render: (string, int) -> div string
+): term-renderer
+  make-term-renderer(info.to-render-entries, ?var-render=var-render)
+
+// Default var renderers for LaTeX and Markdown
+pub fun latex/var-render(nm: string, id: int): div string
+  if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
+
+pub fun md/var-render(nm: string, id: int): div string
+  if id == 0 then nm else nm ++ id.show

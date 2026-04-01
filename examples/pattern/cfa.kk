@@ -90,77 +90,35 @@ pub fun store/from-term(t: term): <exn,div> store
 // LaTeX/Markdown formatters
 // ----------------------------------------------------------------------------
 
-pub fun expr/show-md(e: expr): div string
-  match e
-    EAtom(n) -> n
-    EVar(n) -> n.show-md
-    EApp(e1, e2) -> e1.show-md ++ " " ++ e2.show-md
-    ELam(x, body) -> "\\lambda " ++ x.show-md ++ ". " ++ body.show-md
+// Per-constructor render formats — one entry per non-atom constructor
+val cfa-latex-entries : list<render-entry> = [
+  ("var",   fn([n])          n),
+  ("app",   fn([e1, e2])     e1 ++ "\\; " ++ e2),
+  ("lam",   fn([x, body])    "\\lambda " ++ x ++ ".\\; " ++ body),
+  ("snil",  fn([])           "\\emptyset"),
+  ("scons", fn([n, v, rest]) rest ++ "[" ++ n ++ " \\mapsto " ++ v ++ "]")
+]
 
-pub fun expr/show-latex-j(e: expr): div string
-  match e
-    EAtom(n) -> n
-    EVar(n) -> n.show-latex-j
-    EApp(e1, e2) -> e1.show-latex-j ++ "\\; " ++ e2.show-latex-j
-    ELam(x, body) -> "\\lambda " ++ x.show-latex-j ++ ".\\; " ++ body.show-latex-j
+val cfa-md-entries : list<render-entry> = [
+  ("var",   fn([n])          n),
+  ("app",   fn([e1, e2])     e1 ++ " " ++ e2),
+  ("lam",   fn([x, body])    "\\lambda " ++ x ++ ". " ++ body),
+  ("snil",  fn([])           "\\emptyset"),
+  ("scons", fn([n, v, rest]) rest ++ "[" ++ n ++ " \\mapsto " ++ v ++ "]")
+]
 
-pub fun store/show-md(s: store): div string
-  match s
-    SNil -> "\\emptyset"
-    SCons(n, v, rest) -> rest.show-md ++ "[" ++ n.show-md ++ " \\mapsto " ++ v.show-md ++ "]"
+val cfa-term-latex : term-renderer = make-term-renderer(cfa-latex-entries, ?var-render=latex/var-render)
+val cfa-term-md : term-renderer = make-term-renderer(cfa-md-entries, ?var-render=md/var-render)
 
-pub fun store/show-latex-j(s: store): div string
-  match s
-    SNil -> "\\emptyset"
-    SCons(n, v, rest) -> rest.show-latex-j ++ "[" ++ n.show-latex-j ++ " \\mapsto " ++ v.show-latex-j ++ "]"
-
-// Pattern formatters: delegate to inner type or show metavar name
-// ----------------------------------------------------------------------------
-// Term-level renderers (interpret term structure back to readable form)
-// ----------------------------------------------------------------------------
-
-fun term/show-md(t: term): div string
-  match t
-    TAtom(n) -> n
-    TVar(nm, id) -> if id == 0 then nm else nm ++ id.show
-    TNode("var", [n]) -> term/show-md(n)
-    TNode("app", [e1, e2]) -> term/show-md(e1) ++ " " ++ term/show-md(e2)
-    TNode("lam", [x, body]) -> "\\lambda " ++ term/show-md(x) ++ ". " ++ term/show-md(body)
-    TNode("snil", []) -> "\\emptyset"
-    TNode("scons", [n, v, rest]) -> term/show-md(rest) ++ "[" ++ term/show-md(n) ++ " \\mapsto " ++ term/show-md(v) ++ "]"
-    _ -> t.show
-
-fun term/show-latex-j(t: term): div string
-  match t
-    TAtom(n) -> n
-    TVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    TNode("var", [n]) -> term/show-latex-j(n)
-    TNode("app", [e1, e2]) -> term/show-latex-j(e1) ++ "\\; " ++ term/show-latex-j(e2)
-    TNode("lam", [x, body]) -> "\\lambda " ++ term/show-latex-j(x) ++ ".\\; " ++ term/show-latex-j(body)
-    TNode("snil", []) -> "\\emptyset"
-    TNode("scons", [n, v, rest]) -> term/show-latex-j(rest) ++ "[" ++ term/show-latex-j(n) ++ " \\mapsto " ++ term/show-latex-j(v) ++ "]"
-    _ -> t.show
-
-// Pattern renderers: delegate to term-level renderers
-pub fun pexpr/show-md(p: pat<expr>): div string
-  match p
-    PatVar(nm, _id) -> nm
-    PatTerm(t) -> term/show-md(t)
-
-pub fun pexpr/show-latex-j(p: pat<expr>): div string
-  match p
-    PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    PatTerm(t) -> term/show-latex-j(t)
-
-pub fun pstore/show-md(p: pat<store>): div string
-  match p
-    PatVar(nm, _id) -> nm
-    PatTerm(t) -> show-md(t)
-
-pub fun pstore/show-latex-j(p: pat<store>): div string
-  match p
-    PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    PatTerm(t) -> term/show-latex-j(t)
+// Pattern renderers: generic framework + derived term renderers
+pub fun pexpr/show-latex-j(p: pat<expr>): <div,exn> string
+  pat/show-latex-j(p, ?term-show-latex-j=cfa-term-latex)
+pub fun pexpr/show-md(p: pat<expr>): <div,exn> string
+  pat/show-md(p, ?term-show-md=cfa-term-md)
+pub fun pstore/show-latex-j(p: pat<store>): <div,exn> string
+  pat/show-latex-j(p, ?term-show-latex-j=cfa-term-latex)
+pub fun pstore/show-md(p: pat<store>): <div,exn> string
+  pat/show-md(p, ?term-show-md=cfa-term-md)
 
 // ----------------------------------------------------------------------------
 // Relation markers

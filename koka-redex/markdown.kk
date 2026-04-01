@@ -4,6 +4,7 @@ import type-level/structs
 import type-level/list
 import type-level/nil
 import koka-redex/syntax
+import koka-redex/pattern
 
 // Helper to wrap text in latex math block for markdown
 pub fun math(s: string): string
@@ -53,7 +54,7 @@ pub fun tcons/show-md(l: t-cons<a, b>, ?show-markdown: t-cons<a, b> -> e list<st
 
 // ---- Rule rendering ----
 
-pub fun rule/show-markdown(Rule(name, premises, conclusion): rule<n, p, c>, ?show-md-premises: p -> e list<string>, ?conclusion/show-md: c -> e string, ?name/show-md: n -> e string): e string
+pub fun rule/show-markdown(Rule(name, premises, conclusion): koka-redex/syntax/rule<n, p, c>, ?show-md-premises: p -> e list<string>, ?conclusion/show-md: c -> e string, ?name/show-md: n -> e string): e string
   val premises-md = premises.show-md-premises.map(fn(s) "- " ++ math(s)).join("\n")
   val conc-md = "- " ++ math(conclusion.show-md)
 
@@ -63,7 +64,7 @@ pub fun rule/show-markdown(Rule(name, premises, conclusion): rule<n, p, c>, ?sho
 
 pub value struct mdstr( s: string )
 
-pub fun map-field(r: rule<n, p, c>, ?show-markdown: rule<n, p, c> -> e string): e mdstr
+pub fun map-field(r: koka-redex/syntax/rule<n, p, c>, ?show-markdown: koka-redex/syntax/rule<n, p, c> -> e string): e mdstr
   Mdstr(r.show-markdown)
 
 // External entries are skipped in Markdown rendering
@@ -72,3 +73,12 @@ pub fun ext/map-field(_e: external-entry): e mdstr
 
 pub fun relation-to-md(RelationDef(rules): relation-def<r>, name: string, ?to-list: r -> e list<mdstr>): e string
   "# Relation: " ++ name ++ "\n\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n")
+
+// ============================================================================
+// Generic pattern renderer for Markdown
+// ============================================================================
+
+pub fun pat/show-md(p: pat<a>, ?term-show-md: (term) -> <div,exn> string): <div,exn> string
+  match p
+    PatVar(nm, _id) -> nm
+    PatTerm(t) -> t.term-show-md

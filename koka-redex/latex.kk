@@ -4,6 +4,7 @@ import type-level/structs
 import type-level/list
 import type-level/nil
 import koka-redex/syntax
+import koka-redex/pattern
 import std/core/undiv
 
 // -----------------------------------------------------------------------------
@@ -50,7 +51,7 @@ pub fun default/show-latex(a: a, ?show-latex-j: a -> e string): e list<string>
 
 // ---- Rule rendering ----
 
-pub fun rule/show-latex(Rule(name, premises, conclusion): rule<n, p, c>, ?show-latex-premises: p -> e list<string>, ?conclusion/show-latex-j: c -> e string, ?name/show-latex-j: n -> e string): e string
+pub fun rule/show-latex(Rule(name, premises, conclusion): koka-redex/syntax/rule<n, p, c>, ?show-latex-premises: p -> e list<string>, ?conclusion/show-latex-j: c -> e string, ?name/show-latex-j: n -> e string): e string
   val premises-str = premises.show-latex-premises.join(" \\\\\\\\ ")
   val conc-str = conclusion.show-latex-j
 
@@ -58,7 +59,7 @@ pub fun rule/show-latex(Rule(name, premises, conclusion): rule<n, p, c>, ?show-l
 
 pub value struct latexstr( s: string )
 
-pub fun map-field(r: rule<n, p, c>, ?show-latex: rule<n, p, c> -> e string): e latexstr
+pub fun map-field(r: koka-redex/syntax/rule<n, p, c>, ?show-latex: koka-redex/syntax/rule<n, p, c> -> e string): e latexstr
   Latexstr(r.show-latex)
 
 // External entries are skipped in LaTeX rendering
@@ -67,3 +68,16 @@ pub fun ext/map-field(_e: external-entry): e latexstr
 
 pub fun relation-to-latex(RelationDef(rules): relation-def<r>, ?to-list: r -> e list<latexstr>): e string
   "\\begin{mathpar}\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n\n") ++ "\n\\end{mathpar}"
+
+// ============================================================================
+// Generic pattern renderer for LaTeX
+//
+// Works for any pat<a> given a term renderer.
+// PatVar → metavar name with LaTeX subscript
+// PatTerm → delegate to term renderer
+// ============================================================================
+
+pub fun pat/show-latex-j(p: pat<a>, ?term-show-latex-j: (term) -> <div,exn> string): <div,exn> string
+  match p
+    PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
+    PatTerm(t) -> t.term-show-latex-j

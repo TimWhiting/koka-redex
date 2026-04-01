@@ -66,5 +66,9 @@ pub value struct mdstr( s: string )
 pub fun map-field(r: rule<n, p, c>, ?show-markdown: rule<n, p, c> -> e string): e mdstr
   Mdstr(r.show-markdown)
 
+// External entries are skipped in Markdown rendering
+pub fun ext/map-field(_e: external-entry): e mdstr
+  Mdstr("")
+
 pub fun relation-to-md(RelationDef(rules): relation-def<r>, name: string, ?to-list: r -> e list<mdstr>): e string
-  "# Relation: " ++ name ++ "\n\n" ++ rules.to-list.map(s).join("\n")
+  "# Relation: " ++ name ++ "\n\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n")

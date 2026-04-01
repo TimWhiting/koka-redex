@@ -28,27 +28,27 @@ fun all-rules(): list<rule>
       [edge(v("x"), v("y")), reach(v("y"), v("z"))],
       reach(v("x"), v("z"))) ]
 
-fun full-key(f: fact): div string
+fun memo-key(f: fact): div string
   f.show
 
-fun show-results(name: string, table: list<(string, list<fact>)>)
+fun show-results(name: string, goal: fact, table: list<(string, list<fact>)>)
   println("--- " ++ name ++ " ---")
-  val reach-entries = table.flatmap fn(kv)
-    match kv
-      (key, results) ->
-        if key.starts-with("reach(").is-just then
-          results.map(fn(f) f.show)
-        else []
-  reach-entries.foreach(println)
+  val goal-key = memo-key(normalize-fact(goal))
+  val results = table.flatmap fn(kv)
+    if kv.fst == goal-key then kv.snd else []
+  results.map(fn(f) f.show).foreach(println)
 
 pub fun main()
   val rules = all-rules()
 
-  show-results("reach(1, 4)",
-    forward-search(reach(n(1), n(4)), rules, ?memo-key=full-key))
+  val g1 = reach(n(1), n(4))
+  show-results("reach(1, 4)", g1,
+    forward-search(g1, rules))
 
-  show-results("reach(1, ?)",
-    forward-search(reach(n(1), v("target")), rules, ?memo-key=full-key))
+  val g2 = reach(n(1), v("target"))
+  show-results("reach(1, ?)", g2,
+    forward-search(g2, rules))
 
-  show-results("reach(?, ?)",
-    forward-search(reach(v("src"), v("dst")), rules, ?memo-key=full-key))
+  val g3 = reach(v("src"), v("dst"))
+  show-results("reach(?, ?)", g3,
+    forward-search(g3, rules))

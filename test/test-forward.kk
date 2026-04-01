@@ -112,10 +112,32 @@ pub fun main()
 
     test("open query reach(?,?)")
       val table = forward-search(reach(v("s"), v("d")), reach-rules())
-      val reach-results = get-results(table, "reach(")
-      // 6 reachable pairs from 3 edges
-      // Some may be duplicated due to freshening — check at least 6
-      expect-that(fn(n) n >= 6) { reach-results.length }
+      val goal-key = full-key(normalize-fact(reach(v("s"), v("d"))))
+      val reach-results = table.flatmap fn(kv)
+        if kv.fst == goal-key then kv.snd else []
+      // 6 reachable pairs from 3 edges, no duplicates
+      expect(6) { reach-results.length }
+
+  group("normalize-fact")
+    test("shared variables preserve sharing")
+      // reach(X, X) should differ from reach(X, Y)
+      val shared = normalize-fact(reach(v("a"), v("a")))
+      val distinct = normalize-fact(reach(v("a"), TVar("b", 0)))
+      expect(True) { shared.show != distinct.show }
+      // reach(X, X) -> reach(_0, _0)
+      expect("reach(__0,__0)") { shared.show }
+      // reach(X, Y) -> reach(_0, _1)
+      expect("reach(__0,__1)") { distinct.show }
+
+    test("different fresh IDs normalize to same key")
+      // reach(3, z_100) and reach(3, z_200) should normalize identically
+      val a = normalize-fact(Fact("reach", [n(3), TVar("z", 100)]))
+      val b = normalize-fact(Fact("reach", [n(3), TVar("z", 200)]))
+      expect(True) { a.show == b.show }
+
+    test("ground facts unchanged")
+      val f = reach(n(1), n(4))
+      expect(f.show) { normalize-fact(f).show }
 
   group("0CFA Store-Passing")
     test("identity application")

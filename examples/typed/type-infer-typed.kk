@@ -51,6 +51,31 @@ pub fun tenv/to-term(e: tenv): term
     TEAny(p, i) -> TVar(p, i)
     TECons(n, t, rest) -> TNode("scons", [n.to-term, t.to-term, rest.to-term])
 
+pub fun expr/from-term(t: term): exn expr
+  match t
+    TVar(p, i) -> XAny(p, i)
+    TAtom(n) -> XAtom(n)
+    TNode("var", [n]) -> XVar(n.from-term)
+    TNode("app", [e1, e2]) -> XApp(e1.from-term, e2.from-term)
+    TNode("lam", [x, body]) -> XLam(x.from-term, body.from-term)
+    TNode("int", [TInt(n)]) -> XInt(n)
+    TNode("int", [TVar(p, i)]) -> XIntAny(p, i)
+    _ -> throw("expr/from-term: invalid term " ++ t.show)
+
+pub fun ty/from-term(t: term): exn ty
+  match t
+    TVar(p, i) -> TAny(p, i)
+    TNode("arrow", [t1, t2]) -> TArrow(t1.from-term, t2.from-term)
+    TAtom(n) -> TBase(n)
+    _ -> throw("ty/from-term: invalid term " ++ t.show)
+
+pub fun tenv/from-term(t: term): exn tenv
+  match t
+    TVar(p, i) -> TEAny(p, i)
+    TNode("snil", []) -> TENil
+    TNode("scons", [n, typ, rest]) -> TECons(n.from-term, typ.from-term, rest.from-term)
+    _ -> throw("tenv/from-term: invalid term " ++ t.show)
+
 // ----------------------------------------------------------------------------
 // Relation markers
 // ----------------------------------------------------------------------------
@@ -87,6 +112,17 @@ fun ev(nm: string): tenv
 // Rules
 // ----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
+// External solver helpers
+// ----------------------------------------------------------------------------
+
+fun store-lookup-all(s: tenv, nm: expr): div list<ty>
+  match s
+    TECons(n, t, rest) ->
+      val found = if n.to-term.show == nm.to-term.show then [t] else []
+      found ++ store-lookup-all(rest, nm)
+    _ -> []
+
 fun type-relation()
   val x = xv("x")
   with relation-def
@@ -102,39 +138,17 @@ fun type-relation()
     xv("e") \ TECons(x, tv("a"), ev("env")) |- RInfer \ tv("t")
     --- "T-Lam" -->
     XLam(x, xv("e")) \ ev("env") |- RInfer \ TArrow(tv("a"), tv("t")))
+  with cons/external-rule(ev("env") \ x |- RLookup \ tv("t")) fn(TCons(env-val: tenv, x-val: expr))
+    store-lookup-all(env-val, x-val)
+  with external-term-rule(tv("t1") \ tv("t2") |- RUnify \ TNil) fn([t1', t2'])
+    unify(t1', t2')
+    [Fact("unify-types", [resolve(t1'), resolve(t2')])]
   single/rule(
     xv("e1") \ ev("env") |- RInfer \ tv("t1") \\
     xv("e2") \ ev("env") |- RInfer \ tv("t2") \\
-    tv("t1") |- RUnify \ TArrow(tv("t2"), tv("a"))
+    tv("t1") \ tv("t2") |- RUnify \ TNil
     --- "T-App" -->
     XApp(xv("e1"), xv("e2")) \ ev("env") |- RInfer \ tv("a"))
-
-// ----------------------------------------------------------------------------
-// External solvers + memo-key
-// ----------------------------------------------------------------------------
-
-fun store-lookup-all(s: term, nm: term): div list<term>
-  match s
-    TNode("scons", [n, vl, rest]) ->
-      val found = if term/eq(n, nm) then [vl] else []
-      found ++ store-lookup-all(rest, nm)
-    _ -> []
-
-val lookup-ext = make-external("lookup") fn(args)
-  match args
-    Cons(store, Cons(nm, _)) ->
-      store-lookup-all(store, nm).map(fn(vl) [store, nm, vl])
-    _ -> []
-
-val unify-ext = ("unify-types", fn(goal: fact): <logic,div,exn> maybe<list<fact>>
-  match goal
-    Fact("unify-types", [t1, t2]) ->
-      unify(t1, t2)
-      Just([Fact("unify-types", [resolve(t1), resolve(t2)])])
-    _ -> Nothing
-)
-
-val ti/external = compose-externals([lookup-ext, unify-ext])
 
 // ----------------------------------------------------------------------------
 // Run
@@ -150,7 +164,7 @@ fun run-infer(nm: string, program: expr)
   println("\n\n" ++ nm ++ " : ")
   val goal = program \ TENil |- RInfer \ tv("result")
   val rel = type-relation()
-  val table = search(goal, rel)
+  val table = forward-search(goal, rel)
   // Use derived keys for result lookup too
   val mk = keys-to-memo-key(rel.derive-keys)
   val goal-fact = chain/to-fact(goal)

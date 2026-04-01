@@ -45,6 +45,39 @@ pub fun default/memo-key(f: fact): div string
   f.show
 
 // ---------------------------------------------------------------------------
+// Normalize unbound variables for memo-key canonicalization
+// ---------------------------------------------------------------------------
+
+// Canonicalize unbound variables so that logically equivalent queries
+// (differing only in fresh variable IDs) map to the same memo-key.
+// Variables are renamed to _0, _1, ... in order of first occurrence,
+// preserving sharing: reach(X, X) -> reach(_0, _0) vs reach(X, Y) -> reach(_0, _1).
+fun normalize-terms(ts: list<term>, counter: int, mapping: list<(string, int, int)>): div (list<term>, int, list<(string, int, int)>)
+  match ts
+    Nil -> (Nil, counter, mapping)
+    Cons(t, rest) ->
+      val (t', counter', mapping') = normalize-term(t, counter, mapping)
+      val (rest', counter'', mapping'') = normalize-terms(rest, counter', mapping')
+      (Cons(t', rest'), counter'', mapping'')
+
+fun normalize-term(t: term, counter: int, mapping: list<(string, int, int)>): div (term, int, list<(string, int, int)>)
+  match t
+    TVar(nm, id) ->
+      match mapping.find(fn(e) e.fst == nm && e.snd == id)
+        Just((_, _, canonical)) -> (TVar("_", canonical), counter, mapping)
+        Nothing -> (TVar("_", counter), counter + 1, Cons((nm, id, counter), mapping))
+    TNode(n, args) ->
+      val (args', counter', mapping') = normalize-terms(args, counter, mapping)
+      (TNode(n, args'), counter', mapping')
+    _ -> (t, counter, mapping)
+
+pub fun normalize-fact(f: fact): div fact
+  match f
+    Fact(p, args) ->
+      val (args', _, _) = normalize-terms(args, 0, [])
+      Fact(p, args')
+
+// ---------------------------------------------------------------------------
 // Core engine
 // ---------------------------------------------------------------------------
 
@@ -54,7 +87,7 @@ pub fun forward-eval(
   ?external: external-solver,
   ?memo-key: (fact) -> div string
 ): <cache<string, search-result>, logic, div, exn> search-result
-  val key = memo-key(goal)
+  val key = memo-key(normalize-fact(resolve-fact(goal)))
   with each <- memo(key)
   // Each rule is a branch. Unification failure calls none() via on-fail,
   // which kills just this branch (scoped by do-each).

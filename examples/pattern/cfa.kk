@@ -245,10 +245,10 @@ pub fun main()
   val rel = cfa-relation()
 
   // LaTeX rendering
-  // println("--- LaTeX ---")
-  // println(rel.relation-to-latex)
-  // println("\n--- Markdown ---")
-  // println(rel.relation-to-md("eval/lookup"))
+  println("--- LaTeX ---")
+  println(rel.relation-to-latex)
+  println("\n--- Markdown ---")
+  println(rel.relation-to-md("eval/lookup"))
 
   // Example 1: (λx.x)(λz.z)
   println("\n--- (λx.x)(λz.z) ---")

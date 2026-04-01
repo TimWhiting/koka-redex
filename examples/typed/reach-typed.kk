@@ -10,28 +10,34 @@ fun v(nm: string): term
 fun n(i: int): term
   TInt(i)
 
-fun edge(a: term, b: term): fact
-  Fact("edge", [a, b])
+// Relation markers
+pub type r-edge
+  REdge
+pub fun r-edge/judgment-name(_: r-edge): string
+  "edge"
 
-fun reach(a: term, b: term): fact
-  Fact("reach", [a, b])
+pub type r-reach
+  RReach
+pub fun r-reach/judgment-name(_: r-reach): string
+  "reach"
 
 fun reach-relation()
   with relation-def
-  with rule(axiom --- "edge-1-2" --> edge(n(1), n(2)))
-  with rule(axiom --- "edge-2-3" --> edge(n(2), n(3)))
-  with rule(axiom --- "edge-3-4" --> edge(n(3), n(4)))
+  with rule(axiom --- "edge-1-2" --> n(1) |- REdge \ n(2))
+  with rule(axiom --- "edge-2-3" --> n(2) |- REdge \ n(3))
+  with rule(axiom --- "edge-3-4" --> n(3) |- REdge \ n(4))
   with rule(
-    edge(v("x"), v("y"))
+    v("x") |- REdge \ v("y")
     --- "reach-edge" -->
-    reach(v("x"), v("y")))
+    v("x") |- RReach \ v("y"))
   single/rule(
-    edge(v("x"), v("y")) \\ reach(v("y"), v("z"))
+    v("x") |- REdge \ v("y") \\
+    v("y") |- RReach \ v("z")
     --- "reach-step" -->
-    reach(v("x"), v("z")))
+    v("x") |- RReach \ v("z"))
 
 pub fun main()
   println("--- reach(1, ?) ---")
-  val table = search(reach(n(1), v("target")), reach-relation())
-  val results = table.flatmap(fn(kv) if kv.fst.starts-with("reach(1,").is-just then kv.snd else [])
+  val table = forward-search(n(1) |- RReach \ v("target"), reach-relation())
+  val results = table.flatmap(fn(kv) if kv.fst == "reach(1)" then kv.snd else [])
   results.map(fn(f) f.show).foreach(println)

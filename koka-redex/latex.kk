@@ -61,5 +61,9 @@ pub value struct latexstr( s: string )
 pub fun map-field(r: rule<n, p, c>, ?show-latex: rule<n, p, c> -> e string): e latexstr
   Latexstr(r.show-latex)
 
+// External entries are skipped in LaTeX rendering
+pub fun ext/map-field(_e: external-entry): e latexstr
+  Latexstr("")
+
 pub fun relation-to-latex(RelationDef(rules): relation-def<r>, ?to-list: r -> e list<latexstr>): e string
-  "\\begin{mathpar}\n" ++ rules.to-list.map(s).join("\n\n") ++ "\n\\end{mathpar}"
+  "\\begin{mathpar}\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n\n") ++ "\n\\end{mathpar}"

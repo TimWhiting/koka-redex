@@ -46,6 +46,28 @@ pub fun tenv/to-term(e: tenv): term
     TENil -> TNode("snil", [])
     TECons(n, t, rest) -> TNode("scons", [n.to-term, t.to-term, rest.to-term])
 
+// from-term converters (needed by external-rule's ?from-inputs)
+pub fun expr/from-term(t: term): exn expr
+  match t
+    TAtom(n) -> XAtom(n)
+    TNode("var", [n]) -> XVar(n.from-term)
+    TNode("app", [e1, e2]) -> XApp(e1.from-term, e2.from-term)
+    TNode("lam", [x, body]) -> XLam(x.from-term, body.from-term)
+    TNode("int", [TInt(n)]) -> XInt(n)
+    _ -> throw("expr/from-term: invalid term " ++ t.show)
+
+pub fun ty/from-term(t: term): exn ty
+  match t
+    TNode("arrow", [t1, t2]) -> TArrow(t1.from-term, t2.from-term)
+    TAtom(n) -> TBase(n)
+    _ -> throw("ty/from-term: invalid term " ++ t.show)
+
+pub fun tenv/from-term(t: term): exn tenv
+  match t
+    TNode("snil", []) -> TENil
+    TNode("scons", [n, typ, rest]) -> TECons(n.from-term, typ.from-term, rest.from-term)
+    _ -> throw("tenv/from-term: invalid term " ++ t.show)
+
 // ----------------------------------------------------------------------------
 // Pattern constructors
 // ----------------------------------------------------------------------------

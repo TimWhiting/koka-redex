@@ -16,7 +16,7 @@ pub type pat<a>
   PatVar(nm: string, id: int)
   PatTerm(t: term)
 
-pub fun term/pat(t: a, ?to-term: a -> term): pat<term>
+pub fun term/pat(t: a, ?to-term: a -> div term): div pat<term>
   PatTerm(to-term(t))
 
 pub fun pattern/to-term(p: pat<a>): term

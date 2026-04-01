@@ -22,9 +22,9 @@ import std/core/undiv
 // from-inputs: convert list<term> to a tcons chain of domain values
 pub fun tcons/from-inputs(
   args: list<term>,
-  ?from-term: term -> exn a,
-  ?from-inputs: list<term> -> exn b
-): exn t-cons<a, b>
+  ?from-term: term -> <exn,div> a,
+  ?from-inputs: list<term> -> <exn,div> b
+): <exn,div> t-cons<a, b>
   match args
     Cons(t, rest) -> TCons(t.from-term, rest.from-inputs)
     _ -> throw("from-inputs: not enough args for tcons")
@@ -32,8 +32,8 @@ pub fun tcons/from-inputs(
 // Base: single remaining input (bare value)
 pub fun end/from-inputs(
   args: list<term>,
-  ?from-term: term -> exn a
-): exn a
+  ?from-term: term -> <exn,div> a
+): <exn,div> a
   match args
     Cons(t, _) -> t.from-term
     _ -> throw("from-inputs: not enough args for base")
@@ -41,30 +41,17 @@ pub fun end/from-inputs(
 // to-outputs: convert domain output value(s) to list<term>
 pub fun tcons/to-outputs(
   TCons(h, t): t-cons<a, b>,
-  ?to-term: a -> term,
-  ?to-outputs: b -> list<term>
-): list<term>
+  ?to-term: a -> div term,
+  ?to-outputs: b -> div list<term>
+): div list<term>
   Cons(h.to-term, t.to-outputs)
 
 // Base: single output value
 pub fun end/to-outputs(
   v: a,
-  ?to-term: a -> term
-): list<term>
+  ?to-term: a -> div term
+): div list<term>
   [v.to-term]
-
-// ----------------------------------------------------------------------------
-// Built-in to-term converters
-// ----------------------------------------------------------------------------
-
-pub fun term/to-term(t: term): term
-  t
-
-pub fun string/to-term(s: string): term
-  TAtom(s)
-
-pub fun int/to-term(i: int): term
-  TInt(i)
 
 // ----------------------------------------------------------------------------
 // Output-arg collection (after the relation marker)
@@ -73,17 +60,17 @@ pub fun int/to-term(i: int): term
 // Recursive: head is a value, tail is more cons
 pub fun tcons/to-output-args(
   TCons(h, t): t-cons<a, b>,
-  ?to-term: a -> term,
-  ?to-output-args: b -> list<term>
-): list<term>
+  ?to-term: a -> div term,
+  ?to-output-args: b -> div list<term>
+): div list<term>
   Cons(h.to-term, t.to-output-args)
 
 // Base: two-element cons (last pair of outputs)
 pub fun end/to-output-args(
   TCons(h, t): t-cons<a, b>,
-  ?to-term: a -> term,
-  ?tail/to-term: b -> term
-): list<term>
+  ?to-term: a -> div term,
+  ?tail/to-term: b -> div term
+): div list<term>
   [h.to-term, t.tail/to-term]
 
 // ----------------------------------------------------------------------------
@@ -93,7 +80,7 @@ pub fun end/to-output-args(
 // Pre-marker recursive: head is a value, tail has more (including marker)
 pub fun tcons/to-fact-args(
   TCons(h, t): t-cons<a, b>,
-  ?to-term: a -> term,
+  ?to-term: a -> div term,
   ?to-fact-args: b -> div (list<term>, string, list<term>),
   ?before-judgment: b -> ()
 ): div (list<term>, string, list<term>)
@@ -103,14 +90,14 @@ pub fun tcons/to-fact-args(
 // Pre-marker recursive: head is a value, tail has more (including marker)
 pub fun default/after/to-fact-args(
   TCons(h, t): t-cons<a, b>,
-  ?to-term: a -> term,
+  ?to-term: a -> div term,
   ?to-fact-args: b -> div (list<term>, string, list<term>)): div (list<term>, string, list<term>)
   val (inputs, judgment, outputs) = t.to-fact-args
   (inputs, judgment, Cons(h.to-term, outputs))
 
 pub fun tnil/to-fact-args(tn: t-nil) : (list<term>, string, list<term>)
   (Nil, "", Nil)
-pub fun tnil/to-output-args(tn: t-nil) : list<term>
+pub fun tnil/to-output-args(tn: t-nil) : div list<term>
   Nil
 
 pub fun tcons/before-judgment(b: t-cons<a,b>, ?before-judgment: b -> ()): ()
@@ -122,7 +109,7 @@ pub fun judgement/before-judgment(j: t-cons<a,b>, ?judgment-name: a -> string): 
 pub fun marker/to-fact-args(
   TCons(h, t): t-cons<a, b>,
   ?judgment-name: a -> string,
-  ?to-output-args: b -> list<term>
+  ?to-output-args: b -> div list<term>
 ): div (list<term>, string, list<term>)
   ([], h.judgment-name, t.to-output-args)
 
@@ -130,7 +117,7 @@ pub fun marker/to-fact-args(
 pub fun marker-end/to-fact-args(
   TCons(h, t): t-cons<a, b>,
   ?judgment-name: a -> string,
-  ?to-term: b -> term
+  ?to-term: b -> div term
 ): div (list<term>, string, list<term>)
   ([], h.judgment-name, [t.to-term])
 

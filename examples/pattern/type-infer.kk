@@ -6,6 +6,7 @@ module examples/pattern/type-infer
 //   Backward: unification as external relation
 
 import koka-redex/forward-bridge
+import koka-redex/derive
 import koka-redex/pattern
 
 // ----------------------------------------------------------------------------
@@ -27,46 +28,85 @@ pub type tenv
   TENil
   TECons(nm: expr, typ: ty, rest: tenv)
 
-// to-term converters
-pub fun expr/to-term(e: expr): term
-  match e
-    XAtom(n) -> TAtom(n)
-    XVar(n) -> TNode("var", [n.to-term])
-    XApp(e1, e2) -> TNode("app", [e1.to-term, e2.to-term])
-    XLam(x, body) -> TNode("lam", [x.to-term, body.to-term])
-    XInt(n) -> TNode("int", [TInt(n)])
+// ----------------------------------------------------------------------------
+// Con-info descriptors
+// ----------------------------------------------------------------------------
 
-pub fun ty/to-term(t: ty): term
-  match t
-    TArrow(t1, t2) -> TNode("arrow", [t1.to-term, t2.to-term])
-    TBase(n) -> TAtom(n)
+pub type atom-expr
+pub fun atom-expr/name/show(): name<atom-expr> { Name("") }
+pub type var-expr
+pub fun var-expr/name/show(): name<var-expr> { Name("var") }
+pub type app-expr
+pub fun app-expr/name/show(): name<app-expr> { Name("app") }
+pub type lam-expr
+pub fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+pub type int-expr
+pub fun int-expr/name/show(): name<int-expr> { Name("int") }
 
-pub fun tenv/to-term(e: tenv): term
-  match e
-    TENil -> TNode("snil", [])
-    TECons(n, t, rest) -> TNode("scons", [n.to-term, t.to-term, rest.to-term])
+pub val atom-expr/con-info : con-info<atom-expr, string, expr> = Con-info(
+  fn(e) match e { XAtom(n) -> Just(n); _ -> Nothing }, XAtom)
+pub val var-expr/con-info : con-info<var-expr, t-cons<expr, t-nil>, expr> = Con-info(
+  fn(e) match e { XVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) XVar(n))
+pub val app-expr/con-info : con-info<app-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+  fn(e) match e { XApp(a, b) -> Just(a +: b +: TNil); _ -> Nothing }, fn(TCons(a, TCons(b, _))) XApp(a, b))
+pub val lam-expr/con-info : con-info<lam-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+  fn(e) match e { XLam(x, body) -> Just(x +: body +: TNil); _ -> Nothing }, fn(TCons(x, TCons(body, _))) XLam(x, body))
+pub val int-expr/con-info : con-info<int-expr, t-cons<int, t-nil>, expr> = Con-info(
+  fn(e) match e { XInt(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) XInt(n))
+val expr-info =
+  mk-field(atom-expr/con-info) *: mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: mk-field(int-expr/con-info) *: TNil
 
-// from-term converters (needed by external-rule's ?from-inputs)
-pub fun expr/from-term(t: term): exn expr
-  match t
-    TAtom(n) -> XAtom(n)
-    TNode("var", [n]) -> XVar(n.from-term)
-    TNode("app", [e1, e2]) -> XApp(e1.from-term, e2.from-term)
-    TNode("lam", [x, body]) -> XLam(x.from-term, body.from-term)
-    TNode("int", [TInt(n)]) -> XInt(n)
-    _ -> throw("expr/from-term: invalid term " ++ t.show)
+pub type arrow-ty
+pub fun arrow-ty/name/show(): name<arrow-ty> { Name("arrow") }
+pub type base-ty
+pub fun base-ty/name/show(): name<base-ty> { Name("") }
 
-pub fun ty/from-term(t: term): exn ty
-  match t
-    TNode("arrow", [t1, t2]) -> TArrow(t1.from-term, t2.from-term)
-    TAtom(n) -> TBase(n)
-    _ -> throw("ty/from-term: invalid term " ++ t.show)
+pub val arrow-ty/con-info : con-info<arrow-ty, t-cons<ty, t-cons<ty, t-nil>>, ty> = Con-info(
+  fn(t) match t { TArrow(t1, t2) -> Just(t1 +: t2 +: TNil); _ -> Nothing }, fn(TCons(t1, TCons(t2, _))) TArrow(t1, t2))
+pub val base-ty/con-info : con-info<base-ty, string, ty> = Con-info(
+  fn(t) match t { TBase(n) -> Just(n); _ -> Nothing }, TBase)
+val ty-info =
+  mk-field(arrow-ty/con-info) *: mk-field(base-ty/con-info) *: TNil
 
-pub fun tenv/from-term(t: term): exn tenv
-  match t
-    TNode("snil", []) -> TENil
-    TNode("scons", [n, typ, rest]) -> TECons(n.from-term, typ.from-term, rest.from-term)
-    _ -> throw("tenv/from-term: invalid term " ++ t.show)
+pub type tenil-tenv
+pub fun tenil-tenv/name/show(): name<tenil-tenv> { Name("snil") }
+pub type tecons-tenv
+pub fun tecons-tenv/name/show(): name<tecons-tenv> { Name("scons") }
+
+pub val tenil-tenv/con-info : con-info<tenil-tenv, t-nil, tenv> = Con-info(
+  fn(e) match e { TENil -> Just(TNil); _ -> Nothing }, fn(_) TENil)
+pub val tecons-tenv/con-info : con-info<tecons-tenv, t-cons<expr, t-cons<ty, t-cons<tenv, t-nil>>>, tenv> = Con-info(
+  fn(e) match e { TECons(n, t, rest) -> Just(n +: t +: rest +: TNil); _ -> Nothing }, fn(TCons(n, TCons(t, TCons(rest, _)))) TECons(n, t, rest))
+val tenv-info =
+  mk-field(tenil-tenv/con-info) *: mk-field(tecons-tenv/con-info) *: TNil
+
+// ----------------------------------------------------------------------------
+// Derived to-term / from-term
+// ----------------------------------------------------------------------------
+
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term
+  derive-to-term(e, expr-info)
+
+pub fun ty/to-term(t: ty): div term
+  val n/to-term = ty/to-term
+  derive-to-term(t, ty-info)
+
+pub fun tenv/to-term(e: tenv): div term
+  val n/to-term = tenv/to-term
+  derive-to-term(e, tenv-info)
+
+pub fun expr/from-term(t: term): <exn,div> expr
+  val n/from-term = expr/from-term
+  derive-from-term(t, expr-info)
+
+pub fun ty/from-term(t: term): <exn,div> ty
+  val n/from-term = ty/from-term
+  derive-from-term(t, ty-info)
+
+pub fun tenv/from-term(t: term): <exn,div> tenv
+  val n/from-term = tenv/from-term
+  derive-from-term(t, tenv-info)
 
 // ----------------------------------------------------------------------------
 // Pattern constructors

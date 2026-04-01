@@ -5,9 +5,11 @@ module examples/pattern/cfa
 // Metavariables come from `pat<a>` with fresh-pat.
 
 import koka-redex/forward-bridge
+import koka-redex/derive
 import koka-redex/pattern
 import koka-redex/latex
 import koka-redex/markdown
+import std/core/undiv
 
 // ----------------------------------------------------------------------------
 // Clean domain types — no metavariable constructors!
@@ -23,31 +25,66 @@ pub type store
   SNil
   SCons(nm: expr, vl: expr, rest: store)
 
-pub fun expr/to-term(e: expr): term
-  match e
-    EAtom(n) -> TAtom(n)
-    EVar(n) -> TNode("var", [n.to-term])
-    EApp(e1, e2) -> TNode("app", [e1.to-term, e2.to-term])
-    ELam(x, body) -> TNode("lam", [x.to-term, body.to-term])
+// ----------------------------------------------------------------------------
+// Con-info descriptors
+// ----------------------------------------------------------------------------
 
-pub fun store/to-term(s: store): term
-  match s
-    SNil -> TNode("snil", [])
-    SCons(n, v, rest) -> TNode("scons", [n.to-term, v.to-term, rest.to-term])
+pub type atom-expr
+pub fun atom-expr/name/show(): name<atom-expr>
+  Name("")
+pub type var-expr
+pub fun var-expr/name/show(): name<var-expr>
+  Name("var")
+pub type app-expr
+pub fun app-expr/name/show(): name<app-expr>
+  Name("app")
+pub type lam-expr
+pub fun lam-expr/name/show(): name<lam-expr>
+  Name("lam")
+pub type snil-store
+pub fun snil-store/name/show(): name<snil-store>
+  Name("snil")
+pub type scons-store
+pub fun scons-store/name/show(): name<scons-store>
+  Name("scons")
 
-pub fun expr/from-term(t: term): exn expr
-  match t
-    TAtom(n) -> EAtom(n)
-    TNode("var", [n]) -> EVar(expr/from-term(n))
-    TNode("app", [e1, e2]) -> EApp(expr/from-term(e1), expr/from-term(e2))
-    TNode("lam", [x, body]) -> ELam(expr/from-term(x), expr/from-term(body))
-    _ -> throw("expr/from-term: invalid term " ++ t.show)
+pub val atom-expr/con-info : con-info<atom-expr, string, expr> = Con-info(
+  fn(e) match e { EAtom(n) -> Just(n); _ -> Nothing }, EAtom)
+pub val var-expr/con-info : con-info<var-expr, t-cons<expr, t-nil>, expr> = Con-info(
+  fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
+pub val app-expr/con-info : con-info<app-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+  fn(e) match e { EApp(a, b) -> Just(a +: b +: TNil); _ -> Nothing }, fn(TCons(a, TCons(b, _))) EApp(a, b))
+pub val lam-expr/con-info : con-info<lam-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+  fn(e) match e { ELam(x, body) -> Just(x +: body +: TNil); _ -> Nothing }, fn(TCons(x, TCons(body, _))) ELam(x, body))
+val expr-info =
+  mk-field(atom-expr/con-info) *: mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: TNil
 
-pub fun store/from-term(t: term): exn store
-  match t
-    TNode("snil", []) -> SNil
-    TNode("scons", [n, v, rest]) -> SCons(expr/from-term(n), expr/from-term(v), store/from-term(rest))
-    _ -> throw("store/from-term: invalid term " ++ t.show)
+pub val snil-store/con-info : con-info<snil-store, t-nil, store> = Con-info(
+  fn(s) match s { SNil -> Just(TNil); _ -> Nothing }, fn(_) SNil)
+pub val scons-store/con-info : con-info<scons-store, t-cons<expr, t-cons<expr, t-cons<store, t-nil>>>, store> = Con-info(
+  fn(s) match s { SCons(n, v, rest) -> Just(n +: v +: rest +: TNil); _ -> Nothing }, fn(TCons(n, TCons(v, TCons(rest, _)))) SCons(n, v, rest))
+val store-info =
+  mk-field(snil-store/con-info) *: mk-field(scons-store/con-info) *: TNil
+
+// ----------------------------------------------------------------------------
+// Derived to-term / from-term (pretend-no-div for forward-bridge compat)
+// ----------------------------------------------------------------------------
+
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term
+  derive-to-term(e, expr-info)
+
+pub fun store/to-term(s: store): div term
+  val n/to-term = store/to-term
+  derive-to-term(s, store-info)
+
+pub fun expr/from-term(t: term): <exn,div> expr
+  val n/from-term = expr/from-term
+  derive-from-term(t, expr-info)
+
+pub fun store/from-term(t: term): <exn,div> store
+  val n/from-term = store/from-term
+  derive-from-term(t, store-info)
 
 // ----------------------------------------------------------------------------
 // LaTeX/Markdown formatters
@@ -82,20 +119,15 @@ pub fun store/show-latex-j(s: store): div string
 // Term-level renderers (interpret term structure back to readable form)
 // ----------------------------------------------------------------------------
 
-fun show-term-expr-md(t: term): div string
+fun term/show-md(t: term): div string
   match t
     TAtom(n) -> n
     TVar(nm, id) -> if id == 0 then nm else nm ++ id.show
-    TNode("var", [n]) -> show-term-expr-md(n)
-    TNode("app", [e1, e2]) -> show-term-expr-md(e1) ++ " " ++ show-term-expr-md(e2)
-    TNode("lam", [x, body]) -> "\\lambda " ++ show-term-expr-md(x) ++ ". " ++ show-term-expr-md(body)
-    _ -> t.show
-
-fun show-term-store-md(t: term): div string
-  match t
-    TVar(nm, id) -> if id == 0 then nm else nm ++ id.show
+    TNode("var", [n]) -> term/show-md(n)
+    TNode("app", [e1, e2]) -> term/show-md(e1) ++ " " ++ term/show-md(e2)
+    TNode("lam", [x, body]) -> "\\lambda " ++ term/show-md(x) ++ ". " ++ term/show-md(body)
     TNode("snil", []) -> "\\emptyset"
-    TNode("scons", [n, v, rest]) -> show-term-store-md(rest) ++ "[" ++ show-term-expr-md(n) ++ " \\mapsto " ++ show-term-expr-md(v) ++ "]"
+    TNode("scons", [n, v, rest]) -> term/show-md(rest) ++ "[" ++ term/show-md(n) ++ " \\mapsto " ++ term/show-md(v) ++ "]"
     _ -> t.show
 
 fun term/show-latex-j(t: term): div string
@@ -113,7 +145,7 @@ fun term/show-latex-j(t: term): div string
 pub fun pexpr/show-md(p: pat<expr>): div string
   match p
     PatVar(nm, _id) -> nm
-    PatTerm(t) -> show-term-expr-md(t)
+    PatTerm(t) -> term/show-md(t)
 
 pub fun pexpr/show-latex-j(p: pat<expr>): div string
   match p
@@ -123,7 +155,7 @@ pub fun pexpr/show-latex-j(p: pat<expr>): div string
 pub fun pstore/show-md(p: pat<store>): div string
   match p
     PatVar(nm, _id) -> nm
-    PatTerm(t) -> show-term-store-md(t)
+    PatTerm(t) -> show-md(t)
 
 pub fun pstore/show-latex-j(p: pat<store>): div string
   match p

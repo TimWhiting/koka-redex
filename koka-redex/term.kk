@@ -93,3 +93,26 @@ pub fun term/is-ground(t: term): div bool
 
 pub fun fact/is-ground(Fact(_, args): fact): div bool
   args.all(term/is-ground)
+
+// ---------------------------------------------------------------------------
+// Primitive to-term / from-term converters
+// ---------------------------------------------------------------------------
+
+pub fun term/to-term(t: term): term
+  t
+
+pub fun string/to-term(s: string): term
+  TAtom(s)
+
+pub fun int/to-term(i: int): term
+  TInt(i)
+
+pub fun string/from-term(t: term): exn string
+  match t
+    TAtom(s) -> s
+    _ -> throw("string/from-term: expected TAtom, got " ++ t.show)
+
+pub fun int/from-term(t: term): exn int
+  match t
+    TInt(i) -> i
+    _ -> throw("int/from-term: expected TInt, got " ++ t.show)

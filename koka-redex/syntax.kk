@@ -65,8 +65,8 @@ pub fun cons/external-rule(
   solver: (i) -> <logic,div,exn> list<o>,
   rest: () -> <div|e> t-struct<_, _, _>,
   ?to-fact-args: s -> div (list<term>, string, list<term>),
-  ?from-inputs: list<term> -> exn i,
-  ?to-outputs: o -> list<term>
+  ?from-inputs: list<term> -> <exn,div> i,
+  ?to-outputs: o -> div list<term>
 ): <div|e> t-struct<string, external-entry, t-struct<_, _, _>>
   val (input-terms, pred, _) = shape.to-fact-args
   val n = input-terms.length
@@ -109,8 +109,8 @@ pub fun single/external-rule(
   shape: s,
   solver: (i) -> <logic,div,exn> list<o>,
   ?to-fact-args: s -> div (list<term>, string, list<term>),
-  ?from-inputs: list<term> -> exn i,
-  ?to-outputs: o -> list<term>
+  ?from-inputs: list<term> -> <exn,div> i,
+  ?to-outputs: o -> div list<term>
 ): div t-struct<string, external-entry, t-nil>
   val (input-terms, pred, _) = shape.to-fact-args
   val n = input-terms.length

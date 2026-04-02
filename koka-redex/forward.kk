@@ -126,7 +126,26 @@ pub fun forward-eval(
   if all.is-empty then none()
   else each(all)
 
-// Execute premises left-to-right.
+// Count ground arguments in a resolved fact
+fun groundness(f: fact): div int
+  match f
+    Fact(_, args) -> args.foldl(0) fn(acc, a)
+      if a.is-ground then acc + 1 else acc
+
+// Sort premise pairs by groundness (most ground first) — simple insertion sort
+fun sort-by-groundness(xs: list<(fact, fact)>): div list<(fact, fact)>
+  match xs
+    Nil -> Nil
+    Cons(x, rest) -> insert-by-groundness(x, rest.sort-by-groundness)
+
+fun insert-by-groundness(x: (fact, fact), sorted: list<(fact, fact)>): div list<(fact, fact)>
+  match sorted
+    Nil -> [x]
+    Cons(y, rest) ->
+      if x.snd.groundness >= y.snd.groundness then Cons(x, sorted)
+      else Cons(y, insert-by-groundness(x, rest))
+
+// Sort premises by groundness (most ground first), re-sorting after each evaluation
 fun forward-premises(
   premises: list<fact>,
   rules: list<rule>,
@@ -135,17 +154,23 @@ fun forward-premises(
 ): <cache<string, search-result>, logic, div, exn> ()
   match premises
     Nil -> ()
-    Cons(p, ps) ->
-      val p-resolved = resolve-fact(p)
-      val result = match external(p-resolved)
-        Just(results) ->
-          if results.is-empty then none()
-          else do-each(results)
-        Nothing ->
-          forward-eval(p-resolved, rules, ?external=external, ?memo-key=memo-key)
-      // Unify result with premise to capture output bindings
-      unify-facts(p, result)
-      forward-premises(ps, rules, ?external=external, ?memo-key=memo-key)
+    _ ->
+      // Resolve all premises and pick the most grounded one
+      val resolved = premises.map(fn(p) (p, resolve-fact(p)))
+      val sorted = resolved.sort-by-groundness
+      match sorted
+        Cons((p, p-resolved), rest) ->
+          val result = match external(p-resolved)
+            Just(results) ->
+              if results.is-empty then none()
+              else do-each(results)
+            Nothing ->
+              forward-eval(p-resolved, rules, ?external=external, ?memo-key=memo-key)
+          // Unify result with premise to capture output bindings
+          unify-facts(p, result)
+          // Continue with remaining premises (will re-sort with new bindings)
+          forward-premises(rest.map(fst), rules, ?external=external, ?memo-key=memo-key)
+        Nil -> ()
 
 // ---------------------------------------------------------------------------
 // Entry point

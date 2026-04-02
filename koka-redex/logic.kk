@@ -135,6 +135,7 @@ fun unify-internal(t1: term, t2: term, s: list<(string, int, term)>): div maybe<
       else Just(Cons((n, i, t), s))
     (TAtom(a1), TAtom(a2)) -> if a1 == a2 then Just(s) else Nothing
     (TInt(i1), TInt(i2)) -> if i1 == i2 then Just(s) else Nothing
+    (TRef(a), TRef(b)) -> if a == b then Just(s) else Nothing  // O(1)
     (TNode(n1, as1), TNode(n2, as2)) ->
       if n1 == n2 then unify-args-internal(as1, as2, s) else Nothing
     _ -> Nothing
@@ -161,6 +162,7 @@ fun resolve-internal(t: term, s: list<(string, int, term)>): div term
     TVar(n, i) -> TVar(n, i)
     TAtom(a) -> TAtom(a)
     TInt(i) -> TInt(i)
+    TRef(id) -> TRef(id)  // opaque, don't walk into
     TNode(n, args) -> TNode(n, args.map(fn(a) resolve-internal(a, s)))
 
 fun occurs-internal(name: string, id: int, t: term, s: list<(string, int, term)>): div bool

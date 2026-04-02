@@ -29,6 +29,9 @@
 		},
 		{
 			"path": "../../koka/.worktrees/redex"
+		},
+		{
+			"path": "../../koka-community/compiler"
 		}
 	],
 	"settings": {

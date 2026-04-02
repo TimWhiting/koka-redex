@@ -179,3 +179,33 @@ pub fun main()
     test("store with lam roundtrip")
       val s = SCons(EAtom("f"), ELam(EAtom("x"), EVar(EAtom("x"))), SCons(EAtom("y"), EAtom("z"), SNil))
       expect(True) { roundtrip-store(s) }
+
+  group("ref-pool")
+    test("intern produces TRef")
+      val store/pool : ev<ref-pool<store>> = make-pool(fn(a: store, b: store) a.to-term.show == b.to-term.show)
+      val s = SCons(EAtom("x"), EAtom("y"), SNil)
+      val t = ref/to-term(s)
+      expect(True) { match t { TRef(_) -> True; _ -> False } }
+
+    test("intern dedup — same value same id")
+      val store/pool : ev<ref-pool<store>> = make-pool(fn(a: store, b: store) a.to-term.show == b.to-term.show)
+      val s1 = SCons(EAtom("x"), EAtom("y"), SNil)
+      val s2 = SCons(EAtom("x"), EAtom("y"), SNil)
+      val t1 = ref/to-term(s1)
+      val t2 = ref/to-term(s2)
+      expect(True) { term/eq(t1, t2) }
+
+    test("intern distinct — different values different ids")
+      val store/pool : ev<ref-pool<store>> = make-pool(fn(a: store, b: store) a.to-term.show == b.to-term.show)
+      val s1 = SCons(EAtom("x"), EAtom("y"), SNil)
+      val s2 = SCons(EAtom("z"), EAtom("w"), SNil)
+      val t1 = ref/to-term(s1)
+      val t2 = ref/to-term(s2)
+      expect(False) { term/eq(t1, t2) }
+
+    test("roundtrip through pool")
+      val store/pool : ev<ref-pool<store>> = make-pool(fn(a: store, b: store) a.store/to-term.show == b.store/to-term.show)
+      val s = SCons(EAtom("x"), ELam(EAtom("y"), EVar(EAtom("y"))), SNil)
+      val t = ref/to-term(s)
+      val s2 : store = ref/from-term(t)
+      expect(True) { s.store/to-term.show == s2.store/to-term.show }

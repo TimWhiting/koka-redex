@@ -1,0 +1,102 @@
+Title         : Rendering
+Heading Depth : 0
+[INCLUDE=style.mdk]
+
+# Rendering: LaTeX and Markdown from Rules
+
+Rules render to LaTeX and Markdown directly from their type-level structure.
+The user defines per-constructor format functions; the framework handles
+the rest.
+
+## Per-Constructor Rendering
+
+Each constructor gets a format function per backend, taking `name<tag>` and
+a t-cons chain of pre-rendered field strings:
+
+```koka
+// LaTeX: formal notation
+fun lam-expr/render-latex(_: name<lam-expr>,
+  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
+  "\\lambda " ++ x ++ ".\\; " ++ body  // renders as: λ x. body
+
+// Markdown: unicode
+fun lam-expr/render-md(_: name<lam-expr>,
+  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
+  "λ" ++ x ++ ". " ++ body
+```
+
+The t-cons field type must match the constructor's con-info field count —
+wrong arity is a compile error.
+
+Constructors without a custom render get the default: `Name(f1, f2, ...)`.
+
+## Nullary Constructor Names
+
+Nullary constructors render via `name-latex` / `name-md`:
+
+```koka
+fun snil-store/name-latex(_: name<snil-store>): string { "\\emptyset" }  // renders as: ∅
+fun snil-store/name-md(_: name<snil-store>): string { "∅" }
+```
+
+Default: renders the constructor name as-is.
+
+## Building Term Renderers
+
+Term renderers are built from type-info via `to-list`, selecting the backend by return-type annotation:
+
+```koka
+val cfa/term-show-latex: term-renderer =
+  val expr-entries : list<latex-entry> = expr-info.to-list
+  val store-entries : list<latex-entry> = store-info.to-list
+  make-term-renderer(
+    expr-entries.map(entry) ++ store-entries.map(entry),
+    ?var-render=latex/var-render)
+```
+
+The `: list<latex-entry>` annotation selects the LaTeX backend.
+Change to `list<md-entry>` for Markdown.
+
+## Pattern Rendering
+
+The framework provides generic pattern renderers:
+
+```koka
+// In latex.kk:
+pub fun pat/show-latex(p: pat<a>,
+  ?term-show-latex: term-renderer): <div,exn> string
+  match p
+    PatVar(nm, id) -> // render metavar name with subscript
+    PatTerm(t) -> t.term-show-latex
+```
+
+With `cfa/term-show-latex` in scope, `pat/show-latex` resolves
+`?term-show-latex` automatically — no per-type wrappers needed.
+
+## Rule Rendering
+
+`relation-to-latex` and `relation-to-md` walk the relation-def's type-level
+structure, rendering each rule:
+
+```koka
+println(rel.relation-to-latex)  // \begin{mathpar} \inferrule*[...] ...
+println(rel.relation-to-md("eval/lookup"))  // **E-Lam** ...
+```
+
+The rendering traversal uses `show-latex` / `show-md` implicits per element
+type in the judgement chains. Relation markers (`REval`, `RLookup`) define
+their own `show-latex` / `show-md`.
+
+## Variable Rendering
+
+Built-in var renderers format metavariables:
+
+```koka
+// LaTeX: x_{1}
+pub fun latex/var-render(nm, id) =
+  if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
+
+// Markdown: x1
+pub fun md/var-render(nm, id) =
+  if id == 0 then nm else nm ++ id.show
+```

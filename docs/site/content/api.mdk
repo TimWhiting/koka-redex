@@ -1,0 +1,131 @@
+Title         : API Reference
+Heading Depth : 0
+[INCLUDE=style.mdk]
+
+# API Reference
+
+## term.kk
+
+### Types
+
+| Type | Description |
+|:-----|:------------|
+| `term` | Universal value: `TVar(name, id)`, `TAtom(name)`, `TInt(value)`, `TNode(name, args)`, `TRef(ref-id)` |
+| `fact` | `Fact(pred, args: list<term>)` |
+| `rule` | `Rule(name, premises: list<fact>, conclusion: fact)` |
+| `ref-pool<a>` | Named effect for first-class intern pools |
+
+### Functions
+
+| Function | Type | Description |
+|:---------|:-----|:------------|
+| `make-pool(eq)` | `((a,a) -> pure bool) -> pure ev<ref-pool<a>>` | Create an intern pool |
+| `ref/to-term(x, ?pool)` | `a -> pure term` | Intern a value as `TRef(id)` |
+| `ref/from-term(t, ?pool)` | `term -> pure a` | Dereference a `TRef` |
+| `string/to-term` | `string -> term` | `TAtom(s)` |
+| `int/to-term` | `int -> term` | `TInt(n)` |
+| `term/eq` | `(term, term) -> div bool` | Structural equality (O(1) for `TRef`) |
+| `normalize-fact` | `fact -> div fact` | Canonicalize unbound variables |
+
+## logic.kk
+
+### Effect
+
+```koka
+effect logic
+  fun unify(t1: term, t2: term): ()
+  fun walk(t: term): term
+  fun resolve(t: term): term
+  fun resolve-fact(f: fact): fact
+  fun freshv(pre: string): term
+  fun save(): list<(string, int, term)>
+  fun restore(s: list<(string, int, term)>): ()
+```
+
+### Functions
+
+| Function | Description |
+|:---------|:------------|
+| `with-logic(on-fail, action)` | Run action with unification; `on-fail` called on unification failure |
+| `unify-facts(f1, f2)` | Unify two facts (predicate + args) |
+| `freshen-rule(r)` | Create a fresh copy of a rule with new variable ids |
+
+## forward.kk
+
+### Lattice Policies
+
+| Policy | Description |
+|:-------|:------------|
+| `set-join` | Collect all distinct results (default) |
+| `single-join` | Error if multiple distinct results (deterministic relation) |
+
+### Functions
+
+| Function | Description |
+|:---------|:------------|
+| `forward-search(goal, rules, ?external, ?memo-key, ?lattice-policies)` | Run tabled resolution |
+| `forward-eval(goal, rules, ?external, ?memo-key)` | Core evaluation (used inside cache handler) |
+| `make-lattice(policies)` | Build dispatching lattice from per-predicate policies |
+
+## syntax.kk
+
+### Types & Operators
+
+| Syntax | Description |
+|:-------|:------------|
+| `a \ b` | Judgement chain element separator |
+| `a \|- b` | Turnstile (visual marker) |
+| `a \\\\ b` | Premise separator |
+| `premises --- "name" --> conclusion` | Rule constructor |
+| `with rule(...)` / `single/rule(...)` | Add rule to relation-def |
+| `with external-rule(shape, solver)` | Add external solver |
+| `with relation-def` | Begin relation definition |
+
+## forward-bridge.kk
+
+### Functions
+
+| Function | Description |
+|:---------|:------------|
+| `forward-search(goal, rel)` | Unified search: extracts rules + externals + memo-key + policies from relation-def |
+| `derive-key(sample)` | Derive memo-key config from a sample judgement chain |
+| `compose-externals(solvers)` | Compose multiple external solvers |
+
+## derive.kk (type-level/con-info.kk)
+
+### Types
+
+| Type | Description |
+|:-----|:------------|
+| `con-info<tag, fields, whole>` | Constructor descriptor with phantom tag |
+| `name<tag>` | Named phantom type (carries constructor name string) |
+| `latex-entry` / `md-entry` | Backend-tagged render entry wrappers |
+| `render-entry` | `(string, render-fmt)` — constructor name + format function |
+| `term-renderer` | `(term) -> <div,exn> string` |
+
+### Derivation Functions
+
+| Function | Description |
+|:---------|:------------|
+| `derive-to-term(v, info)` | Auto-derive to-term from type-info |
+| `derive-from-term(t, info)` | Auto-derive from-term from type-info |
+| `derive-show(v, info)` | Auto-derive show from type-info |
+| `make-term-renderer(entries, ?var-render)` | Build term renderer from render entries |
+| `latex/var-render` / `md/var-render` | Default metavar renderers |
+
+## pattern.kk
+
+### Types
+
+| Type | Description |
+|:-----|:------------|
+| `pat<a>` | `PatVar(nm, id)` or `PatTerm(t)` — phantom-typed metavar |
+
+### Functions
+
+| Function | Description |
+|:---------|:------------|
+| `fresh-pat(nm)` | Generate fresh pattern variable (requires `pat-fresh` effect) |
+| `with-pats(action)` | Run action with fresh pattern variable allocation |
+| `term/pat(t)` | Lift a concrete value to `pat<term>` |
+| `pattern/to-term(p)` | Convert pat to term (`PatVar` → `TVar`, `PatTerm` → term) |

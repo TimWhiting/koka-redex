@@ -1,0 +1,252 @@
+Title         : Koka Redex
+Heading Depth : 0
+[INCLUDE=style.mdk]
+
+# Koka Redex
+
+A typed rule schema framework for program analysis in Koka. Write declarative
+inference rules — the framework derives execution, rendering, and term encoding
+automatically via implicits and algebraic effects.
+
+~ begin project-section
+
+## Overview { .project-section-heading }
+
+Koka Redex bridges the gap between declarative rule specifications and
+executable fixpoint engines. A single typed rule representation drives:
+
+- **Demand-driven tabled resolution** with per-relation lattice policies
+- **LaTeX and Markdown rendering** of inference rules
+- **Auto-derived term encoding** from constructor descriptors
+- **External solver dispatch** for domain-specific operations
+- **Interned abstract domains** via first-class handler values
+
+~ end project-section
+
+~ begin project-section
+
+## Quick Example { .project-section-heading }
+
+A complete 0CFA analysis in Koka Redex:
+
+```koka
+// Domain types — clean, no framework noise
+type expr
+  EVar(nm: string)
+  EApp(e1: expr, e2: expr)
+  ELam(x: string, body: expr)
+```
+
+Rules read like inference rules from a paper:
+
+```koka
+// E-Lam: lambda values evaluate to themselves
+with rule(
+  axiom
+  --- "E-Lam" -->
+  p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
+
+// E-App: application with store threading
+single/rule(
+  e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
+  e2 \ s1 |- REval \ v2 \ s2 \\
+  e3 \ p-scons(x, v2, s2) |- REval \ v \ s3
+  --- "E-App" -->
+  p-app(e1, e2) \ s0 |- REval \ v \ s3)
+```
+
+Run the analysis:
+
+```koka
+val id-fn = ELam("x", EVar("x"))
+val goal = pat(EApp(id-fn, ELam("z", EVar("z"))))
+         \ pat(SNil) |- REval \ fresh-pat("v")
+         \ (fresh-pat("s") : pat<store>)
+val table = forward-search(goal, rel)
+```
+
+The same rules render as LaTeX:
+
+```
+\inferrule*[Right=E-App]
+  { e1 s0 ⇓ λ x. e3 s1 \\
+    e2 s1 ⇓ v2 s2 \\
+    e3 s2[x ↦ v2] ⇓ v s3 }
+  { e1\; e2 s0 ⇓ v s3 }
+```
+
+~ end project-section
+
+~ begin project-section
+
+## Engine: Demand-Driven Tabled Resolution { .project-section-heading }
+
+The engine combines ideas from SLG resolution (XSB Prolog), Datalog, and
+algebraic effects:
+
+- **Goal-directed**: starts from a query, selects rules by unifying with conclusions
+- **Tabled with continuation resumption**: when a sub-goal discovers a new answer, all dependent computations re-execute automatically
+- **Premise reordering**: after goal unification, premises are sorted by groundness (most ground args first) and re-sorted after each evaluation. The user writes premises in any order — the engine finds the optimal data-flow order
+- **Per-relation lattice policies**: `set-join` (collect all results), `single-join` (error on multiple distinct results), or custom — derived from relation marker types via implicits
+- **Memo key canonicalization**: `normalize-fact` replaces unbound variables with canonical names preserving sharing (`reach(X,X)` distinct from `reach(X,Y)`)
+
+For the stratified Datalog fragment, the engine is complete — the tabled fixpoint
+converges to the same results as bottom-up evaluation.
+
+~ end project-section
+
+~ begin project-section
+
+## Constructor Descriptors and Auto-Derivation { .project-section-heading }
+
+The `con-info<tag, fields, whole>` descriptor captures a constructor's structure
+once. The framework derives everything else:
+
+```koka
+// Phantom tags identify constructors
+type lam-expr
+fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+
+// One descriptor per constructor
+val lam-expr/con-info :
+  con-info<lam-expr, t-cons<string, t-cons<expr, t-nil>>, expr> =
+  Con-info(
+    fn(e) match e { ELam(x, body) -> Just(x +: body +: TNil); _ -> Nothing },
+    fn(TCons(x, TCons(body, _))) ELam(x, body))
+```
+
+From this, the framework auto-derives:
+
+- **`to-term`**: `ELam("x", EVar("x"))` → `TNode("lam", [TAtom("x"), TNode("var", [TAtom("x")])])`
+- **`from-term`**: roundtrip back to domain types
+- **`show`**: `lam(x, var(x))`
+- **LaTeX rendering**: `λ x. var(x)` (with per-constructor format functions)
+- **Markdown rendering**: `λ x. var(x)` (separate backend, different format)
+
+For recursive types, bind `to-term` as a local implicit before calling `derive-to-term`:
+
+```koka
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term
+  derive-to-term(e, expr-info)
+```
+
+~ end project-section
+
+~ begin project-section
+
+## External Solvers and Interned Domains { .project-section-heading }
+
+Relations that are better computed than searched can be implemented as
+external Koka functions:
+
+```koka
+// Store lookup as external relation
+with external-rule(s \ x |- RLookup \ v,
+  fn(TCons(s-val: store, x-val: string))
+    s-val.filter(fn((n, _)) n == x-val).map(snd))
+```
+
+Abstract domains can be **interned** as opaque references for O(1) comparison.
+The `ref-pool` is a first-class named handler value — no effect in caller types:
+
+```koka
+// Create a pool — scoped to the analysis run
+val store/pool : ev<ref-pool<store>> = make-pool(store/(==))
+
+// to-term automatically interns via the ?pool implicit
+// Engine sees TRef(42) — opaque, ground, O(1) equality
+```
+
+~ end project-section
+
+~ begin project-section
+
+## Rendering { .project-section-heading }
+
+Rules render to LaTeX and Markdown from the same type-level structure.
+Per-constructor format functions control the output:
+
+```koka
+// LaTeX: formal notation
+fun lam-expr/render-latex(_: name<lam-expr>,
+  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
+  "\\lambda " ++ x ++ ".\\; " ++ body
+
+// Markdown: unicode
+fun lam-expr/render-md(_: name<lam-expr>,
+  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
+  "λ" ++ x ++ ". " ++ body
+```
+
+The return type annotation (`latex-entry` vs `md-entry`) selects the
+rendering backend — same `to-list` call, different output.
+
+~ end project-section
+
+~ begin project-section
+
+## Algebraic Effects { .project-section-heading }
+
+The framework uses Koka's algebraic effects throughout:
+
+| Effect | Purpose |
+|:-------|:--------|
+| `logic` | Unification: `unify`, `resolve`, `freshv`, `save`/`restore` |
+| `cache` (fixpoint-memo) | Tabled memoization: `memo`, `depend`, `add-result`, `do-each` |
+| `ref-pool` (named) | First-class intern pools — value, not effect in caller types |
+| `pat-fresh` | Fresh pattern variable generation for rule metavariables |
+
+The `logic` effect expressing unification as algebraic effects is, to our
+knowledge, novel in the effects literature.
+
+~ end project-section
+
+~ begin project-section
+
+## Architecture { .project-section-heading }
+
+```
+Rules (syntax.kk)         Con-info (type-level/con-info.kk)
+  rule<n,p,c>               con-info<tag, fields, whole>
+  relation-def<r>            name<tag>
+       |                          |
+       v                          v
+Bridge (forward-bridge.kk)  Derive (derive.kk)
+  to-fact-args, derive-keys   to-term, from-term, show
+  derive-policies             render-latex, render-md
+  external-rule
+       |                          |
+       v                          v
+Engine (forward.kk)         Rendering (latex.kk, markdown.kk)
+  forward-eval                relation-to-latex
+  memo/depend/add-result      relation-to-md
+  normalize-fact              pat/show-latex, pat/show-md
+  premise reordering
+       |
+       v
+Logic (logic.kk)
+  unify, resolve, freshv
+  with-logic handler
+```
+
+~ end project-section
+
+~ begin project-section
+
+## Examples { .project-section-heading }
+
+| Example | Description |
+|:--------|:------------|
+| `pattern/cfa.kk` | 0CFA with store-passing, LaTeX/Markdown rendering |
+| `pattern/cfa-interned.kk` | 0CFA with interned stores via `ref-pool` |
+| `pattern/type-infer.kk` | Type inference with unification as external solver |
+| `pattern/reachability.kk` | Reachability with ground/partial/open queries |
+| `typed/cfa-typed.kk` | 0CFA with manual metavar constructors |
+| `typed/type-infer-typed.kk` | Type inference with manual metavars |
+
+39 tests across 3 test files validate the engine, bridge, and derive system.
+
+[GitHub →](https://github.com/timwhiting/koka-redex){ .learn }
+
+~ end project-section

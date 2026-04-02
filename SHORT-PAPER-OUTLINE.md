@@ -84,12 +84,13 @@ Our approach occupies a middle ground between SLG resolution (top-down, tabled) 
 
 ### 3.3 The Engine (`forward.kk`)
 - `forward-eval(goal, rules, ?external, ?memo-key)`: core evaluation loop
-- Rule matching: freshen rule, unify goal with conclusion, evaluate premises left-to-right
+- Rule matching: freshen rule, unify goal with conclusion, evaluate premises in groundness order
 - Tabling: `memo(key)` from `fixpoint-memo`. On first encounter, evaluates and caches. On re-encounter, returns cached results AND registers a dependency — when new answers arrive, the continuation resumes with the new answer. This is the algebraic-effect encoding of SLG's suspension/resumption mechanism.
 - Nondeterminism: `do-each(branches)` explores all matching rules and external solver results
 - `normalize-fact`: canonicalize unbound variables in memo keys preserving variable sharing (`reach(X,X)` → `reach(_0,_0)` distinct from `reach(X,Y)` → `reach(_0,_1)`)
 - Per-relation lattice: `?join-policy` implicit on relation markers, dispatched by predicate name. `set-join` (default — collect all distinct results), `single-join` (deterministic — error on multiple distinct results)
-- **Completeness argument**: every rule is tried for every goal (via `do-each`). Every tabled answer triggers dependent resumption. The lattice fixpoint terminates when no new answers are produced. For finite domains, this is complete.
+- **Premise reordering**: after goal unification, all premises are resolved with current bindings and sorted by groundness (most ground arguments first). After each premise evaluation, remaining premises are re-resolved and re-sorted. This is a dynamic form of the "sideways information passing" optimization from Datalog — bindings flow eagerly to the premises that can use them.
+- **Completeness argument**: every rule is tried for every goal (via `do-each`). Every tabled answer triggers dependent resumption. The lattice fixpoint terminates when no new answers are produced. For finite domains, this is complete. Premise reordering does not affect completeness — it only affects evaluation order, not which answers are discovered.
 
 ### 3.4 The Bridge (`forward-bridge.kk`)
 - Compiles typed `relation-def<r>` to `list<rule>` + external solver + memo-key

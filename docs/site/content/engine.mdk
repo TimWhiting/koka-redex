@@ -1,0 +1,96 @@
+Title         : Engine
+Heading Depth : 0
+[INCLUDE=style.mdk]
+
+# Engine: Demand-Driven Tabled Resolution
+
+The forward engine (`forward.kk`) combines goal-directed rule selection with
+tabled memoization and algebraic effects for unification and nondeterminism.
+
+## Core Loop
+
+`forward-eval(goal, rules, ?external, ?memo-key)`:
+
+1. Compute memo key from the resolved, normalized goal
+2. Enter `memo(key)` — returns cached results or sets up new computation
+3. For each rule: freshen, unify goal with conclusion, evaluate premises
+4. For external solvers: query `?external(goal)` for pre-computed results
+5. Explore all branches via `do-each`
+
+```koka
+pub fun forward-eval(goal, rules, ?external, ?memo-key)
+  val key = memo-key(normalize-fact(resolve-fact(goal)))
+  with each <- memo(key)
+  val rule-branches = rules.map fn(r)
+    fn()
+      val rf = freshen-rule(r)
+      unify-facts(goal, rf.conclusion)
+      forward-premises(rf.premises, rules)
+      resolve-fact(rf.conclusion)
+  val ext-branches = match external(goal)
+    Just(results) -> results.map(fn(r) fn() r)
+    Nothing -> []
+  each(rule-branches ++ ext-branches)
+```
+
+## Premise Reordering
+
+After unifying the goal with a rule's conclusion (which binds some variables),
+the engine sorts remaining premises by **groundness** — how many arguments
+are fully resolved. The most-grounded premise evaluates first, maximizing
+the chance of binding variables before they're needed downstream.
+
+After each premise evaluation, remaining premises are re-resolved and re-sorted
+with the new bindings. This is a dynamic form of Datalog's "sideways information
+passing" optimization.
+
+The user writes premises in any order for clarity (matching the on-paper
+inference rule). The engine finds the optimal data-flow order automatically.
+
+## Tabled Continuation Resumption
+
+When a tabled sub-goal discovers a **new answer** (via `add-result`), all
+computations that `depend` on that key **re-execute** with the new answer.
+
+For the stratified Datalog fragment (no negation, finite domains), this
+ensures completeness — all derivable facts are discovered.
+
+## Memo Key Canonicalization
+
+`normalize-fact` replaces unbound variables with canonical names in order
+of first occurrence:
+
+- `reach(X, X)` → `reach(_0, _0)` (same variable, must be equal)
+- `reach(X, Y)` → `reach(_0, _1)` (different variables)
+
+This prevents duplicate memo entries from different rule freshenings that
+produce logically equivalent queries.
+
+## Per-Relation Lattice Policies
+
+Each relation marker type can carry a `?join-policy` implicit:
+
+```koka
+pub val set-join : join-policy   // collect all distinct results (default)
+pub val single-join : join-policy // error if multiple distinct results
+```
+
+Policies are derived from the relation-def structure via `derive-policies`.
+The lattice dispatches by predicate name at the `add-result` level.
+
+## External Solvers
+
+Relations computed by Koka functions rather than rule search:
+
+```koka
+?external: (fact) -> <logic,div,exn> maybe<list<fact>>
+```
+
+Returns `Nothing` (not handled, use rules) or `Just(solutions)`.
+Used for store lookup, unification, inequality, store extension.
+
+## Relationship to SLG and Magic Sets
+
+- **SLG resolution** (XSB): The engine provides the same tabling semantics as SLG, encoded via algebraic effects.
+- **Magic sets**: Goal-directed evaluation achieves the same demand propagation without a program transformation step.
+- **Completeness**: Same as SLG for the stratified positive fragment.

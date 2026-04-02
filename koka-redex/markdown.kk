@@ -71,8 +71,9 @@ pub fun map-field(r: koka-redex/syntax/rule<n, p, c>, ?show-markdown: koka-redex
 pub fun ext/map-field(_e: external-entry): e mdstr
   Mdstr("")
 
-pub fun relation-to-md(RelationDef(rules): relation-def<r>, name: string, ?to-list: r -> e list<mdstr>): e string
-  "# Relation: " ++ name ++ "\n\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n")
+pub fun relation-to-md(RelationDef(rules): relation-def<r>, name: string = "", ?to-list: r -> e list<mdstr>): e string
+  val header = if name.is-empty then "" else "# " ++ name ++ "\n\n"
+  header ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n")
 
 // ============================================================================
 // Generic pattern renderer for Markdown

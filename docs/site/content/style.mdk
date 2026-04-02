@@ -1,0 +1,7 @@
+Css Header:
+    .koka .keyword, .koka .type.keyword { color: var(--syn-keyword, #8d29ba); font-weight: bold; }
+    .koka .type { color: var(--syn-type, #005f5f); }
+    .koka .string { color: var(--syn-string, #a31515); }
+    .koka .comment { color: var(--syn-comment, #6e7681); font-style: italic; }
+    .koka .number { color: var(--syn-number, #09885a); }
+    .koka .constructor { color: var(--syn-constructor, #267f99); }

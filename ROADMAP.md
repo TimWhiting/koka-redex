@@ -8,7 +8,7 @@
 
 **`koka-redex/logic.kk`** — Microkanren-style unification as an algebraic effect. `unify`, `resolve`, `freshv`, `save`/`restore`. Novel: no prior work expresses microkanren unification as algebraic effects with handlers.
 
-**`koka-redex/forward.kk`** — Demand-driven tabled resolution engine. Combines unification (logic effect), tabled memoization (fixpoint-memo), and external relation dispatch. `normalize-fact` canonicalizes memo keys preserving variable sharing. Per-relation lattice policies via `?join-policy` implicit.
+**`koka-redex/forward.kk`** — Demand-driven tabled resolution engine. Combines unification (logic effect), tabled memoization (fixpoint-memo), and external relation dispatch. `normalize-fact` canonicalizes memo keys preserving variable sharing. Per-relation lattice policies via `?join-policy` implicit. Automatic premise reordering by groundness for syntax-directed evaluation.
 
 **`koka-redex/forward-bridge.kk`** — Compiles typed rules to the forward engine via implicits. Chain-to-fact conversion with relation marker detection. Auto-derives memo keys and lattice policies from relation structure. External solver composition.
 
@@ -30,6 +30,7 @@
 - **Return-type dispatch**: `latex-entry` vs `md-entry` wrapper types drive `to-list` to resolve different `map-field` overloads per backend.
 - **Per-relation policies**: Relation marker phantom types carry `?join-policy`, `?judgment-name` implicits, derived from relation-def structure.
 - **First-class intern pools**: `ev<ref-pool<a>>` is a named handler value — no effect in caller signatures. Passed as `?pool` implicit, resolved by type. Pool creation is scoped to analysis entry point.
+- **Premise reordering**: after goal-conclusion unification, premises are sorted by groundness (most ground args first). Re-sorted after each evaluation as new bindings arrive. Dynamic "sideways information passing" — the user writes premises in any order, the engine finds the optimal data-flow order.
 
 ### Examples & Tests
 

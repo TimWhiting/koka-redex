@@ -1,0 +1,83 @@
+Title         : Derive
+Heading Depth : 0
+[INCLUDE=style.mdk]
+
+# Derive: Auto-Derivation from Constructor Descriptors
+
+The derive system (`derive.kk`) auto-generates `to-term`, `from-term`, `show`,
+and rendering functions from `con-info` descriptors.
+
+## Constructor Descriptors
+
+`con-info<tag, fields, whole>` describes one constructor:
+
+- **`tag`**: phantom type identifying the constructor (e.g., `type lam-expr`)
+- **`fields`**: type-level structure — `string` (atom), `t-cons<a,b>` (node), `t-nil` (nullary)
+- **`whole`**: the ADT type being described
+
+```koka
+type lam-expr
+fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+
+val lam-expr/con-info :
+  con-info<lam-expr, t-cons<string, t-cons<expr, t-nil>>, expr> =
+  Con-info(
+    fn(e) match e { ELam(x, body) -> Just(x +: body +: TNil); _ -> Nothing },
+    fn(TCons(x, TCons(body, _))) ELam(x, body))
+```
+
+The `con-match` function destructures a value into a t-cons chain of fields.
+The `con-build` function reconstructs a value from fields.
+The constructor name comes from `name/show` on the phantom tag type.
+
+## Type Info
+
+Combine con-infos into a t-struct for traversal:
+
+```koka
+val expr-info =
+  mk-field(var-expr/con-info) *: mk-field(app-expr/con-info)
+  *: mk-field(lam-expr/con-info) *: TNil
+```
+
+## Deriving to-term / from-term
+
+```koka
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term  // close recursive loop
+  derive-to-term(e, expr-info)
+
+pub fun expr/from-term(t: term): <exn,div> expr
+  val n/from-term = expr/from-term
+  derive-from-term(t, expr-info)
+```
+
+The `val n/to-term = self` pattern binds the function as a local implicit
+so recursive fields resolve correctly.
+
+## How It Works
+
+The derive system dispatches on the `fields` type parameter of each `con-info`:
+
+- `con-info<tag, string, w>` → maps to `TAtom`
+- `con-info<tag, t-cons<a,b>, w>` → maps to `TNode` with recursive field encoding
+- `con-info<tag, t-nil, w>` → maps to `TNode(name, [])`
+
+`derive-to-term` tries each constructor's matcher until one succeeds.
+
+## Interned Types
+
+Types that should be opaque to the engine use `ref-pool` instead of structural
+encoding:
+
+```koka
+val store/pool : ev<ref-pool<store>> = make-pool(store/(==))
+// ref/to-term and ref/from-term resolve via ?pool implicit
+```
+
+The engine sees `TRef(id)` — ground, O(1) equality, never walked into.
+
+## Key Patterns
+
+- **`val n/to-term = self`**: closes recursive implicit chains for self-referential types
+- **Return-type annotation**: annotate with `list<latex-entry>` or `list<md-entry>` to select the rendering backend

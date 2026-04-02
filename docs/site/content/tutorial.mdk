@@ -1,0 +1,290 @@
+Title         : Tutorial
+Heading Depth : 0
+[INCLUDE=style.mdk]
+
+# Tutorial: From Reachability to 0CFA
+
+This tutorial walks through three examples of increasing complexity,
+demonstrating the core features of Koka Redex.
+
+## 1. Reachability — Your First Relation
+
+Define a simple graph and query for reachable nodes.
+
+### Domain Setup
+
+```koka
+import koka-redex/forward-bridge
+import koka-redex/pattern
+
+// Relation markers — phantom types that name the relations
+pub type r-edge
+  REdge
+pub fun r-edge/judgment-name(_: r-edge): string { "edge" }
+
+pub type r-reach
+  RReach
+pub fun r-reach/judgment-name(_: r-reach): string { "reach" }
+```
+
+### Pattern Variables
+
+```koka
+fun n(i: int): pat<int> { PatTerm(TInt(i)) }
+fun pv(nm: string, id: int): pat<int> { PatVar(nm, id) }
+```
+
+### Rules
+
+```koka
+fun reach-relation()
+  val x = pv("x", 1)
+  val y = pv("y", 2)
+  val z = pv("z", 3)
+
+  with relation-def
+  // Ground facts (edges)
+  with rule(axiom --- "edge-1-2" --> n(1) |- REdge \ n(2))
+  with rule(axiom --- "edge-2-3" --> n(2) |- REdge \ n(3))
+  with rule(axiom --- "edge-3-4" --> n(3) |- REdge \ n(4))
+  // Reachability rules
+  with rule(
+    x |- REdge \ y
+    --- "reach-edge" -->
+    x |- RReach \ y)
+  single/rule(
+    x |- REdge \ y \\
+    y |- RReach \ z
+    --- "reach-step" -->
+    x |- RReach \ z)
+```
+
+### Queries
+
+```koka
+pub fun main()
+  println("--- reach(1, ?) ---")
+  val goal = n(1) |- RReach \ pv("target", 0)
+  val table = forward-search(goal, reach-relation())
+  // Result: reach(1,2), reach(1,3), reach(1,4)
+```
+
+**Key concepts:**
+
+- `|-` separates inputs from the relation marker
+- `\` separates elements within a judgement
+- `\\` separates premises
+- `--- "name" -->` creates a named rule
+- `axiom` means no premises
+- `with rule(...)` chains rules, `single/rule(...)` ends the chain
+
+---
+
+## 2. Type Inference — External Solvers
+
+Type inference demonstrates **external solvers** — relations computed by
+Koka functions rather than rules.
+
+### Domain Types with Auto-Derivation
+
+```koka
+import koka-redex/derive
+
+pub type expr
+  XVar(nm: string)
+  XApp(e1: expr, e2: expr)
+  XLam(x: string, body: expr)
+  XInt(n: int)
+
+// Constructor descriptors (one per constructor)
+pub type var-expr
+pub fun var-expr/name/show(): name<var-expr> { Name("var") }
+
+pub val var-expr/con-info :
+  con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
+    fn(e) match e { XVar(n) -> Just(n +: TNil); _ -> Nothing },
+    fn(TCons(n, _)) XVar(n))
+// ... similar for app-expr, lam-expr, int-expr
+
+// Combine into type-info
+val expr-info = mk-field(var-expr/con-info)
+  *: mk-field(app-expr/con-info)
+  *: mk-field(lam-expr/con-info)
+  *: mk-field(int-expr/con-info) *: TNil
+
+// Auto-derive to-term / from-term
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term
+  derive-to-term(e, expr-info)
+```
+
+### External Solvers
+
+Store lookup and unification are external — Koka functions, not rules:
+
+```koka
+// Lookup: external relation on domain types
+with external-rule(env \ x |- RLookup \ t,
+  fn(TCons(env-val: tenv, x-val: string))
+    store-lookup-all(env-val, x-val))
+
+// Unification: external relation using the logic effect
+with external-term-rule(t1 \ t2 |- RUnify \ TNil,
+  fn([t1', t2'])
+    unify(t1', t2')
+    [Fact("unify-types", [resolve(t1'), resolve(t2')])])
+```
+
+### Rules
+
+```koka
+with rule(
+  axiom
+  --- "T-Int" -->
+  p-int(n) \ env |- RInfer \ p-base("Int"))
+
+with rule(
+  env \ x |- RLookup \ t
+  --- "T-Var" -->
+  p-var(x) \ env |- RInfer \ t)
+
+with rule(
+  e \ p-tcons(x, a, env) |- RInfer \ t
+  --- "T-Lam" -->
+  p-lam(x, e) \ env |- RInfer \ p-arrow(a, t))
+
+single/rule(
+  e1 \ env |- RInfer \ t1 \\
+  e2 \ env |- RInfer \ t2 \\
+  t1 \ p-arrow(t2, a) |- RUnify \ TNil
+  --- "T-App" -->
+  p-app(e1, e2) \ env |- RInfer \ a)
+```
+
+**Key concepts:**
+
+- `external-rule` wraps a Koka function as a relation — the framework
+  converts between terms and domain types automatically
+- `external-term-rule` operates at the term level (for unification)
+- The engine's premise reordering ensures syntax-directed evaluation —
+  T-App evaluates `e1` and `e2` first, then runs unification
+
+---
+
+## 3. 0CFA — Lattice Fixpoint and Over-Approximation
+
+0CFA demonstrates **lattice-based fixpoint** — the same variable can
+have multiple values.
+
+### Domain Types
+
+```koka
+pub type expr
+  EVar(nm: string)
+  EApp(e1: expr, e2: expr)
+  ELam(x: string, body: expr)
+
+// Store is a custom type (or use list<(string, expr)> for interned version)
+pub type store
+  SNil
+  SCons(nm: string, vl: expr, rest: store)
+```
+
+### Rules
+
+```koka
+// E-Lam: λ values evaluate to themselves
+with rule(
+  axiom
+  --- "E-Lam" -->
+  p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
+
+// E-Var: variable lookup (external)
+with external-rule(s \ x |- RLookup \ v,
+  fn(TCons(s-val: store, x-val: string))
+    store-lookup-all(s-val, x-val))
+with rule(
+  s \ x |- RLookup \ vl
+  --- "E-Var" -->
+  p-var(x) \ s |- REval \ vl \ s)
+
+// E-App: application with store threading
+single/rule(
+  e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
+  e2 \ s1 |- REval \ v2 \ s2 \\
+  e3 \ p-scons(x, v2, s2) |- REval \ v \ s3
+  --- "E-App" -->
+  p-app(e1, e2) \ s0 |- REval \ v \ s3)
+```
+
+### Over-Approximation
+
+```koka
+// let f = λx.x in (f λa.a)(f λb.b)
+val id-fn = ELam("x", EVar("x"))
+val lam-a = ELam("a", EVar("a"))
+val lam-b = ELam("b", EVar("b"))
+val body = EApp(EApp(EVar("f"), lam-a), EApp(EVar("f"), lam-b))
+val prog = EApp(ELam("f", body), id-fn)
+
+val goal = pat(prog) \ pat(SNil) |- REval
+         \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
+val table = forward-search(goal, cfa-relation())
+// Over-approximation: eval(var(x), ...) has 2 values: {λa.a, λb.b}
+```
+
+The `set-join` lattice (default) collects all distinct results per memo key.
+When `f` is applied to both `λa.a` and `λb.b`, the variable `x` bound in
+`f = λx.x` gets both values — the analysis correctly over-approximates.
+
+**Key concepts:**
+
+- The fixpoint engine discovers all reachable results via continuation resumption
+- No special abstract interpretation machinery needed — `set-join` + fixpoint = collecting semantics
+- Same rules work for concrete evaluation (single result) or abstract (over-approximation)
+
+### Interned Stores
+
+For better performance, intern stores as opaque references:
+
+```koka
+// Create a pool at the analysis entry point
+val store/pool : ev<ref-pool<store>> = make-pool(store/(==))
+
+// ref/to-term and ref/from-term resolve via ?pool implicit
+// Engine sees TRef(id) — O(1) equality instead of structural comparison
+```
+
+Store operations (lookup, extend) become external solvers that dereference
+through the pool.
+
+---
+
+## Rendering
+
+Any relation renders to LaTeX or Markdown:
+
+```koka
+println(rel.relation-to-latex)
+println(rel.relation-to-md("Evaluation"))
+```
+
+Define per-constructor format functions for custom rendering:
+
+```koka
+fun lam-expr/render-latex(_: name<lam-expr>,
+  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
+  "\\lambda " ++ x ++ ".\\; " ++ body
+
+fun lam-expr/render-md(_: name<lam-expr>,
+  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
+  "λ" ++ x ++ ". " ++ body
+```
+
+Build term renderers from your type-info:
+
+```koka
+val cfa/term-show-latex: term-renderer =
+  val entries : list<latex-entry> = expr-info.to-list
+  make-term-renderer(entries.map(entry), ?var-render=latex/var-render)
+```

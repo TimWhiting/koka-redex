@@ -91,35 +91,40 @@ pub fun store/from-term(t: term): <exn,div> store
 // ----------------------------------------------------------------------------
 
 // Per-constructor LaTeX rendering
-fun var-expr/show-latex(_: name<var-expr>, TCons(n, _): t-cons<string, t-nil>): <div,exn> string
+fun var-expr/render-latex(_: name<var-expr>, TCons(n, _): t-cons<string, t-nil>): <div,exn> string
   n
-fun app-expr/show-latex(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun app-expr/render-latex(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   e1 ++ "\\; " ++ e2
-fun lam-expr/show-latex(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun lam-expr/render-latex(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   "\\lambda " ++ x ++ ".\\; " ++ body
-fun scons-store/show-latex(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
+fun scons-store/render-latex(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
   rest ++ "[" ++ n ++ " \\mapsto " ++ v ++ "]"
 
 fun snil-store/name-latex(_: name<snil-store>): string
   "\\emptyset"
 
 // Per-constructor Markdown rendering (only where it differs from LaTeX)
-fun app-expr/show-md(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun app-expr/render-md(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   e1 ++ " " ++ e2
-fun lam-expr/show-md(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
-  "\\lambda " ++ x ++ ". " ++ body
+fun lam-expr/render-md(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+  "λ" ++ x ++ ". " ++ body
+
+fun scons-store/render-md(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
+  rest ++ "[" ++ n ++ " ↦ " ++ v ++ "]"
 
 fun snil-store/name-md(_: name<snil-store>): string
-  "\\emptyset"
+  "∅"
 
-// Derive term renderers from type-info traversal
+// Derive term renderers via to-list — return type (latex-entry vs md-entry) drives dispatch
 fun cfa/term-show-latex(): term-renderer
-  val entries = expr-info.to-latex-entries ++ store-info.to-latex-entries
-  make-term-renderer(entries, ?var-render=latex/var-render)
+  val expr-entries : list<latex-entry> = expr-info.to-list
+  val store-entries : list<latex-entry> = store-info.to-list
+  make-term-renderer(expr-entries.map(entry) ++ store-entries.map(entry), ?var-render=latex/var-render)
 
 fun cfa/term-show-md(): term-renderer
-  val entries = expr-info.to-md-entries ++ store-info.to-md-entries
-  make-term-renderer(entries, ?var-render=md/var-render)
+  val expr-entries : list<md-entry> = expr-info.to-list
+  val store-entries : list<md-entry> = store-info.to-list
+  make-term-renderer(expr-entries.map(entry) ++ store-entries.map(entry), ?var-render=md/var-render)
 
 // Pattern renderers
 pub fun cfa/show-latex(p: pat<a>): <div,exn> string
@@ -137,7 +142,7 @@ pub type r-eval
 pub fun r-eval/judgment-name(_: r-eval): string
   "eval"
 pub fun r-eval/show-md(_: r-eval): string
-  "\\Downarrow"
+  "⇓"
 pub fun r-eval/show-latex(_: r-eval): string
   "\\Downarrow"
 
@@ -146,15 +151,9 @@ pub type r-lookup
 pub fun r-lookup/judgment-name(_: r-lookup): string
   "lookup"
 pub fun r-lookup/show-md(_: r-lookup): string
-  "\\in"
+  "∈"
 pub fun r-lookup/show-latex(_: r-lookup): string
   "\\in"
-
-// Default formatters for names
-pub fun default/show-md(a: a, ?show: a -> string): string
-  show(a)
-pub fun default/show-latex(a: a, ?show: a -> string): string
-  show(a)
 
 // ----------------------------------------------------------------------------
 // Pattern constructors: build compound patterns from pattern parts

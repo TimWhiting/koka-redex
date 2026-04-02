@@ -55,8 +55,8 @@ pub fun tcons/show-md(l: t-cons<a, b>, ?show-markdown: t-cons<a, b> -> e list<st
 // ---- Rule rendering ----
 
 pub fun rule/show-markdown(Rule(name, premises, conclusion): koka-redex/syntax/rule<n, p, c>, ?show-md-premises: p -> e list<string>, ?conclusion/show-md: c -> e string, ?name/show-md: n -> e string): e string
-  val premises-md = premises.show-md-premises.map(fn(s) "- " ++ math(s)).join("\n")
-  val conc-md = "- " ++ math(conclusion.show-md)
+  val premises-md = premises.show-md-premises.map(fn(s) "- " ++ s).join("\n")
+  val conc-md = "- " ++ conclusion.show-md
 
   "**" ++ name.show-md ++ "**\n" ++
   (if premises-md.is-empty then "" else premises-md ++ "\n--------\n") ++
@@ -70,6 +70,10 @@ pub fun map-field(r: koka-redex/syntax/rule<n, p, c>, ?show-markdown: koka-redex
 // External entries are skipped in Markdown rendering
 pub fun ext/map-field(_e: external-entry): e mdstr
   Mdstr("")
+
+// Default: fall back to show when no show-md is defined
+pub fun default/show-md(a: a, ?show: a -> string): string
+  show(a)
 
 pub fun relation-to-md(RelationDef(rules): relation-def<r>, name: string, ?to-list: r -> e list<mdstr>): e string
   "# Relation: " ++ name ++ "\n\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n")

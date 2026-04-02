@@ -96,11 +96,6 @@ pub fun rule-subst-lam-neq/show(rule-subst-lam-neq: rule-subst-lam-neq): string
 pub type r-neq
   RNeq
 
-pub fun default/show-md(a: a, ?show: a -> string): string
-  show(a)
-pub fun default/show-latex(a: a, ?show: a -> string): string
-  show(a)
-
 // Formatting relations
 pub fun r-eval/show-md(r: r-eval): string
   "\\Downarrow"

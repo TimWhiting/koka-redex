@@ -3,14 +3,14 @@
 #
 # Usage: ./deploy.sh
 #
-# Builds the site, then force-pushes out/ to the gh-pages branch.
+# Builds the site, then force-pushes koka-redex/ to the gh-pages branch.
 # Requires: git remote 'origin' pointing to the koka-redex repo.
 
 set -e
 cd "$(dirname "$0")"
 
 # Build if needed
-if [ ! -d out ]; then
+if [ ! -d koka-redex ]; then
   echo "Building site first..."
   ./build.sh
 fi
@@ -29,7 +29,7 @@ echo "  Remote: $REMOTE"
 
 # Use a temp directory for the gh-pages commit
 TMPDIR=$(mktemp -d)
-cp -r out/* "$TMPDIR/"
+cp -r koka-redex/* "$TMPDIR/"
 
 # Add .nojekyll to prevent GitHub Pages from processing with Jekyll
 touch "$TMPDIR/.nojekyll"

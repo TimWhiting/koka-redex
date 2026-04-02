@@ -14,7 +14,7 @@ import std/text/regex
 import shell
 
 fun main()
-  val out = "out".path
+  val out = "koka-redex".path
 
   println("Creating output directories...")
   [out, out / "styles", out / "playground"].foreach fn(d)

@@ -3,12 +3,15 @@
 
 import html/html
 
-val playground-base = "./playground"
+val playground-base = "/koka-redex/playground"
 
 pub fun doc-page(page-title: string, content: string): string
   "<!DOCTYPE html>\n" ++
   html
     head
+      if page-title == "Tutorial · Koka Redex" then
+        component("script")
+          add-attr("src", playground-base ++ "/coi-serviceworker.js")
       meta-charset()
       meta-viewport()
       title
@@ -22,8 +25,6 @@ pub fun doc-page(page-title: string, content: string): string
       component("meta")
         add-attr("name", "koka-stdlib-url")
         add-attr("content", playground-base ++ "/")
-      component("script")
-        add-attr("src", playground-base ++ "/coi-serviceworker.js")
     body
       nav(classes=["site-nav"])
         div(classes=["nav-brand"])

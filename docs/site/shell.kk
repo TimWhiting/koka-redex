@@ -3,7 +3,7 @@
 
 import html/html
 
-val playground-base = "/playground"
+val playground-base = "./playground"
 
 pub fun doc-page(page-title: string, content: string): string
   "<!DOCTYPE html>\n" ++

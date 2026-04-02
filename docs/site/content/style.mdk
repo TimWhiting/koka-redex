@@ -1,7 +1,20 @@
+Colorizer: koka
 Css Header:
-    .koka .keyword, .koka .type.keyword { color: var(--syn-keyword, #8d29ba); font-weight: bold; }
-    .koka .type { color: var(--syn-type, #005f5f); }
-    .koka .string { color: var(--syn-string, #a31515); }
-    .koka .comment { color: var(--syn-comment, #6e7681); font-style: italic; }
-    .koka .number { color: var(--syn-number, #09885a); }
-    .koka .constructor { color: var(--syn-constructor, #267f99); }
+    /* Override Madoko's inline koka syntax colors with theme-aware variables */
+    .koka.colorized span[style*="color:blue"]   { color: var(--syn-keyword) !important; }
+    .koka.colorized span[style*="color:maroon"] { color: var(--syn-string) !important; }
+    .koka.colorized span[style*="color:purple"] { color: var(--syn-number) !important; }
+    .koka.colorized span[style*="color:green"]  { color: var(--syn-comment) !important; }
+    .koka.colorized span[style*="color:teal"]   { color: var(--syn-type) !important; }
+    .koka.colorized span[style*="color:navy"]   { color: var(--syn-module) !important; }
+    .koka.colorized span[style*="color:gray"]   { color: var(--syn-comment) !important; }
+    /* Playground token classes (CodeMirror) */
+    .token.keyword        { color: var(--syn-keyword); }
+    .token.type           { color: var(--syn-type); }
+    .token.string         { color: var(--syn-string); }
+    .token.comment        { color: var(--syn-comment); }
+    .token.constructor    { color: var(--syn-constructor); }
+    .token.number         { color: var(--syn-number); }
+    .token.module         { color: var(--syn-module); }
+    .token.type.brackets  { color: var(--text); }
+    .token.brackets.type  { color: var(--text); }

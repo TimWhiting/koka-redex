@@ -11,8 +11,9 @@
   --syn-type: #005f5f;
   --syn-string: #a31515;
   --syn-comment: #6e7681;
-  --syn-number: #09885a;
-  --syn-constructor: #267f99;
+  --syn-number: #098658;
+  --syn-constructor: #7b3814;
+  --syn-module: #811f3f;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-code: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
 }
@@ -28,6 +29,8 @@
     --accent: #58a6ff;
     --syn-keyword: #569cd6;
     --syn-type: #4ec9b0;
+    --syn-module: #9cdcfe;
+    --syn-constructor: #dcdcaa;
     --syn-string: #ce9178;
     --syn-comment: #6a9955;
     --syn-number: #b5cea8;
@@ -73,6 +76,26 @@ body {
   border-radius: 4px;
 }
 .nav-link:hover { color: var(--accent); background: var(--bg); }
+
+/* Override Madoko's inline koka syntax colors with theme-aware variables */
+.koka.colorized span[style*="color:blue"]      { color: var(--syn-keyword) !important; }
+.koka.colorized span[style*="color:maroon"]    { color: var(--syn-string) !important; }
+.koka.colorized span[style*="color:purple"]    { color: var(--syn-number) !important; }
+.koka.colorized span[style*="color:green"]     { color: var(--syn-comment) !important; }
+.koka.colorized span[style*="color:darkgreen"] { color: var(--syn-comment) !important; }
+.koka.colorized span[style*="color:teal"]      { color: var(--syn-type) !important; }
+.koka.colorized span[style*="color:navy"]      { color: var(--syn-module) !important; }
+.koka.colorized span[style*="color:gray"]      { color: var(--syn-comment) !important; }
+.koka.colorized .constant[style*="color:purple"] { color: var(--syn-number) !important; }
+
+/* Playground editor token classes (CodeMirror) */
+.token.keyword        { color: var(--syn-keyword); }
+.token.type           { color: var(--syn-type); }
+.token.string         { color: var(--syn-string); }
+.token.comment        { color: var(--syn-comment); }
+.token.constructor    { color: var(--syn-constructor); }
+.token.number         { color: var(--syn-number); }
+.token.module         { color: var(--syn-module); }
 
 .site-content {
   max-width: 52rem;

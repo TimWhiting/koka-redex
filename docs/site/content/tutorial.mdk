@@ -4,20 +4,19 @@ Heading Depth : 0
 
 # Tutorial: From Reachability to 0CFA
 
-This tutorial walks through three examples of increasing complexity,
-demonstrating the core features of Koka Redex.
+This tutorial walks through three examples of increasing complexity.
+Each code sample is editable and runnable in the browser.
 
 ## 1. Reachability — Your First Relation
 
-Define a simple graph and query for reachable nodes.
+Define a simple directed graph and query for reachable nodes.
 
-### Domain Setup
-
-```koka
+~ begin htmlraw
+<koka-editor>
 import koka-redex/forward-bridge
 import koka-redex/pattern
 
-// Relation markers — phantom types that name the relations
+// Relation markers
 pub type r-edge
   REdge
 pub fun r-edge/judgment-name(_: r-edge): string { "edge" }
@@ -25,29 +24,20 @@ pub fun r-edge/judgment-name(_: r-edge): string { "edge" }
 pub type r-reach
   RReach
 pub fun r-reach/judgment-name(_: r-reach): string { "reach" }
-```
 
-### Pattern Variables
-
-```koka
+// Pattern helpers
 fun n(i: int): pat<int> { PatTerm(TInt(i)) }
 fun pv(nm: string, id: int): pat<int> { PatVar(nm, id) }
-```
 
-### Rules
-
-```koka
+// Rules
 fun reach-relation()
   val x = pv("x", 1)
   val y = pv("y", 2)
   val z = pv("z", 3)
-
   with relation-def
-  // Ground facts (edges)
   with rule(axiom --- "edge-1-2" --> n(1) |- REdge \ n(2))
   with rule(axiom --- "edge-2-3" --> n(2) |- REdge \ n(3))
   with rule(axiom --- "edge-3-4" --> n(3) |- REdge \ n(4))
-  // Reachability rules
   with rule(
     x |- REdge \ y
     --- "reach-edge" -->
@@ -57,19 +47,19 @@ fun reach-relation()
     y |- RReach \ z
     --- "reach-step" -->
     x |- RReach \ z)
-```
 
-### Queries
-
-```koka
 pub fun main()
   println("--- reach(1, ?) ---")
   val goal = n(1) |- RReach \ pv("target", 0)
   val table = forward-search(goal, reach-relation())
-  // Result: reach(1,2), reach(1,3), reach(1,4)
-```
+  val goal-key = "reach(1)"
+  val results = table.flatmap fn(kv)
+    if kv.fst == goal-key then kv.snd else []
+  results.map(fn(f) f.show).foreach(println)
+</koka-editor>
+~ end htmlraw
 
-**Key concepts:**
+**Key syntax:**
 
 - `|-` separates inputs from the relation marker
 - `\` separates elements within a judgement
@@ -80,211 +70,175 @@ pub fun main()
 
 ---
 
-## 2. Type Inference — External Solvers
+## 2. 0CFA — Lattice Fixpoint
 
-Type inference demonstrates **external solvers** — relations computed by
-Koka functions rather than rules.
+0CFA demonstrates **collecting semantics** — the same variable can have
+multiple values, discovered through fixpoint iteration.
 
-### Domain Types with Auto-Derivation
-
-```koka
+~ begin htmlraw
+<koka-editor>
+import koka-redex/forward-bridge
 import koka-redex/derive
+import koka-redex/pattern
 
-pub type expr
-  XVar(nm: string)
-  XApp(e1: expr, e2: expr)
-  XLam(x: string, body: expr)
-  XInt(n: int)
-
-// Constructor descriptors (one per constructor)
-pub type var-expr
-pub fun var-expr/name/show(): name<var-expr> { Name("var") }
-
-pub val var-expr/con-info :
-  con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
-    fn(e) match e { XVar(n) -> Just(n +: TNil); _ -> Nothing },
-    fn(TCons(n, _)) XVar(n))
-// ... similar for app-expr, lam-expr, int-expr
-
-// Combine into type-info
-val expr-info = mk-field(var-expr/con-info)
-  *: mk-field(app-expr/con-info)
-  *: mk-field(lam-expr/con-info)
-  *: mk-field(int-expr/con-info) *: TNil
-
-// Auto-derive to-term / from-term
-pub fun expr/to-term(e: expr): div term
-  val n/to-term = expr/to-term
-  derive-to-term(e, expr-info)
-```
-
-### External Solvers
-
-Store lookup and unification are external — Koka functions, not rules:
-
-```koka
-// Lookup: external relation on domain types
-with external-rule(env \ x |- RLookup \ t,
-  fn(TCons(env-val: tenv, x-val: string))
-    store-lookup-all(env-val, x-val))
-
-// Unification: external relation using the logic effect
-with external-term-rule(t1 \ t2 |- RUnify \ TNil,
-  fn([t1', t2'])
-    unify(t1', t2')
-    [Fact("unify-types", [resolve(t1'), resolve(t2')])])
-```
-
-### Rules
-
-```koka
-with rule(
-  axiom
-  --- "T-Int" -->
-  p-int(n) \ env |- RInfer \ p-base("Int"))
-
-with rule(
-  env \ x |- RLookup \ t
-  --- "T-Var" -->
-  p-var(x) \ env |- RInfer \ t)
-
-with rule(
-  e \ p-tcons(x, a, env) |- RInfer \ t
-  --- "T-Lam" -->
-  p-lam(x, e) \ env |- RInfer \ p-arrow(a, t))
-
-single/rule(
-  e1 \ env |- RInfer \ t1 \\
-  e2 \ env |- RInfer \ t2 \\
-  t1 \ p-arrow(t2, a) |- RUnify \ TNil
-  --- "T-App" -->
-  p-app(e1, e2) \ env |- RInfer \ a)
-```
-
-**Key concepts:**
-
-- `external-rule` wraps a Koka function as a relation — the framework
-  converts between terms and domain types automatically
-- `external-term-rule` operates at the term level (for unification)
-- The engine's premise reordering ensures syntax-directed evaluation —
-  T-App evaluates `e1` and `e2` first, then runs unification
-
----
-
-## 3. 0CFA — Lattice Fixpoint and Over-Approximation
-
-0CFA demonstrates **lattice-based fixpoint** — the same variable can
-have multiple values.
-
-### Domain Types
-
-```koka
+// Domain types
 pub type expr
   EVar(nm: string)
   EApp(e1: expr, e2: expr)
   ELam(x: string, body: expr)
 
-// Store is a custom type (or use list<(string, expr)> for interned version)
 pub type store
   SNil
   SCons(nm: string, vl: expr, rest: store)
-```
 
-### Rules
+// Con-info descriptors for auto-derived to-term/from-term
+pub type var-expr
+pub fun var-expr/name/show(): name<var-expr> { Name("var") }
+pub type app-expr
+pub fun app-expr/name/show(): name<app-expr> { Name("app") }
+pub type lam-expr
+pub fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+pub type snil-store
+pub fun snil-store/name/show(): name<snil-store> { Name("snil") }
+pub type scons-store
+pub fun scons-store/name/show(): name<scons-store> { Name("scons") }
 
-```koka
-// E-Lam: λ values evaluate to themselves
-with rule(
-  axiom
-  --- "E-Lam" -->
-  p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
+pub val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
+  fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
+pub val app-expr/con-info : con-info<app-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+  fn(e) match e { EApp(a, b) -> Just(a +: b +: TNil); _ -> Nothing }, fn(TCons(a, TCons(b, _))) EApp(a, b))
+pub val lam-expr/con-info : con-info<lam-expr, t-cons<string, t-cons<expr, t-nil>>, expr> = Con-info(
+  fn(e) match e { ELam(x, body) -> Just(x +: body +: TNil); _ -> Nothing }, fn(TCons(x, TCons(body, _))) ELam(x, body))
+val expr-info =
+  mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: TNil
 
-// E-Var: variable lookup (external)
-with external-rule(s \ x |- RLookup \ v,
-  fn(TCons(s-val: store, x-val: string))
-    store-lookup-all(s-val, x-val))
-with rule(
-  s \ x |- RLookup \ vl
-  --- "E-Var" -->
-  p-var(x) \ s |- REval \ vl \ s)
+pub val snil-store/con-info : con-info<snil-store, t-nil, store> = Con-info(
+  fn(s) match s { SNil -> Just(TNil); _ -> Nothing }, fn(_) SNil)
+pub val scons-store/con-info : con-info<scons-store, t-cons<string, t-cons<expr, t-cons<store, t-nil>>>, store> = Con-info(
+  fn(s) match s { SCons(n, v, rest) -> Just(n +: v +: rest +: TNil); _ -> Nothing }, fn(TCons(n, TCons(v, TCons(rest, _)))) SCons(n, v, rest))
+val store-info =
+  mk-field(snil-store/con-info) *: mk-field(scons-store/con-info) *: TNil
 
-// E-App: application with store threading
-single/rule(
-  e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
-  e2 \ s1 |- REval \ v2 \ s2 \\
-  e3 \ p-scons(x, v2, s2) |- REval \ v \ s3
-  --- "E-App" -->
-  p-app(e1, e2) \ s0 |- REval \ v \ s3)
-```
+// Auto-derived to-term / from-term
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term
+  derive-to-term(e, expr-info)
+pub fun store/to-term(s: store): div term
+  val n/to-term = store/to-term
+  derive-to-term(s, store-info)
+pub fun expr/from-term(t: term): <exn,div> expr
+  val n/from-term = expr/from-term
+  derive-from-term(t, expr-info)
+pub fun store/from-term(t: term): <exn,div> store
+  val n/from-term = store/from-term
+  derive-from-term(t, store-info)
 
-### Over-Approximation
+// Relation markers
+pub type r-eval
+  REval
+pub fun r-eval/judgment-name(_: r-eval): string { "eval" }
+pub type r-lookup
+  RLookup
+pub fun r-lookup/judgment-name(_: r-lookup): string { "lookup" }
 
-```koka
-// let f = λx.x in (f λa.a)(f λb.b)
-val id-fn = ELam("x", EVar("x"))
-val lam-a = ELam("a", EVar("a"))
-val lam-b = ELam("b", EVar("b"))
-val body = EApp(EApp(EVar("f"), lam-a), EApp(EVar("f"), lam-b))
-val prog = EApp(ELam("f", body), id-fn)
+// Pattern constructors
+fun p-var(nm: pat<string>): pat<expr>
+  PatTerm(TNode("var", [nm.to-term]))
+fun p-app(e1: pat<expr>, e2: pat<expr>): pat<expr>
+  PatTerm(TNode("app", [e1.to-term, e2.to-term]))
+fun p-lam(x: pat<string>, body: pat<expr>): pat<expr>
+  PatTerm(TNode("lam", [x.to-term, body.to-term]))
+fun p-snil(): pat<store>
+  PatTerm(TNode("snil", []))
+fun p-scons(nm: pat<string>, vl: pat<expr>, rest: pat<store>): pat<store>
+  PatTerm(TNode("scons", [nm.to-term, vl.to-term, rest.to-term]))
 
-val goal = pat(prog) \ pat(SNil) |- REval
-         \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
-val table = forward-search(goal, cfa-relation())
-// Over-approximation: eval(var(x), ...) has 2 values: {λa.a, λb.b}
-```
+// External solver
+fun store-lookup-all(s: store, nm: string): div list<expr>
+  match s
+    SCons(n, vl, rest) ->
+      val found = if n == nm then [vl] else []
+      found ++ store-lookup-all(rest, nm)
+    _ -> []
 
-The `set-join` lattice (default) collects all distinct results per memo key.
-When `f` is applied to both `λa.a` and `λb.b`, the variable `x` bound in
-`f = λx.x` gets both values — the analysis correctly over-approximates.
+// Rules
+fun cfa-relation()
+  with with-pats
+  val x  : pat<string> = fresh-pat("x")
+  val e  : pat<expr> = fresh-pat("e")
+  val e1 : pat<expr> = fresh-pat("e1")
+  val e2 : pat<expr> = fresh-pat("e2")
+  val e3 : pat<expr> = fresh-pat("e3")
+  val s  : pat<store> = fresh-pat("s")
+  val s0 : pat<store> = fresh-pat("s0")
+  val s1 : pat<store> = fresh-pat("s1")
+  val s2 : pat<store> = fresh-pat("s2")
+  val s3 : pat<store> = fresh-pat("s3")
+  val v  : pat<expr> = fresh-pat("v")
+  val v2 : pat<expr> = fresh-pat("v2")
+  val vl : pat<expr> = fresh-pat("val")
+  with relation-def
+  with rule(
+    axiom
+    --- "E-Lam" -->
+    p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
+  with external-rule(s \ x |- RLookup \ v,
+    fn(TCons(s-val: store, x-val: string))
+      store-lookup-all(s-val, x-val))
+  with rule(
+    s \ x |- RLookup \ vl
+    --- "E-Var" -->
+    p-var(x) \ s |- REval \ vl \ s)
+  single/rule(
+    e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
+    e2 \ s1 |- REval \ v2 \ s2 \\
+    e3 \ p-scons(x, v2, s2) |- REval \ v \ s3
+    --- "E-App" -->
+    p-app(e1, e2) \ s0 |- REval \ v \ s3)
 
-**Key concepts:**
+pub fun main()
+  with with-pats
+  val rel = cfa-relation()
 
-- The fixpoint engine discovers all reachable results via continuation resumption
-- No special abstract interpretation machinery needed — `set-join` + fixpoint = collecting semantics
-- Same rules work for concrete evaluation (single result) or abstract (over-approximation)
+  // (λx.x)(λz.z) — simple identity application
+  println("--- (λx.x)(λz.z) ---")
+  val id-fn = ELam("x", EVar("x"))
+  val goal1 = pat(EApp(id-fn, ELam("z", EVar("z")))) \ pat(SNil)
+            |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
+  val table1 = forward-search(goal1, rel)
+  println("Entries: " ++ table1.length.show)
 
-### Interned Stores
+  // let f = λx.x in (f λa.a)(f λb.b) — over-approximation
+  println("\n--- let f = λx.x in (f λa.a)(f λb.b) ---")
+  val lam-a = ELam("a", EVar("a"))
+  val lam-b = ELam("b", EVar("b"))
+  val body = EApp(EApp(EVar("f"), lam-a), EApp(EVar("f"), lam-b))
+  val prog2 = EApp(ELam("f", body), id-fn)
+  val goal2 = pat(prog2) \ pat(SNil)
+            |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
+  val table2 = forward-search(goal2, rel)
+  println("Entries: " ++ table2.length.show)
 
-For better performance, intern stores as opaque references:
+  println("\nOver-approximation:")
+  val multi = table2.filter(fn(kv) kv.snd.length > 1)
+  println("  Entries with >1 value: " ++ multi.length.show)
+  multi.foreach fn(kv)
+    println("  ** " ++ kv.fst ++ " has " ++ kv.snd.length.show ++ " values **")
+</koka-editor>
+~ end htmlraw
 
-```koka
-// Create a pool at the analysis entry point
-val store/pool : ev<ref-pool<store>> = make-pool(store/(==))
+**What's happening:**
 
-// ref/to-term and ref/from-term resolve via ?pool implicit
-// Engine sees TRef(id) — O(1) equality instead of structural comparison
-```
-
-Store operations (lookup, extend) become external solvers that dereference
-through the pool.
+- The `set-join` lattice collects all distinct results per memo key
+- When `f = λx.x` is applied to both `λa.a` and `λb.b`, the variable `x`
+  gets both values — the analysis correctly over-approximates
+- The fixpoint engine discovers all values via tabled continuation resumption
+- No special abstract interpretation machinery — `set-join` + fixpoint = collecting semantics
 
 ---
 
-## Rendering
+## What to Try
 
-Any relation renders to LaTeX or Markdown:
-
-```koka
-println(rel.relation-to-latex)
-println(rel.relation-to-md("Evaluation"))
-```
-
-Define per-constructor format functions for custom rendering:
-
-```koka
-fun lam-expr/render-latex(_: name<lam-expr>,
-  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
-  "\\lambda " ++ x ++ ".\\; " ++ body
-
-fun lam-expr/render-md(_: name<lam-expr>,
-  TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>)
-  "λ" ++ x ++ ". " ++ body
-```
-
-Build term renderers from your type-info:
-
-```koka
-val cfa/term-show-latex: term-renderer =
-  val entries : list<latex-entry> = expr-info.to-list
-  make-term-renderer(entries.map(entry), ?var-render=latex/var-render)
-```
+- **Edit the graph** in the reachability example — add edges, see how the results change
+- **Modify the program** in the 0CFA example — try `(λx.x)(λy.y)` or add more bindings
+- **Watch the entry count** grow as the program gets more complex

@@ -3,6 +3,8 @@
 
 import html/html
 
+val playground-base = "/playground"
+
 pub fun doc-page(page-title: string, content: string): string
   "<!DOCTYPE html>\n" ++
   html
@@ -13,6 +15,13 @@ pub fun doc-page(page-title: string, content: string): string
         text(page-title)
       stylesheet("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap")
       stylesheet("styles/site.css")
+      // Koka playground embed configuration
+      component("meta")
+        add-attr("name", "koka-wasm-url")
+        add-attr("content", playground-base ++ "/koka-playground.wasm")
+      component("meta")
+        add-attr("name", "koka-stdlib-url")
+        add-attr("content", playground-base ++ "/")
     body
       nav(classes=["site-nav"])
         div(classes=["nav-brand"])
@@ -35,4 +44,7 @@ pub fun doc-page(page-title: string, content: string): string
         raw-html(content)
       footer(classes=["site-footer"])
         text("Koka Redex")
+      component("script")
+        add-attr("type", "module")
+        add-attr("src", playground-base ++ "/embed.js")
   .show

@@ -23,7 +23,6 @@ pub fun doc-page(page-title: string, content: string): string
         add-attr("name", "koka-stdlib-url")
         add-attr("content", playground-base ++ "/")
       component("script")
-        add-attr("type", "module")
         add-attr("src", playground-base ++ "/coi-serviceworker.js")
     body
       nav(classes=["site-nav"])

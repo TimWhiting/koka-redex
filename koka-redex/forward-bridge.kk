@@ -292,6 +292,53 @@ fun unique-by-pred(keys: list<key-info>): div list<key-info>
     Cons(k, rest) ->
       Cons(k, rest.filter(fn(k2) k2.pred != k.pred).unique-by-pred)
 
+// ----------------------------------------------------------------------------
+// Lattice policy derivation: extract per-relation join policy from rules
+// ----------------------------------------------------------------------------
+
+pub value struct policy-info
+  pred: string
+  policy: join-policy
+
+// map-field for policy extraction: extract from a rule's conclusion
+pub fun policy/map-field(
+  Rule(_name, _premises, conclusion): koka-redex/syntax/rule<n, p, c>,
+  ?to-policy-info: c -> div policy-info
+): div policy-info
+  conclusion.to-policy-info
+
+// Chain traversal: find the relation marker and extract its policy
+pub fun tcons/to-policy-info(
+  TCons(_h, t): t-cons<a, b>,
+  ?to-policy-info: b -> div policy-info,
+  ?before-judgment: b -> ()
+): div policy-info
+  t.to-policy-info
+
+pub fun marker-end/to-policy-info(
+  TCons(h, _t): t-cons<a, b>,
+  ?judgment-name: a -> string,
+  ?join-policy: a -> join-policy
+): div policy-info
+  Policy-info(h.judgment-name, h.join-policy)
+
+// Default join policy: set-join
+pub fun default/join-policy(_a: a): join-policy
+  set-join
+
+// Derive policies from relation-def
+pub fun relation/derive-policies(
+  RelationDef(rules): relation-def<r>,
+  ?to-list: r -> div list<policy-info>
+): div list<(string, join-policy)>
+  rules.to-list.unique-policies
+
+fun unique-policies(infos: list<policy-info>): div list<(string, join-policy)>
+  match infos
+    Nil -> Nil
+    Cons(p, rest) ->
+      Cons((p.pred, p.policy), rest.filter(fn(p2) p2.pred != p.pred).unique-policies)
+
 // Convert key-infos into a composed memo-key function
 pub fun keys-to-memo-key(keys: list<key-info>): ((fact) -> string)
   compose-memo-keys(keys.map(fn(k) (k.pred, make-memo-key(k.pred, k.n-inputs))))
@@ -321,6 +368,10 @@ pub fun ext-entry/map-field(e: external-entry): div relation-entry
 pub fun ext-key/map-field(e: external-entry): div key-info
   Key-info(e.ext-pred, e.ext-n-inputs)
 
+// policy map-field: external-entry -> policy-info (default set-join)
+pub fun ext-policy/map-field(e: external-entry): div policy-info
+  Policy-info(e.ext-pred, set-join)
+
 // Partition relation-entries into rules and external solvers
 fun partition-entries(entries: list<relation-entry>): (list<koka-redex/term/rule>, list<(string, (fact) -> <logic,div,exn> maybe<list<fact>>)>)
   match entries
@@ -343,11 +394,13 @@ pub fun forward-search(
   rel: relation-def<r>,
   ?to-fact: g -> div fact,
   ?to-list: r -> div list<relation-entry>,
-  ?derive-keys: relation-def<r> -> div list<key-info>
+  ?derive-keys: relation-def<r> -> div list<key-info>,
+  ?derive-policies: relation-def<r> -> div list<(string, join-policy)>
 ): <div,exn> list<(string, list<fact>)>
   val entries = to-list(rel.rules)
   val (rules, ext-pairs) = partition-entries(entries)
   val ext = compose-externals(ext-pairs)
   val mk = keys-to-memo-key(rel.derive-keys)
-  koka-redex/forward/forward-search(goal.to-fact, rules, ?external=ext, ?memo-key=mk)
+  val policies = rel.derive-policies
+  koka-redex/forward/forward-search(goal.to-fact, rules, ?external=ext, ?memo-key=mk, ?lattice-policies=policies)
 

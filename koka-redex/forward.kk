@@ -14,7 +14,7 @@ import std/fixpoint/lattice
 import std/core/unsafe
 
 // ---------------------------------------------------------------------------
-// Result lattice
+// Result lattice — per-relation dispatch
 // ---------------------------------------------------------------------------
 
 pub alias search-result = fact
@@ -22,11 +22,33 @@ pub alias search-result = fact
 fun search-result/(==)(a: search-result, b: search-result): div bool
   fact/eq(a, b)
 
-fun result-join(old: list<search-result>, new: search-result): pure (bool, list<search-result>)
+// Built-in join policies
+pub alias join-policy = (list<search-result>, search-result) -> pure (bool, list<search-result>)
+
+// Set join: collect all distinct results (default)
+pub val set-join : join-policy = fn(old, new)
   if old.any(fn(r) unsafe-total({search-result/(==)(r, new)})) then (False, old)
   else (True, Cons(new, old))
 
-val result-lattice : change-lattice<list<search-result>, search-result> = Change-lattice([], result-join, fn(x) x)
+// Single join: deterministic relation — error if a second distinct result appears
+pub val single-join : join-policy = fn(old, new)
+  match old
+    Nil -> (True, [new])
+    Cons(existing, _) ->
+      if unsafe-total({search-result/(==)(existing, new)}) then (False, old)
+      else throw("single-join: relation produced multiple distinct results: " ++ unsafe-total({existing.show}) ++ " vs " ++ unsafe-total({new.show}))
+
+// Per-relation lattice: dispatches join by predicate name
+pub fun make-lattice(policies: list<(string, join-policy)>): change-lattice<list<search-result>, search-result>
+  val dispatch-join : join-policy = fn(old, new)
+    match new
+      Fact(pred, _) ->
+        match policies.find(fn(p) p.fst == pred)
+          Just((_, policy)) -> policy(old, new)
+          Nothing -> set-join(old, new)
+  Change-lattice([], dispatch-join, fn(x) x)
+
+val result-lattice : change-lattice<list<search-result>, search-result> = make-lattice([])
 
 // ---------------------------------------------------------------------------
 // External relation solver
@@ -133,15 +155,17 @@ pub fun forward-search(
   goal: fact,
   rules: list<rule>,
   ?external: external-solver,
-  ?memo-key: (fact) -> div string
+  ?memo-key: (fact) -> div string,
+  ?lattice-policies: list<(string, join-policy)>
 ): <div,exn> list<(string, list<search-result>)>
   val table =
-    with cache(?change-lattice = result-lattice,
+    with cache(?change-lattice = make-lattice(lattice-policies),
                ?order2 = string/order2,
                ?k/show = fn(s) s,
                ?r/show = fn(f: fact) unsafe-total({f.show}))
     with-logic({none()})
       forward-eval(goal, rules, ?external=external, ?memo-key=memo-key)
   table.list
-// test comment
+
+pub val default/lattice-policies : list<(string, join-policy)> = []
 // kki test

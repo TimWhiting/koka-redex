@@ -25,7 +25,7 @@ fun main()
 
   // Copy playground dist for embedded editors
   println("Copying playground assets...")
-  deploy-playground(out / "playground")
+  deploy-playground(out / "playground", out)
 
   println("Building pages...")
   val pages = [
@@ -43,7 +43,7 @@ fun main()
   println("Done. Site written to out/")
 
 // Deploy playground assets needed for embedded <koka-editor> elements
-fun deploy-playground(dst: path): io ()
+fun deploy-playground(dst: path, root: path): io ()
   val home = get-env-value("HOME").default("/Users/timwhiting")
   val playground-dist = get-env-value("PLAYGROUND_DIST").default(
     home ++ "/koka/.worktrees/redex/web/playground/dist").path
@@ -92,7 +92,7 @@ fun deploy-playground(dst: path): io ()
 
   // Cross-origin isolation service worker
   val coi = playground-dist / "coi-serviceworker.js"
-  if coi.is-file then copy-file(coi, dst / "coi-serviceworker.js")
+  if coi.is-file then copy-file(coi, root / "coi-serviceworker.js")
 
   println("  Playground deployed to " ++ dst.string)
 

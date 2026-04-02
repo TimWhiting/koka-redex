@@ -11,7 +11,7 @@ pub fun doc-page(page-title: string, content: string): string
     head
       if page-title == "Tutorial · Koka Redex" then
         component("script")
-          add-attr("src", playground-base ++ "/coi-serviceworker.js")
+          add-attr("src", "/koka-redex/coi-serviceworker.js")
       meta-charset()
       meta-viewport()
       title

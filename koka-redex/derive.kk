@@ -231,7 +231,7 @@ pub fun end/build-string-tcons(
 //
 // A render-entry maps a constructor name to its format function.
 // The user defines per-tag, per-backend:
-//   fun lam-expr/render-latex(_: name<lam-expr>, TCons(x, TCons(body, _))): string
+//   fun lam-expr/show-latex(_: name<lam-expr>, TCons(x, TCons(body, _))): string
 //     "\\lambda " ++ x ++ ".\\; " ++ body
 //
 // Falls back to default show-style rendering: Name(field1, field2)
@@ -247,53 +247,89 @@ pub fun default/name-latex(n: name<a>): string
 pub fun default/name-md(n: name<a>): string
   n.s
 
-// ---- to-render-entry: build a render-entry from a con-info ----
+// ---- LaTeX render entries ----
 
-// Atom constructors: rendered as the atom value
-pub fun atom/to-render-entry<tag, whole>(ci: con-info<tag, string, whole>,
+pub fun atom/to-latex-entry<tag, whole>(ci: con-info<tag, string, whole>,
   ?name/show: () -> name<tag>
 ): render-entry
   (ci.con-name, fn(Cons(v, _)) v)
 
-// Node constructors with custom render: type-safe t-cons fields via build-string-tcons
-pub fun node/to-render-entry<tag, whole, sf>(ci: con-info<tag, t-cons<a, b>, whole>,
+pub fun node/to-latex-entry<tag, whole, sf>(ci: con-info<tag, t-cons<a, b>, whole>,
   ?name/show: () -> name<tag>,
-  ?render: (name<tag>, sf) -> <div,exn> string,
+  ?show-latex: (name<tag>, sf) -> <div,exn> string,
   ?build-string-tcons: (list<string>, field-witness<b>) -> exn sf
 ): render-entry
   val nm = ?name/show()
   val w : field-witness<b> = FieldWitness
-  (nm.s, fn(rendered) render(nm, rendered.build-string-tcons(w)))
+  (nm.s, fn(rendered) show-latex(nm, rendered.build-string-tcons(w)))
 
-// Node constructors without custom render: default Name(f1, f2, ...)
-pub fun default/node/to-render-entry<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
+pub fun default/node/to-latex-entry<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
   ?name/show: () -> name<tag>
 ): render-entry
   val nm = ?name/show()
   (nm.s, fn(rendered) nm.s ++ "(" ++ rendered.join(", ") ++ ")")
 
-// Nullary constructors: rendered via name-latex/name-md
-pub fun nullary/to-render-entry<tag, whole>(ci: con-info<tag, t-nil, whole>,
+pub fun nullary/to-latex-entry<tag, whole>(ci: con-info<tag, t-nil, whole>,
   ?name/show: () -> name<tag>,
-  ?name-render: name<tag> -> string
+  ?name-latex: name<tag> -> string
 ): render-entry
   val nm = ?name/show()
-  (nm.s, fn(_) nm.name-render)
+  (nm.s, fn(_) nm.name-latex)
 
-// ---- to-render-entries: t-struct traversal ----
-
-pub fun tstruct/to-render-entries<tag, tag1, fields, fields1, whole>(
+pub fun tstruct/to-latex-entries<tag, tag1, fields, fields1, whole>(
   s: t-struct<n, con-info<tag, fields, whole>, t-struct<n1, con-info<tag1, fields1, whole>, r>>,
-  ?to-render-entry: con-info<tag, fields, whole> -> render-entry,
-  ?to-render-entries: t-struct<n1, con-info<tag1, fields1, whole>, r> -> list<render-entry>
+  ?to-latex-entry: con-info<tag, fields, whole> -> render-entry,
+  ?to-latex-entries: t-struct<n1, con-info<tag1, fields1, whole>, r> -> list<render-entry>
 ): list<render-entry>
-  Cons(s.head-field.v.to-render-entry, s.rest.to-render-entries)
+  Cons(s.head-field.v.to-latex-entry, s.rest.to-latex-entries)
 
-pub fun nil/to-render-entries<tag, fields, whole>(
+pub fun nil/to-latex-entries<tag, fields, whole>(
   s: t-struct<n, con-info<tag, fields, whole>, t-nil>,
-  ?to-render-entry: con-info<tag, fields, whole> -> render-entry
+  ?to-latex-entry: con-info<tag, fields, whole> -> render-entry
 ): list<render-entry>
-  [s.head-field.v.to-render-entry]
+  [s.head-field.v.to-latex-entry]
+
+// ---- Markdown render entries ----
+
+pub fun atom/to-md-entry<tag, whole>(ci: con-info<tag, string, whole>,
+  ?name/show: () -> name<tag>
+): render-entry
+  (ci.con-name, fn(Cons(v, _)) v)
+
+pub fun node/to-md-entry<tag, whole, sf>(ci: con-info<tag, t-cons<a, b>, whole>,
+  ?name/show: () -> name<tag>,
+  ?show-md: (name<tag>, sf) -> <div,exn> string,
+  ?build-string-tcons: (list<string>, field-witness<b>) -> exn sf
+): render-entry
+  val nm = ?name/show()
+  val w : field-witness<b> = FieldWitness
+  (nm.s, fn(rendered) show-md(nm, rendered.build-string-tcons(w)))
+
+pub fun default/node/to-md-entry<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
+  ?name/show: () -> name<tag>
+): render-entry
+  val nm = ?name/show()
+  (nm.s, fn(rendered) nm.s ++ "(" ++ rendered.join(", ") ++ ")")
+
+pub fun nullary/to-md-entry<tag, whole>(ci: con-info<tag, t-nil, whole>,
+  ?name/show: () -> name<tag>,
+  ?name-md: name<tag> -> string
+): render-entry
+  val nm = ?name/show()
+  (nm.s, fn(_) nm.name-md)
+
+pub fun tstruct/to-md-entries<tag, tag1, fields, fields1, whole>(
+  s: t-struct<n, con-info<tag, fields, whole>, t-struct<n1, con-info<tag1, fields1, whole>, r>>,
+  ?to-md-entry: con-info<tag, fields, whole> -> render-entry,
+  ?to-md-entries: t-struct<n1, con-info<tag1, fields1, whole>, r> -> list<render-entry>
+): list<render-entry>
+  Cons(s.head-field.v.to-md-entry, s.rest.to-md-entries)
+
+pub fun nil/to-md-entries<tag, fields, whole>(
+  s: t-struct<n, con-info<tag, fields, whole>, t-nil>,
+  ?to-md-entry: con-info<tag, fields, whole> -> render-entry
+): list<render-entry>
+  [s.head-field.v.to-md-entry]
 
 // ============================================================================
 // Term renderer: dispatch by con-name, handle TVar/TAtom/TInt

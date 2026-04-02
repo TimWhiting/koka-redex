@@ -91,49 +91,35 @@ pub fun store/from-term(t: term): <exn,div> store
 // ----------------------------------------------------------------------------
 
 // Per-constructor LaTeX rendering
-fun var-expr/render-latex(_: name<var-expr>, TCons(n, _): t-cons<string, t-nil>): <div,exn> string
+fun var-expr/show-latex(_: name<var-expr>, TCons(n, _): t-cons<string, t-nil>): <div,exn> string
   n
-fun app-expr/render-latex(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun app-expr/show-latex(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   e1 ++ "\\; " ++ e2
-fun lam-expr/render-latex(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun lam-expr/show-latex(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   "\\lambda " ++ x ++ ".\\; " ++ body
-fun scons-store/render-latex(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
+fun scons-store/show-latex(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
   rest ++ "[" ++ n ++ " \\mapsto " ++ v ++ "]"
 
 fun snil-store/name-latex(_: name<snil-store>): string
   "\\emptyset"
 
 // Per-constructor Markdown rendering (only where it differs from LaTeX)
-fun app-expr/render-md(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun app-expr/show-md(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   e1 ++ " " ++ e2
-fun lam-expr/render-md(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
+fun lam-expr/show-md(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   "\\lambda " ++ x ++ ". " ++ body
 
 fun snil-store/name-md(_: name<snil-store>): string
   "\\emptyset"
 
-// Derive term renderers from type-info
-fun latex-entries(): list<render-entry>
-  [ to-render-entry(atom-expr/con-info),
-    to-render-entry(var-expr/con-info, ?render=var-expr/render-latex),
-    to-render-entry(app-expr/con-info, ?render=app-expr/render-latex),
-    to-render-entry(lam-expr/con-info, ?render=lam-expr/render-latex),
-    to-render-entry(snil-store/con-info, ?name-render=snil-store/name-latex),
-    to-render-entry(scons-store/con-info, ?render=scons-store/render-latex) ]
-
-fun md-entries(): list<render-entry>
-  [ to-render-entry(atom-expr/con-info),
-    to-render-entry(var-expr/con-info),   // default: var(n)
-    to-render-entry(app-expr/con-info, ?render=app-expr/render-md),
-    to-render-entry(lam-expr/con-info, ?render=lam-expr/render-md),
-    to-render-entry(snil-store/con-info, ?name-render=snil-store/name-md),
-    to-render-entry(scons-store/con-info) ] // default: scons(n, v, rest)
-
+// Derive term renderers from type-info traversal
 fun cfa/term-show-latex(): term-renderer
-  make-term-renderer(latex-entries(), ?var-render=latex/var-render)
+  val entries = expr-info.to-latex-entries ++ store-info.to-latex-entries
+  make-term-renderer(entries, ?var-render=latex/var-render)
 
 fun cfa/term-show-md(): term-renderer
-  make-term-renderer(md-entries(), ?var-render=md/var-render)
+  val entries = expr-info.to-md-entries ++ store-info.to-md-entries
+  make-term-renderer(entries, ?var-render=md/var-render)
 
 // Pattern renderers
 pub fun cfa/show-latex(p: pat<a>): <div,exn> string

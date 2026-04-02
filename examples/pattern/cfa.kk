@@ -1,37 +1,30 @@
 module examples/pattern/cfa
 
 // 0CFA with store-passing using `pat<a>` metavariables.
-// Domain types are CLEAN — no Any/metavar constructors needed.
-// Metavariables come from `pat<a>` with fresh-pat.
 
 import koka-redex/forward-bridge
 import koka-redex/derive
 import koka-redex/pattern
 import koka-redex/latex
 import koka-redex/markdown
-import std/core/undiv
 
 // ----------------------------------------------------------------------------
-// Clean domain types — no metavariable constructors!
+// Domain types
 // ----------------------------------------------------------------------------
 
 pub type expr
-  EAtom(nm: string)
-  EVar(nm: expr)
+  EVar(nm: string)
   EApp(e1: expr, e2: expr)
-  ELam(x: expr, body: expr)
+  ELam(x: string, body: expr)
 
 pub type store
   SNil
-  SCons(nm: expr, vl: expr, rest: store)
+  SCons(nm: string, vl: expr, rest: store)
 
 // ----------------------------------------------------------------------------
 // Con-info descriptors
 // ----------------------------------------------------------------------------
 
-pub type atom-expr
-pub fun atom-expr/name/show(): name<atom-expr>
-  Name("")
 pub type var-expr
 pub fun var-expr/name/show(): name<var-expr>
   Name("var")
@@ -48,26 +41,24 @@ pub type scons-store
 pub fun scons-store/name/show(): name<scons-store>
   Name("scons")
 
-pub val atom-expr/con-info : con-info<atom-expr, string, expr> = Con-info(
-  fn(e) match e { EAtom(n) -> Just(n); _ -> Nothing }, EAtom)
-pub val var-expr/con-info : con-info<var-expr, t-cons<expr, t-nil>, expr> = Con-info(
+pub val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
   fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
 pub val app-expr/con-info : con-info<app-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
   fn(e) match e { EApp(a, b) -> Just(a +: b +: TNil); _ -> Nothing }, fn(TCons(a, TCons(b, _))) EApp(a, b))
-pub val lam-expr/con-info : con-info<lam-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+pub val lam-expr/con-info : con-info<lam-expr, t-cons<string, t-cons<expr, t-nil>>, expr> = Con-info(
   fn(e) match e { ELam(x, body) -> Just(x +: body +: TNil); _ -> Nothing }, fn(TCons(x, TCons(body, _))) ELam(x, body))
 val expr-info =
-  mk-field(atom-expr/con-info) *: mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: TNil
+  mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: TNil
 
 pub val snil-store/con-info : con-info<snil-store, t-nil, store> = Con-info(
   fn(s) match s { SNil -> Just(TNil); _ -> Nothing }, fn(_) SNil)
-pub val scons-store/con-info : con-info<scons-store, t-cons<expr, t-cons<expr, t-cons<store, t-nil>>>, store> = Con-info(
+pub val scons-store/con-info : con-info<scons-store, t-cons<string, t-cons<expr, t-cons<store, t-nil>>>, store> = Con-info(
   fn(s) match s { SCons(n, v, rest) -> Just(n +: v +: rest +: TNil); _ -> Nothing }, fn(TCons(n, TCons(v, TCons(rest, _)))) SCons(n, v, rest))
 val store-info =
   mk-field(snil-store/con-info) *: mk-field(scons-store/con-info) *: TNil
 
 // ----------------------------------------------------------------------------
-// Derived to-term / from-term (pretend-no-div for forward-bridge compat)
+// Derived to-term / from-term
 // ----------------------------------------------------------------------------
 
 pub fun expr/to-term(e: expr): div term
@@ -87,10 +78,9 @@ pub fun store/from-term(t: term): <exn,div> store
   derive-from-term(t, store-info)
 
 // ----------------------------------------------------------------------------
-// LaTeX/Markdown formatters
+// LaTeX rendering
 // ----------------------------------------------------------------------------
 
-// Per-constructor LaTeX rendering
 fun var-expr/render-latex(_: name<var-expr>, TCons(n, _): t-cons<string, t-nil>): <div,exn> string
   n
 fun app-expr/render-latex(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
@@ -99,39 +89,38 @@ fun lam-expr/render-latex(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<st
   "\\lambda " ++ x ++ ".\\; " ++ body
 fun scons-store/render-latex(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
   rest ++ "[" ++ n ++ " \\mapsto " ++ v ++ "]"
-
 fun snil-store/name-latex(_: name<snil-store>): string
   "\\emptyset"
 
-// Per-constructor Markdown rendering (only where it differs from LaTeX)
+// ----------------------------------------------------------------------------
+// Markdown rendering (only where it differs)
+// ----------------------------------------------------------------------------
+
 fun app-expr/render-md(_: name<app-expr>, TCons(e1, TCons(e2, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   e1 ++ " " ++ e2
 fun lam-expr/render-md(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<string, t-cons<string, t-nil>>): <div,exn> string
   "λ" ++ x ++ ". " ++ body
-
 fun scons-store/render-md(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
   rest ++ "[" ++ n ++ " ↦ " ++ v ++ "]"
-
 fun snil-store/name-md(_: name<snil-store>): string
   "∅"
 
-// Derive term renderers via to-list — return type (latex-entry vs md-entry) drives dispatch
-fun cfa/term-show-latex(): term-renderer
+// ----------------------------------------------------------------------------
+// Term renderers
+// ----------------------------------------------------------------------------
+
+val cfa/term-show-latex: term-renderer =
   val expr-entries : list<latex-entry> = expr-info.to-list
   val store-entries : list<latex-entry> = store-info.to-list
   make-term-renderer(expr-entries.map(entry) ++ store-entries.map(entry), ?var-render=latex/var-render)
 
-fun cfa/term-show-md(): term-renderer
+val cfa/term-show-md: term-renderer =
   val expr-entries : list<md-entry> = expr-info.to-list
   val store-entries : list<md-entry> = store-info.to-list
   make-term-renderer(expr-entries.map(entry) ++ store-entries.map(entry), ?var-render=md/var-render)
 
-// Pattern renderers
-pub fun cfa/show-latex(p: pat<a>): <div,exn> string
-  pat/show-latex(p, ?term-show-latex=cfa/term-show-latex())
-
-pub fun cfa/show-md(p: pat<a>): <div,exn> string
-  pat/show-md(p, ?term-show-md=cfa/term-show-md())
+// pat/show-latex and pat/show-md from the framework resolve
+// ?term-show-latex → cfa/term-show-latex and ?term-show-md → cfa/term-show-md
 
 // ----------------------------------------------------------------------------
 // Relation markers
@@ -155,48 +144,45 @@ pub fun r-lookup/show-md(_: r-lookup): string
 pub fun r-lookup/show-latex(_: r-lookup): string
   "\\in"
 
+// String rendering for rule names
+pub fun string/show-latex(s: string): string
+  s
+pub fun string/show-md(s: string): string
+  s
+
 // ----------------------------------------------------------------------------
-// Pattern constructors: build compound patterns from pattern parts
-// These mirror the domain type constructors but work on patterns.
+// Pattern constructors
 // ----------------------------------------------------------------------------
 
-fun p-atom(nm: string): pat<expr>
-  PatTerm(TAtom(nm))
-
-fun p-var(nm: pat<expr>): pat<expr>
+fun p-var(nm: pat<string>): pat<expr>
   PatTerm(TNode("var", [nm.to-term]))
-
 fun p-app(e1: pat<expr>, e2: pat<expr>): pat<expr>
   PatTerm(TNode("app", [e1.to-term, e2.to-term]))
-
-fun p-lam(x: pat<expr>, body: pat<expr>): pat<expr>
+fun p-lam(x: pat<string>, body: pat<expr>): pat<expr>
   PatTerm(TNode("lam", [x.to-term, body.to-term]))
-
 fun p-snil(): pat<store>
   PatTerm(TNode("snil", []))
-
-fun p-scons(nm: pat<expr>, vl: pat<expr>, rest: pat<store>): pat<store>
+fun p-scons(nm: pat<string>, vl: pat<expr>, rest: pat<store>): pat<store>
   PatTerm(TNode("scons", [nm.to-term, vl.to-term, rest.to-term]))
 
 // ----------------------------------------------------------------------------
-// Rules — using fresh-pat for metavariables
+// External solver
 // ----------------------------------------------------------------------------
 
-
-// ----------------------------------------------------------------------------
-// External solver + policy
-// ----------------------------------------------------------------------------
-
-fun store-lookup-all(s: store, nm: expr): div list<expr>
+fun store-lookup-all(s: store, nm: string): div list<expr>
   match s
     SCons(n, vl, rest) ->
-      val found = if n.to-term.show == nm.to-term.show then [vl] else []
+      val found = if n == nm then [vl] else []
       found ++ store-lookup-all(rest, nm)
     _ -> []
 
+// ----------------------------------------------------------------------------
+// Rules
+// ----------------------------------------------------------------------------
+
 fun cfa-relation()
   with with-pats
-  val x  : pat<expr> = fresh-pat("x")
+  val x  : pat<string> = fresh-pat("x")
   val e  : pat<expr> = fresh-pat("e")
   val e1 : pat<expr> = fresh-pat("e1")
   val e2 : pat<expr> = fresh-pat("e2")
@@ -218,7 +204,7 @@ fun cfa-relation()
     p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
   // E-Var: variable lookup (external)
   with external-rule(s \ x |- RLookup \ v,
-    fn(TCons(s-val: store, x-val : expr)) 
+    fn(TCons(s-val: store, x-val : string))
       store-lookup-all(s-val, x-val)
     )
   with rule(
@@ -241,25 +227,22 @@ pub fun main()
   with with-pats
   val rel = cfa-relation()
 
-  // LaTeX rendering
   println("--- LaTeX ---")
   println(rel.relation-to-latex)
   println("\n--- Markdown ---")
   println(rel.relation-to-md("eval/lookup"))
 
-  // Example 1: (λx.x)(λz.z)
   println("\n--- (λx.x)(λz.z) ---")
-  val id-fn = ELam(EAtom("x"), EVar(EAtom("x")))
-  val goal1 = pat(EApp(id-fn, ELam(EAtom("z"), EVar(EAtom("z"))))) \ pat(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
+  val id-fn = ELam("x", EVar("x"))
+  val goal1 = pat(EApp(id-fn, ELam("z", EVar("z")))) \ pat(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
   val table1 = forward-search(goal1, rel)
   println("Entries: " ++ table1.length.show)
 
-  // Example 2: let f = λx.x in (f λa.a)(f λb.b)
   println("\n--- let f = λx.x in (f λa.a)(f λb.b) ---")
-  val lam-a = ELam(EAtom("a"), EVar(EAtom("a")))
-  val lam-b = ELam(EAtom("b"), EVar(EAtom("b")))
-  val body = EApp(EApp(EVar(EAtom("f")), lam-a), EApp(EVar(EAtom("f")), lam-b))
-  val prog2 = EApp(ELam(EAtom("f"), body), id-fn)
+  val lam-a = ELam("a", EVar("a"))
+  val lam-b = ELam("b", EVar("b"))
+  val body = EApp(EApp(EVar("f"), lam-a), EApp(EVar("f"), lam-b))
+  val prog2 = EApp(ELam("f", body), id-fn)
   val goal2 = pat(prog2) \ pat(SNil) |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat<store>)
   val table2 = forward-search(goal2, rel)
   println("Entries: " ++ table2.length.show)

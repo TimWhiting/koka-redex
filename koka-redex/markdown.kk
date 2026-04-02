@@ -71,10 +71,6 @@ pub fun map-field(r: koka-redex/syntax/rule<n, p, c>, ?show-markdown: koka-redex
 pub fun ext/map-field(_e: external-entry): e mdstr
   Mdstr("")
 
-// Default: fall back to show when no show-md is defined
-pub fun default/show-md(a: a, ?show: a -> string): string
-  show(a)
-
 pub fun relation-to-md(RelationDef(rules): relation-def<r>, name: string, ?to-list: r -> e list<mdstr>): e string
   "# Relation: " ++ name ++ "\n\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n")
 

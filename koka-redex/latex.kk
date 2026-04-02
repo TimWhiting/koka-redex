@@ -66,10 +66,6 @@ pub fun map-field(r: koka-redex/syntax/rule<n, p, c>, ?show-latex: koka-redex/sy
 pub fun ext/map-field(_e: external-entry): e latexstr
   Latexstr("")
 
-// Default: fall back to show when no show-latex is defined
-pub fun default/show-latex(a: a, ?show: a -> string): string
-  show(a)
-
 pub fun relation-to-latex(RelationDef(rules): relation-def<r>, ?to-list: r -> e list<latexstr>): e string
   "\\begin{mathpar}\n" ++ rules.to-list.filter(fn(l) !l.s.is-empty).map(s).join("\n\n") ++ "\n\\end{mathpar}"
 

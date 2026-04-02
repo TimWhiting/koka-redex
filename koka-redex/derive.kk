@@ -193,32 +193,95 @@ pub fun derive-from-term<whole>(t: term, info: s,
 //   TNode(name, args) → dispatch to format function by con-name
 // ============================================================================
 
-// A render-entry maps a constructor name to its format function
+// ============================================================================
+// build-string-tcons: convert list<string> to t-cons<string, ...> chain
+//
+// Driven by the con-info field type `b` (the tail of the field t-cons).
+// Since `b` is structurally known from the con-info, the resolver
+// can determine the chain length without unbounded expansion.
+//
+// Nested-type disambiguation on `b`:
+//   b = t-cons<c, d>  → more fields: consume head, recurse
+//   b = t-nil         → last field: consume head, done
+// ============================================================================
+
+// Phantom witness carrying the field tail type for structural recursion
+pub type field-witness<b>
+  FieldWitness
+
+pub fun tcons/build-string-tcons(
+  ss: list<string>,
+  _w: field-witness<t-cons<c, d>>,
+  ?tail/build-string-tcons: (list<string>, field-witness<d>) -> exn t-cons<string, e>
+): exn t-cons<string, t-cons<string, e>>
+  match ss
+    Cons(h, t) -> TCons(h, t.build-string-tcons(FieldWitness))
+    _ -> throw("build-string-tcons: not enough strings")
+
+pub fun end/build-string-tcons(
+  ss: list<string>,
+  _w: field-witness<t-nil>
+): exn t-cons<string, t-nil>
+  match ss
+    Cons(h, _) -> TCons(h, TNil)
+    _ -> throw("build-string-tcons: not enough strings")
+
+// ============================================================================
+// Render entries: type-safe per-constructor rendering
+//
+// A render-entry maps a constructor name to its format function.
+// The user defines per-tag, per-backend:
+//   fun lam-expr/render-latex(_: name<lam-expr>, TCons(x, TCons(body, _))): string
+//     "\\lambda " ++ x ++ ".\\; " ++ body
+//
+// Falls back to default show-style rendering: Name(field1, field2)
+// ============================================================================
+
 pub alias render-fmt = (list<string>) -> <div,exn> string
 pub alias render-entry = (string, render-fmt)
 
-// Per-tag format function implicit — the user provides these
-// Atom constructors: rendered as just the atom value (no name)
+// Default name rendering: constructor name as-is
+pub fun default/name-latex(n: name<a>): string
+  n.s
+
+pub fun default/name-md(n: name<a>): string
+  n.s
+
+// ---- to-render-entry: build a render-entry from a con-info ----
+
+// Atom constructors: rendered as the atom value
 pub fun atom/to-render-entry<tag, whole>(ci: con-info<tag, string, whole>,
   ?name/show: () -> name<tag>
 ): render-entry
-  (ci.con-name, fn(fs) fs[0].default(""))
+  (ci.con-name, fn(Cons(v, _)) v)
 
-// Node constructors: user provides ?fmt per tag (resolved by tag type)
-pub fun node/to-render-entry<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
+// Node constructors with custom render: type-safe t-cons fields via build-string-tcons
+pub fun node/to-render-entry<tag, whole, sf>(ci: con-info<tag, t-cons<a, b>, whole>,
   ?name/show: () -> name<tag>,
-  ?fmt: name<tag> -> render-fmt
+  ?render: (name<tag>, sf) -> <div,exn> string,
+  ?build-string-tcons: (list<string>, field-witness<b>) -> exn sf
 ): render-entry
-  (ci.con-name, fmt(?name/show()))
+  val nm = ?name/show()
+  val w : field-witness<b> = FieldWitness
+  (nm.s, fn(rendered) render(nm, rendered.build-string-tcons(w)))
 
-// Nullary constructors: use ?fmt if provided, otherwise render as con-name
+// Node constructors without custom render: default Name(f1, f2, ...)
+pub fun default/node/to-render-entry<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
+  ?name/show: () -> name<tag>
+): render-entry
+  val nm = ?name/show()
+  (nm.s, fn(rendered) nm.s ++ "(" ++ rendered.join(", ") ++ ")")
+
+// Nullary constructors: rendered via name-latex/name-md
 pub fun nullary/to-render-entry<tag, whole>(ci: con-info<tag, t-nil, whole>,
   ?name/show: () -> name<tag>,
-  ?fmt: name<tag> -> render-fmt
+  ?name-render: name<tag> -> string
 ): render-entry
-  (ci.con-name, fmt(?name/show()))
+  val nm = ?name/show()
+  (nm.s, fn(_) nm.name-render)
 
-// Traversal: collect render-entries from type-info
+// ---- to-render-entries: t-struct traversal ----
+
 pub fun tstruct/to-render-entries<tag, tag1, fields, fields1, whole>(
   s: t-struct<n, con-info<tag, fields, whole>, t-struct<n1, con-info<tag1, fields1, whole>, r>>,
   ?to-render-entry: con-info<tag, fields, whole> -> render-entry,
@@ -232,9 +295,12 @@ pub fun nil/to-render-entries<tag, fields, whole>(
 ): list<render-entry>
   [s.head-field.v.to-render-entry]
 
+// ============================================================================
+// Term renderer: dispatch by con-name, handle TVar/TAtom/TInt
+// ============================================================================
+
 pub alias term-renderer = (term) -> <div,exn> string
 
-// Build a term renderer from render-entries
 pub fun make-term-renderer(entries: list<render-entry>, ?var-render: (string, int) -> <div,exn> string): term-renderer
   fn(t) render-term(t, entries, var-render)
 
@@ -249,16 +315,16 @@ fun render-term(t: term, entries: list<render-entry>, var-render: (string, int) 
         Just((_, fmt)) -> fmt(rendered-args)
         Nothing -> name ++ "(" ++ rendered-args.join(", ") ++ ")"
 
-// Derive a complete term renderer from type-info
+// Default var renderers
+pub fun latex/var-render(nm: string, id: int): <div,exn> string
+  if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
+
+pub fun md/var-render(nm: string, id: int): <div,exn> string
+  if id == 0 then nm else nm ++ id.show
+
 pub fun derive-term-renderer<whole>(info: s,
   ?to-render-entries: s -> list<render-entry>,
-  ?var-render: (string, int) -> div string
+  ?var-render: (string, int) -> <div,exn> string
 ): term-renderer
   make-term-renderer(info.to-render-entries, ?var-render=var-render)
 
-// Default var renderers for LaTeX and Markdown
-pub fun latex/var-render(nm: string, id: int): div string
-  if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-
-pub fun md/var-render(nm: string, id: int): div string
-  if id == 0 then nm else nm ++ id.show

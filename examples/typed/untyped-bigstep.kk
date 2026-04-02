@@ -44,16 +44,16 @@ pub fun format-latex-var(name: string, index: int): string
   val base = latex-subst(name)
   if index == 0 then base else base ++ "_{" ++ index.show ++ "}"
 
-pub fun expr/show-latex-j(e: expr): div string
+pub fun expr/show-latex(e: expr): div string
   match e
     EAny(p, i) -> format-latex-var(p, i)
     EVar(n) -> n
-    EApp(e1, e2) -> e1.show-latex-j ++ "\\; " ++ e2.show-latex-j
-    ELam(x, body) -> "\\lambda " ++ latex-subst(x) ++ ".\\; " ++ body.show-latex-j
+    EApp(e1, e2) -> e1.show-latex ++ "\\; " ++ e2.show-latex
+    ELam(x, body) -> "\\lambda " ++ latex-subst(x) ++ ".\\; " ++ body.show-latex
 
 // String formatters for AST embedding
 pub fun string/show-md(s: string): string { s }
-pub fun string/show-latex-j(s: string): string { latex-subst(s) }
+pub fun string/show-latex(s: string): string { latex-subst(s) }
 
 
 // -----------------------------------------------------------------------------
@@ -98,23 +98,23 @@ pub type r-neq
 
 pub fun default/show-md(a: a, ?show: a -> string): string
   show(a)
-pub fun default/show-latex-j(a: a, ?show: a -> string): string
+pub fun default/show-latex(a: a, ?show: a -> string): string
   show(a)
 
 // Formatting relations
 pub fun r-eval/show-md(r: r-eval): string
   "\\Downarrow"
-pub fun r-eval/show-latex-j(r: r-eval): string
+pub fun r-eval/show-latex(r: r-eval): string
   "\\Downarrow"
 
 pub fun r-subst/show-md(r: r-subst): string
   "\\mapsto"
-pub fun r-subst/show-latex-j(r: r-subst): string
+pub fun r-subst/show-latex(r: r-subst): string
   "\\mapsto"
 
 pub fun r-neq/show-md(r: r-neq): string
   "\\neq"
-pub fun r-neq/show-latex-j(r: r-neq): string
+pub fun r-neq/show-latex(r: r-neq): string
   "\\neq"
 
 // -----------------------------------------------------------------------------

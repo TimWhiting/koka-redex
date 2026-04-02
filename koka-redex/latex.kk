@@ -23,39 +23,39 @@ pub fun sep/show-latex-premises(TCons(_sep, t): t-cons<premise-sep, b>, ?show-la
 
 // Premise whose head is a judgement chain (tcons) — render as one joined string
 pub fun tcons-prem/show-latex-premises(TCons(h, t): t-cons<t-cons<a1, a2>, b>,
-  ?show-latex-j: t-cons<a1, a2> -> e string,
+  ?show-latex: t-cons<a1, a2> -> e string,
   ?show-latex-premises: b -> e list<string>): e list<string>
-  Cons(h.show-latex-j, t.show-latex-premises)
+  Cons(h.show-latex, t.show-latex-premises)
 
 // Single premise (bare value, not tcons) — base case
-pub fun default/show-latex-premises(a: a, ?show-latex-j: a -> e string): e list<string>
-  Cons(show-latex-j(a), Nil)
+pub fun default/show-latex-premises(a: a, ?show-latex: a -> e string): e list<string>
+  Cons(show-latex(a), Nil)
 
 // ---- Within-judgement rendering (flattens to list<string>, joined with spaces) ----
 
 // Format `t-nil`
-pub fun tnil/show-latex(_l: t-nil): e list<string>
+pub fun tnil/show-latex-tokens(_l: t-nil): e list<string>
   Nil
 
 // Format `tcons` within a judgement — each element is one token
-pub fun tcons/show-latex(TCons(h, t): t-cons<a, b>, ?show-latex-j: a -> e string, ?show-latex: b -> e list<string>): e list<string>
-  Cons(show-latex-j(h), t.show-latex)
+pub fun tcons/show-latex-tokens(TCons(h, t): t-cons<a, b>, ?show-latex: a -> e string, ?show-latex-tokens: b -> e list<string>): e list<string>
+  Cons(show-latex(h), t.show-latex-tokens)
 
-// A judgement (tcons chain) rendered as a single string by joining elements with spaces
-pub fun tcons/show-latex-j(l: t-cons<a, b>, ?show-latex: t-cons<a, b> -> e list<string>): e string
-  l.show-latex.join(" ")
+// A judgement (tcons chain) rendered as a single string by joining tokens with spaces
+pub fun tcons/show-latex(l: t-cons<a, b>, ?show-latex-tokens: t-cons<a, b> -> e list<string>): e string
+  l.show-latex-tokens.join(" ")
 
 // Single element as list
-pub fun default/show-latex(a: a, ?show-latex-j: a -> e string): e list<string>
-  Cons(show-latex-j(a), Nil)
+pub fun default/show-latex-tokens(a: a, ?show-latex: a -> e string): e list<string>
+  Cons(show-latex(a), Nil)
 
 // ---- Rule rendering ----
 
-pub fun rule/show-latex(Rule(name, premises, conclusion): koka-redex/syntax/rule<n, p, c>, ?show-latex-premises: p -> e list<string>, ?conclusion/show-latex-j: c -> e string, ?name/show-latex-j: n -> e string): e string
+pub fun rule/show-latex(Rule(name, premises, conclusion): koka-redex/syntax/rule<n, p, c>, ?show-latex-premises: p -> e list<string>, ?conclusion/show-latex: c -> e string, ?name/show-latex: n -> e string): e string
   val premises-str = premises.show-latex-premises.join(" \\\\\\\\ ")
-  val conc-str = conclusion.show-latex-j
+  val conc-str = conclusion.show-latex
 
-  "\\inferrule*[Right=" ++ name.show-latex-j ++ "]\n  { " ++ premises-str ++ " }\n  { " ++ conc-str ++ " }"
+  "\\inferrule*[Right=" ++ name.show-latex ++ "]\n  { " ++ premises-str ++ " }\n  { " ++ conc-str ++ " }"
 
 pub value struct latexstr( s: string )
 
@@ -77,7 +77,7 @@ pub fun relation-to-latex(RelationDef(rules): relation-def<r>, ?to-list: r -> e 
 // PatTerm → delegate to term renderer
 // ============================================================================
 
-pub fun pat/show-latex-j(p: pat<a>, ?term-show-latex-j: (term) -> <div,exn> string): <div,exn> string
+pub fun pat/show-latex(p: pat<a>, ?term-show-latex: (term) -> <div,exn> string): <div,exn> string
   match p
     PatVar(nm, id) -> if id == 0 then nm else nm ++ "_{" ++ id.show ++ "}"
-    PatTerm(t) -> t.term-show-latex-j
+    PatTerm(t) -> t.term-show-latex

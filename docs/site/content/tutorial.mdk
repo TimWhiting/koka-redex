@@ -183,8 +183,7 @@ fun cfa-relation()
     --- "E-Lam" -->
     p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
   with external-rule(s \ x |- RLookup \ v,
-    fn(TCons(s-val: store, x-val: string))
-      store-lookup-all(s-val, x-val))
+    fn(TCons(s-val: store, x-val: string)) store-lookup-all(s-val, x-val))
   with rule(
     s \ x |- RLookup \ vl
     --- "E-Var" -->

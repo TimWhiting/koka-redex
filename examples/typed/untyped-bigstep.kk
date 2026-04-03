@@ -13,20 +13,20 @@ import std/core/undiv
 // Untyped Lambda Calculus Syntax
 // -----------------------------------------------------------------------------
 
-pub type expr
+type expr
   EAny(pre: string, i: int)
   EVar(name: string)
   EApp(e1: expr, e2: expr)
   ELam(x: string, body: expr)
 
-pub fun format-var(name: string, index: int): string
+fun format-var(name: string, index: int): string
   if index == 0 then name else name ++ "-" ++ index.show
 
 // -----------------------------------------------------------------------------
 // Markdown formatters
 // -----------------------------------------------------------------------------
 
-pub fun expr/show-md(e: expr): div string
+fun expr/show-md(e: expr): div string
   match e
     EAny(p, i) -> format-var(p, i)
     EVar(n) -> n
@@ -37,88 +37,71 @@ pub fun expr/show-md(e: expr): div string
 // LaTeX formatters
 // -----------------------------------------------------------------------------
 
-pub fun latex-subst(s: string): string
-  s // No special substitution needed for basic variables here usually
-
-pub fun format-latex-var(name: string, index: int): string
-  val base = latex-subst(name)
+fun format-latex-var(name: string, index: int): string
+  val base = name
   if index == 0 then base else base ++ "_{" ++ index.show ++ "}"
 
-pub fun expr/show-latex(e: expr): div string
+fun expr/show-latex(e: expr): div string
   match e
     EAny(p, i) -> format-latex-var(p, i)
     EVar(n) -> n
     EApp(e1, e2) -> e1.show-latex ++ "\\; " ++ e2.show-latex
-    ELam(x, body) -> "\\lambda " ++ latex-subst(x) ++ ".\\; " ++ body.show-latex
+    ELam(x, body) -> "\\lambda " ++ x ++ ".\\; " ++ body.show-latex
 
-// String formatters for AST embedding
-pub fun string/show-md(s: string): string { s }
-pub fun string/show-latex(s: string): string { latex-subst(s) }
 
 
 // -----------------------------------------------------------------------------
 // Relations
 // -----------------------------------------------------------------------------
 
-pub type r-eval
+type r-eval
   REval
-pub type rule-eval-lam
+val r-eval/judgment-name : name<r-eval> = Name("eval")
+val r-eval/name-md : name<r-eval> = Name("\\Downarrow")
+val r-eval/name-latex : name<r-eval> = Name("\\Downarrow")
+
+type rule-eval-lam
   RuleEvalLam
-pub fun rule-eval-lam/show(rule-eval-lam: rule-eval-lam): string
-  "RuleEvalLam"
-pub type rule-eval-app
+val rule-eval-lam/rule-name : name<rule-eval-lam> = Name("E-Lam")
+type rule-eval-app
   RuleEvalApp
-pub fun rule-eval-app/show(rule-eval-app: rule-eval-app): string
-  "RuleEvalApp"
+val rule-eval-app/rule-name : name<rule-eval-app> = Name("E-App")
 
-pub type r-subst
+type r-subst
   RSubst
-pub type rule-subst-var-eq
+val r-subst/judgment-name : name<r-subst> = Name("subst")
+val r-subst/name-md : name<r-subst> = Name("\\mapsto")
+val r-subst/name-latex : name<r-subst> = Name("\\mapsto")
+
+type rule-subst-var-eq
   RuleSubstVarEq
-pub fun rule-subst-var-eq/show(rule-subst-var-eq: rule-subst-var-eq): string
-  "RuleSubstVarEq"
-pub type rule-subst-var-neq
+val rule-subst-var-eq/rule-name : name<rule-subst-var-eq> = Name("S-Var-Eq")
+type rule-subst-var-neq
   RuleSubstVarNeq
-pub fun rule-subst-var-neq/show(rule-subst-var-neq: rule-subst-var-neq): string
-  "RuleSubstVarNeq"
-pub type rule-subst-app
+val rule-subst-var-neq/rule-name : name<rule-subst-var-neq> = Name("S-Var-Neq")
+type rule-subst-app
   RuleSubstApp
-pub fun rule-subst-app/show(rule-subst-app: rule-subst-app): string
-  "RuleSubstApp"
-pub type rule-subst-lam-eq
+val rule-subst-app/rule-name : name<rule-subst-app> = Name("S-App")
+type rule-subst-lam-eq
   RuleSubstLamEq
-pub fun rule-subst-lam-eq/show(rule-subst-lam-eq: rule-subst-lam-eq): string
-  "RuleSubstLamEq"
-pub type rule-subst-lam-neq
+val rule-subst-lam-eq/rule-name : name<rule-subst-lam-eq> = Name("S-Lam-Eq")
+type rule-subst-lam-neq
   RuleSubstLamNeq
-pub fun rule-subst-lam-neq/show(rule-subst-lam-neq: rule-subst-lam-neq): string
-  "RuleSubstLamNeq"
-pub type r-neq
+val rule-subst-lam-neq/rule-name : name<rule-subst-lam-neq> = Name("S-Lam-Neq")
+
+type r-neq
   RNeq
-
-// Formatting relations
-pub fun r-eval/show-md(r: r-eval): string
-  "\\Downarrow"
-pub fun r-eval/show-latex(r: r-eval): string
-  "\\Downarrow"
-
-pub fun r-subst/show-md(r: r-subst): string
-  "\\mapsto"
-pub fun r-subst/show-latex(r: r-subst): string
-  "\\mapsto"
-
-pub fun r-neq/show-md(r: r-neq): string
-  "\\neq"
-pub fun r-neq/show-latex(r: r-neq): string
-  "\\neq"
+val r-neq/judgment-name : name<r-neq> = Name("neq")
+val r-neq/name-md : name<r-neq> = Name("\\neq")
+val r-neq/name-latex : name<r-neq> = Name("\\neq")
 
 // -----------------------------------------------------------------------------
 // Effect Handlers (Fresh Generation)
 // -----------------------------------------------------------------------------
-pub fun with-fresh-expr(pref: string, action: (ev<fresh<expr>>) -> <div|e> b): <div|e> b
+fun with-fresh-expr(pref: string, action: (ev<fresh<expr>>) -> <div|e> b): <div|e> b
   with-fresh(pref, fn(p, c) EAny(p, c), action)
 
-pub effect terms
+effect terms
   fun e(): expr
   fun v(): expr
   fun x(): string
@@ -158,7 +141,7 @@ fun eval-rules()
     --- RuleEvalApp -->
     EApp(e1, e2) ~> v2)
 
-pub fun subst-rules()
+fun subst-rules()
   val (x-var, y-var) = fresh2(x)
   val (e0, w-var, e-body, e') = fresh4(e)
   val (e1, e1', e2, e2') = fresh4(e)

@@ -7,13 +7,13 @@ import koka-redex/forward-bridge
 import koka-redex/pattern
 
 // Relations
-pub type r-edge
+type r-edge
   REdge
-pub val r-edge/judgment-name: name<r-edge> = Name("edge")
+val r-edge/judgment-name: name<r-edge> = Name("edge")
 
-pub type r-reach
+type r-reach
   RReach
-pub val r-reach/judgment-name: name<r-reach> = Name("reach")
+val r-reach/judgment-name: name<r-reach> = Name("reach")
 
 // (judgement helpers removed — inline syntax is clear enough)
 

@@ -9,19 +9,19 @@ import koka-redex/latex
 // Domain types — EAny/SAny for metavariables in rules
 // ----------------------------------------------------------------------------
 
-pub type expr
+type expr
   EAny(pre: string, i: int)
   EAtom(nm: string)
   EVar(nm: expr)
   EApp(e1: expr, e2: expr)
   ELam(x: expr, body: expr)
 
-pub type store
+type store
   SAny(pre: string, i: int)
   SNil
   SCons(nm: expr, vl: expr, rest: store)
 
-pub fun expr/to-term(e: expr): term
+fun expr/to-term(e: expr): term
   match e
     EAny(p, i) -> TVar(p, i)
     EAtom(n) -> TAtom(n)

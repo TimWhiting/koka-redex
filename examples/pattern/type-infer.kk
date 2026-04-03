@@ -13,18 +13,18 @@ import koka-redex/pattern
 // Clean domain types
 // ----------------------------------------------------------------------------
 
-pub type expr
+type expr
   XAtom(nm: string)
   XVar(nm: expr)
   XApp(e1: expr, e2: expr)
   XLam(x: expr, body: expr)
   XInt(n: int)
 
-pub type ty
+type ty
   TArrow(t1: ty, t2: ty)
   TBase(nm: string)
 
-pub type tenv
+type tenv
   TENil
   TECons(nm: expr, typ: ty, rest: tenv)
 

@@ -12,13 +12,13 @@ import koka-redex/pattern
 // Domain types
 // ----------------------------------------------------------------------------
 
-pub type expr
+type expr
   EVar(nm: string)
   EApp(e1: expr, e2: expr)
   ELam(x: string, body: expr)
 
 // Store is just a regular Koka list — not a custom ADT
-pub alias store = list<(string, expr)>
+alias store = list<(string, expr)>
 
 // ----------------------------------------------------------------------------
 // Expr con-info (same as cfa.kk)
@@ -73,10 +73,6 @@ pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 pub type r-lookup
   RLookup
 pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
-
-// String rendering for rule names
-pub fun string/show-latex(s: string): string { s }
-pub fun string/show-md(s: string): string { s }
 
 // ----------------------------------------------------------------------------
 // Pattern constructors

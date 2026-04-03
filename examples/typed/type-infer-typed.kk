@@ -10,7 +10,7 @@ import koka-redex/forward-bridge
 // Domain types
 // ----------------------------------------------------------------------------
 
-pub type expr
+type expr
   XAny(pre: string, i: int)
   XAtom(nm: string)
   XVar(nm: expr)
@@ -19,7 +19,7 @@ pub type expr
   XInt(n: int)
   XIntAny(pre: string, i: int)
 
-pub fun expr/to-term(e: expr): term
+fun expr/to-term(e: expr): term
   match e
     XAny(p, i) -> TVar(p, i)
     XAtom(n) -> TAtom(n)

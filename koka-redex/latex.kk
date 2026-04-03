@@ -49,10 +49,15 @@ pub fun tcons/show-latex(l: t-cons<a, b>, ?show-latex-tokens: t-cons<a, b> -> e 
 pub fun default/show-latex-tokens(a: a, ?show-latex: a -> e string): e list<string>
   Cons(show-latex(a), Nil)
 
-// Default show-latex from name-latex val (for relation markers etc.)
+// Default show-latex: try name-latex, fall back to rule-name
 pub fun default/show-latex(_a: a, ?name-latex: name<a>): string
   ?name-latex.s
 
+pub fun default/name-latex(?rule-name: name<a>): name<a>
+  ?rule-name
+
+// Strings render as themselves (rule names, identifiers)
+pub fun string/show-latex(s: string): string { s }
 
 // ---- Rule rendering ----
 

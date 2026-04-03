@@ -12,12 +12,12 @@ import koka-redex/markdown
 // Domain types
 // ----------------------------------------------------------------------------
 
-pub type expr
+type expr
   EVar(nm: string)
   EApp(e1: expr, e2: expr)
   ELam(x: string, body: expr)
 
-pub type store
+type store
   SNil
   SCons(nm: string, vl: expr, rest: store)
 
@@ -25,29 +25,29 @@ pub type store
 // Con-info descriptors
 // ----------------------------------------------------------------------------
 
-pub type var-expr
-pub val var-expr/con-name: name<var-expr> = Name("var")
-pub type app-expr
-pub val app-expr/con-name: name<app-expr> = Name("app")
-pub type lam-expr
-pub val lam-expr/con-name: name<lam-expr> = Name("lam")
-pub type snil-store
-pub val snil-store/con-name: name<snil-store> = Name("snil")
-pub type scons-store
-pub val scons-store/con-name: name<scons-store> = Name("scons")
+type var-expr
+val var-expr/con-name: name<var-expr> = Name("var")
+type app-expr
+val app-expr/con-name: name<app-expr> = Name("app")
+type lam-expr
+val lam-expr/con-name: name<lam-expr> = Name("lam")
+type snil-store
+val snil-store/con-name: name<snil-store> = Name("snil")
+type scons-store
+val scons-store/con-name: name<scons-store> = Name("scons")
 
-pub val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
+val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
   fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
-pub val app-expr/con-info : con-info<app-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
+val app-expr/con-info : con-info<app-expr, t-cons<expr, t-cons<expr, t-nil>>, expr> = Con-info(
   fn(e) match e { EApp(a, b) -> Just(a +: b +: TNil); _ -> Nothing }, fn(TCons(a, TCons(b, _))) EApp(a, b))
-pub val lam-expr/con-info : con-info<lam-expr, t-cons<string, t-cons<expr, t-nil>>, expr> = Con-info(
+val lam-expr/con-info : con-info<lam-expr, t-cons<string, t-cons<expr, t-nil>>, expr> = Con-info(
   fn(e) match e { ELam(x, body) -> Just(x +: body +: TNil); _ -> Nothing }, fn(TCons(x, TCons(body, _))) ELam(x, body))
 val expr-info =
   mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: TNil
 
-pub val snil-store/con-info : con-info<snil-store, t-nil, store> = Con-info(
+val snil-store/con-info : con-info<snil-store, t-nil, store> = Con-info(
   fn(s) match s { SNil -> Just(TNil); _ -> Nothing }, fn(_) SNil)
-pub val scons-store/con-info : con-info<scons-store, t-cons<string, t-cons<expr, t-cons<store, t-nil>>>, store> = Con-info(
+val scons-store/con-info : con-info<scons-store, t-cons<string, t-cons<expr, t-cons<store, t-nil>>>, store> = Con-info(
   fn(s) match s { SCons(n, v, rest) -> Just(n +: v +: rest +: TNil); _ -> Nothing }, fn(TCons(n, TCons(v, TCons(rest, _)))) SCons(n, v, rest))
 val store-info =
   mk-field(snil-store/con-info) *: mk-field(scons-store/con-info) *: TNil
@@ -56,19 +56,19 @@ val store-info =
 // Derived to-term / from-term
 // ----------------------------------------------------------------------------
 
-pub fun expr/to-term(e: expr): div term
+fun expr/to-term(e: expr): div term
   val n/to-term = expr/to-term
   derive-to-term(e, expr-info)
 
-pub fun store/to-term(s: store): div term
+fun store/to-term(s: store): div term
   val n/to-term = store/to-term
   derive-to-term(s, store-info)
 
-pub fun expr/from-term(t: term): <exn,div> expr
+fun expr/from-term(t: term): <exn,div> expr
   val n/from-term = expr/from-term
   derive-from-term(t, expr-info)
 
-pub fun store/from-term(t: term): <exn,div> store
+fun store/from-term(t: term): <exn,div> store
   val n/from-term = store/from-term
   derive-from-term(t, store-info)
 
@@ -119,21 +119,17 @@ val cfa/term-show-md: term-renderer =
 // Relation markers
 // ----------------------------------------------------------------------------
 
-pub type r-eval
+type r-eval
   REval
-pub val r-eval/judgment-name: name<r-eval> = Name("eval")
-pub val r-eval/name-md : name<r-eval> = Name("⇓")
-pub val r-eval/name-latex : name<r-eval> = Name("\\Downarrow")
+val r-eval/judgment-name : name<r-eval> = Name("eval")
+val r-eval/name-md : name<r-eval> = Name("⇓")
+val r-eval/name-latex : name<r-eval> = Name("\\Downarrow")
 
-pub type r-lookup
+type r-lookup
   RLookup
-pub val r-lookup/judgment-name : name<r-lookup> = Name("lookup")
-pub val r-lookup/name-md : name<r-lookup> = Name("∈")
-pub val r-lookup/name-latex : name<r-lookup> = Name("\\in")
-
-// String rendering for rule names
-pub fun string/show-latex(s: string): string { s }
-pub fun string/show-md(s: string): string { s }
+val r-lookup/judgment-name : name<r-lookup> = Name("lookup")
+val r-lookup/name-md : name<r-lookup> = Name("∈")
+val r-lookup/name-latex : name<r-lookup> = Name("\\in")
 
 // ----------------------------------------------------------------------------
 // Pattern constructors
@@ -201,7 +197,7 @@ fun cfa-relation()
 
 pub fun main()
   with with-pats
-  val rel = cfa-relation() 
+  val rel = cfa-relation()
 
   println("--- LaTeX ---")
   println(rel.relation-to-latex)

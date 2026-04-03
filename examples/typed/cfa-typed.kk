@@ -41,13 +41,11 @@ pub fun store/to-term(s: store): term
 
 pub type r-eval
   REval
-pub fun r-eval/judgment-name(_: r-eval): string
-  "eval"
+pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/judgment-name(_: r-lookup): string
-  "lookup"
+pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
 
 // ----------------------------------------------------------------------------
 // Metavariable helpers

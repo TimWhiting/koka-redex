@@ -34,6 +34,18 @@ pub effect pat-fresh
 pub fun fresh-pat(nm: string): <pat-fresh> pat<a>
   PatVar(nm, fresh-id())
 
+pub fun two/fresh-pats(nm: string): <pat-fresh> (pat<a>, pat<a>)
+  (fresh-pat(nm), fresh-pat(nm))
+
+pub fun three/fresh-pats(nm: string): <pat-fresh> (pat<a>, pat<a>, pat<a>)
+  (fresh-pat(nm), fresh-pat(nm), fresh-pat(nm))
+
+pub fun four/fresh-pats(nm: string): <pat-fresh> (pat<a>, pat<a>, pat<a>, pat<a>)
+  (fresh-pat(nm), fresh-pat(nm), fresh-pat(nm), fresh-pat(nm))
+
+pub fun five/fresh-pats(nm: string): <pat-fresh> (pat<a>, pat<a>, pat<a>, pat<a>, pat<a>)
+  (fresh-pat(nm), fresh-pat(nm), fresh-pat(nm), fresh-pat(nm), fresh-pat(nm))
+
 // Run an action with fresh pattern variable allocation.
 // Returns the action's result with all metavar IDs assigned.
 pub fun with-pats(action: () -> <pat-fresh|e> a): e a

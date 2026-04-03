@@ -25,11 +25,11 @@ pub alias store = list<(string, expr)>
 // ----------------------------------------------------------------------------
 
 pub type var-expr
-pub fun var-expr/name/show(): name<var-expr> { Name("var") }
+pub val var-expr/con-name: name<var-expr> = Name("var")
 pub type app-expr
-pub fun app-expr/name/show(): name<app-expr> { Name("app") }
+pub val app-expr/con-name: name<app-expr> = Name("app")
 pub type lam-expr
-pub fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+pub val lam-expr/con-name: name<lam-expr> = Name("lam")
 
 pub val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
   fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
@@ -68,13 +68,11 @@ fun store/(==)(a: store, b: store): pure bool
 
 pub type r-eval
   REval
-pub fun r-eval/judgment-name(_: r-eval): string
-  "eval"
+pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/judgment-name(_: r-lookup): string
-  "lookup"
+pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
 
 // String rendering for rule names
 pub fun string/show-latex(s: string): string { s }
@@ -105,8 +103,7 @@ fun p-lam(x: pat<string>, body: pat<expr>): pat<expr>
 
 pub type r-extend
   RExtend
-pub fun r-extend/judgment-name(_: r-extend): string
-  "extend"
+pub val r-extend/judgment-name: name<r-extend> = Name("extend")
 
 fun cfa-relation(?pool: ev<ref-pool<store>>)
   with with-pats

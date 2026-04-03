@@ -3,7 +3,7 @@ module koka-redex/derive
 // Generic derivation of to-term and from-term from con-info descriptors.
 //
 // Usage per domain type:
-//   1. Define phantom tag + name/show per constructor
+//   1. Define phantom tag + con-name per constructor
 //   2. Define con-info per constructor
 //   3. Combine into a type-info via t-struct
 //   4. Define to-term/from-term using derive-to-term/derive-from-term
@@ -77,7 +77,7 @@ pub fun atom/to-matcher<tag,whole>(ci: con-info<tag, string, whole>): to-term-ma
 
 // fields = t-cons<a, b> → TNode(name, fields)
 pub fun node/to-matcher<tag,whole>(ci: con-info<tag, t-cons<a, b>, whole>,
-  ?name/show: () -> name<tag>,
+  ?con-name: name<tag>,
   ?fields-to-terms: t-cons<a, b> -> div list<term>): to-term-matcher<whole>
   val nm = ci.con-name
   fn(v) match (ci.con-match)(v)
@@ -85,7 +85,7 @@ pub fun node/to-matcher<tag,whole>(ci: con-info<tag, t-cons<a, b>, whole>,
     Nothing -> Nothing
 
 // fields = t-nil → TNode(name, [])
-pub fun nullary/to-matcher<tag,whole>(ci: con-info<tag, t-nil, whole>, ?name/show: () -> name<tag>): to-term-matcher<whole>
+pub fun nullary/to-matcher<tag,whole>(ci: con-info<tag, t-nil, whole>, ?con-name: name<tag>): to-term-matcher<whole>
   val nm = ci.con-name
   fn(v) match (ci.con-match)(v)
     Just(_) -> Just(TNode(nm, []))
@@ -135,7 +135,7 @@ pub fun atom/from-matcher<tag,whole>(ci: con-info<tag, string, whole>): from-ter
 
 // fields = t-cons<a, b> → match TNode(name, args), convert args to fields
 pub fun node/from-matcher<tag,whole>(ci: con-info<tag, t-cons<a, b>, whole>,
-  ?name/show: () -> name<tag>,
+  ?con-name: name<tag>,
   ?terms-to-fields: list<term> -> <exn,div> t-cons<a, b>): from-term-matcher<whole>
   val nm = ci.con-name
   fn(t) match t
@@ -143,7 +143,7 @@ pub fun node/from-matcher<tag,whole>(ci: con-info<tag, t-cons<a, b>, whole>,
     _ -> Nothing
 
 // fields = t-nil → match TNode(name, [])
-pub fun nullary/from-matcher<tag,whole>(ci: con-info<tag, t-nil, whole>, ?name/show: () -> name<tag>): from-term-matcher<whole>
+pub fun nullary/from-matcher<tag,whole>(ci: con-info<tag, t-nil, whole>, ?con-name: name<tag>): from-term-matcher<whole>
   val nm = ci.con-name
   fn(t) match t
     TNode(n, _) | n == nm -> Just((ci.con-build)(TNil))
@@ -255,59 +255,59 @@ pub value struct md-entry(entry: render-entry)
 // ---- LaTeX map-field overloads ----
 
 pub fun atom/latex/map-field<tag, whole>(ci: con-info<tag, string, whole>,
-  ?name/show: () -> name<tag>
+  ?con-name: name<tag>
 ): latex-entry
-  Latex-entry((ci.con-name, fn(Cons(v, _)) v))
+  Latex-entry((con-name.s, fn(Cons(v, _)) v))
 
 pub fun node/latex/map-field<tag, whole, sf>(ci: con-info<tag, t-cons<a, b>, whole>,
-  ?name/show: () -> name<tag>,
+  ?con-name: name<tag>,
   ?render-latex: (name<tag>, sf) -> <div,exn> string,
   ?build-string-tcons: (list<string>, field-witness<b>) -> exn sf
 ): latex-entry
-  val nm = ?name/show()
+  val nm = ?con-name
   val w : field-witness<b> = FieldWitness
   Latex-entry((nm.s, fn(rendered) render-latex(nm, rendered.build-string-tcons(w))))
 
 pub fun default/node/latex/map-field<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
-  ?name/show: () -> name<tag>
+  ?con-name: name<tag>
 ): latex-entry
-  val nm = ?name/show()
-  Latex-entry((nm.s, fn(rendered) nm.s ++ "(" ++ rendered.join(", ") ++ ")"))
+  val nm = ?con-name.s
+  Latex-entry((nm, fn(rendered) nm ++ "(" ++ rendered.join(", ") ++ ")"))
 
 pub fun nullary/latex/map-field<tag, whole>(ci: con-info<tag, t-nil, whole>,
-  ?name/show: () -> name<tag>,
+  ?con-name: name<tag>,
   ?name-latex: name<tag> -> string
 ): latex-entry
-  val nm = ?name/show()
+  val nm = ?con-name
   Latex-entry((nm.s, fn(_) nm.name-latex))
 
 // ---- Markdown map-field overloads ----
 
 pub fun atom/md/map-field<tag, whole>(ci: con-info<tag, string, whole>,
-  ?name/show: () -> name<tag>
+  ?con-name: name<tag>
 ): md-entry
   Md-entry((ci.con-name, fn(Cons(v, _)) v))
 
 pub fun node/md/map-field<tag, whole, sf>(ci: con-info<tag, t-cons<a, b>, whole>,
-  ?name/show: () -> name<tag>,
+  ?con-name: name<tag>,
   ?render-md: (name<tag>, sf) -> <div,exn> string,
   ?build-string-tcons: (list<string>, field-witness<b>) -> exn sf
 ): md-entry
-  val nm = ?name/show()
+  val nm = ?con-name
   val w : field-witness<b> = FieldWitness
   Md-entry((nm.s, fn(rendered) render-md(nm, rendered.build-string-tcons(w))))
 
 pub fun default/node/md/map-field<tag, whole>(ci: con-info<tag, t-cons<a, b>, whole>,
-  ?name/show: () -> name<tag>
+  ?con-name: name<tag>
 ): md-entry
-  val nm = ?name/show()
+  val nm = ?con-name
   Md-entry((nm.s, fn(rendered) nm.s ++ "(" ++ rendered.join(", ") ++ ")"))
 
 pub fun nullary/md/map-field<tag, whole>(ci: con-info<tag, t-nil, whole>,
-  ?name/show: () -> name<tag>,
+  ?con-name: name<tag>,
   ?name-md: name<tag> -> string
 ): md-entry
-  val nm = ?name/show()
+  val nm = ?con-name
   Md-entry((nm.s, fn(_) nm.name-md))
 
 // ============================================================================

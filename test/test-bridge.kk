@@ -41,13 +41,11 @@ pub fun expr/to-term(e: expr): term
 
 pub type r-eval
   REval
-pub fun r-eval/judgment-name(_: r-eval): string
-  "eval"
+pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 
 pub type r-reach2
   RReach2
-pub fun r-reach2/judgment-name(_: r-reach2): string
-  "reach"
+pub val r-reach2/judgment-name: name<r-reach2> = Name("reach")
 
 // ----------------------------------------------------------------------------
 // CFA helpers

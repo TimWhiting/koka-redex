@@ -23,28 +23,22 @@ pub type store
 // ============================================================================
 
 pub type atom-expr
-pub fun atom-expr/name/show(): name<atom-expr>
-  Name("")
+pub val atom-expr/con-name: name<atom-expr> = Name("")
 
 pub type var-expr
-pub fun var-expr/name/show(): name<var-expr>
-  Name("var")
+pub val var-expr/con-name: name<var-expr> = Name("var")
 
 pub type app-expr
-pub fun app-expr/name/show(): name<app-expr>
-  Name("app")
+pub val app-expr/con-name: name<app-expr> = Name("app")
 
 pub type lam-expr
-pub fun lam-expr/name/show(): name<lam-expr>
-  Name("lam")
+pub val lam-expr/con-name: name<lam-expr> = Name("lam")
 
 pub type snil-store
-pub fun snil-store/name/show(): name<snil-store>
-  Name("snil")
+pub val snil-store/con-name: name<snil-store> = Name("snil")
 
 pub type scons-store
-pub fun scons-store/name/show(): name<scons-store>
-  Name("scons")
+pub val scons-store/con-name: name<scons-store> = Name("scons")
 
 // ============================================================================
 // Con-info definitions

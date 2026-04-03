@@ -82,18 +82,15 @@ pub fun tenv/from-term(t: term): exn tenv
 
 pub type r-infer
   RInfer
-pub fun r-infer/judgment-name(_: r-infer): string
-  "infer"
+pub val r-infer/judgment-name: name<r-infer> = Name("infer")
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/judgment-name(_: r-lookup): string
-  "lookup"
+pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
 
 pub type r-unify
   RUnify
-pub fun r-unify/judgment-name(_: r-unify): string
-  "unify-types"
+pub val r-unify/judgment-name: name<r-unify> = Name("unify-types")
 
 // ----------------------------------------------------------------------------
 // Metavariable helpers

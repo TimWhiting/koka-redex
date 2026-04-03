@@ -33,15 +33,15 @@ pub type tenv
 // ----------------------------------------------------------------------------
 
 pub type atom-expr
-pub fun atom-expr/name/show(): name<atom-expr> { Name("") }
+pub val atom-expr/con-name: name<atom-expr> = Name("")
 pub type var-expr
-pub fun var-expr/name/show(): name<var-expr> { Name("var") }
+pub val var-expr/con-name: name<var-expr> = Name("var")
 pub type app-expr
-pub fun app-expr/name/show(): name<app-expr> { Name("app") }
+pub val app-expr/con-name: name<app-expr> = Name("app")
 pub type lam-expr
-pub fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+pub val lam-expr/con-name: name<lam-expr> = Name("lam")
 pub type int-expr
-pub fun int-expr/name/show(): name<int-expr> { Name("int") }
+pub val int-expr/con-name: name<int-expr> = Name("int")
 
 pub val atom-expr/con-info : con-info<atom-expr, string, expr> = Con-info(
   fn(e) match e { XAtom(n) -> Just(n); _ -> Nothing }, XAtom)
@@ -57,9 +57,9 @@ val expr-info =
   mk-field(atom-expr/con-info) *: mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: mk-field(int-expr/con-info) *: TNil
 
 pub type arrow-ty
-pub fun arrow-ty/name/show(): name<arrow-ty> { Name("arrow") }
+pub val arrow-ty/con-name: name<arrow-ty> = Name("arrow")
 pub type base-ty
-pub fun base-ty/name/show(): name<base-ty> { Name("") }
+pub val base-ty/con-name: name<base-ty> = Name("base")
 
 pub val arrow-ty/con-info : con-info<arrow-ty, t-cons<ty, t-cons<ty, t-nil>>, ty> = Con-info(
   fn(t) match t { TArrow(t1, t2) -> Just(t1 +: t2 +: TNil); _ -> Nothing }, fn(TCons(t1, TCons(t2, _))) TArrow(t1, t2))
@@ -69,9 +69,9 @@ val ty-info =
   mk-field(arrow-ty/con-info) *: mk-field(base-ty/con-info) *: TNil
 
 pub type tenil-tenv
-pub fun tenil-tenv/name/show(): name<tenil-tenv> { Name("snil") }
+pub val tenil-tenv/con-name: name<tenil-tenv> = Name("snil")
 pub type tecons-tenv
-pub fun tecons-tenv/name/show(): name<tecons-tenv> { Name("scons") }
+pub val tecons-tenv/con-name: name<tecons-tenv> = Name("scons")
 
 pub val tenil-tenv/con-info : con-info<tenil-tenv, t-nil, tenv> = Con-info(
   fn(e) match e { TENil -> Just(TNil); _ -> Nothing }, fn(_) TENil)
@@ -145,18 +145,15 @@ fun p-tcons(nm: pat<expr>, typ: pat<ty>, rest: pat<tenv>): pat<tenv>
 
 pub type r-infer
   RInfer
-pub fun r-infer/judgment-name(_: r-infer): string
-  "infer"
+pub val r-infer/judgment-name: name<r-infer> = Name("infer")
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/judgment-name(_: r-lookup): string
-  "lookup"
+pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
 
 pub type r-unify
   RUnify
-pub fun r-unify/judgment-name(_: r-unify): string
-  "unify-types"
+pub val r-unify/judgment-name: name<r-unify> = Name("unify-types")
 
 // ----------------------------------------------------------------------------
 // Rules

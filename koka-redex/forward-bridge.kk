@@ -102,24 +102,24 @@ pub fun tnil/to-output-args(tn: t-nil) : div list<term>
 
 pub fun tcons/before-judgment(b: t-cons<a,b>, ?before-judgment: b -> ()): ()
   ()
-pub fun judgement/before-judgment(j: t-cons<a,b>, ?judgment-name: a -> string): ()
+pub fun judgement/before-judgment(j: t-cons<a,b>, ?judgment-name: name<a>): ()
   ()
 
 // Marker in middle: head has ?judgment-name, tail is cons of outputs
 pub fun marker/to-fact-args(
-  TCons(h, t): t-cons<a, b>,
-  ?judgment-name: a -> string,
+  TCons(_, t): t-cons<a, b>,
+  ?judgment-name: name<a>,
   ?to-output-args: b -> div list<term>
 ): div (list<term>, string, list<term>)
-  ([], h.judgment-name, t.to-output-args)
+  ([], judgment-name.s, t.to-output-args)
 
 // Marker near end: head has ?judgment-name, tail is a single bare value
 pub fun marker-end/to-fact-args(
-  TCons(h, t): t-cons<a, b>,
-  ?judgment-name: a -> string,
+  TCons(_, t): t-cons<a, b>,
+  ?judgment-name: name<a>,
   ?to-term: b -> div term
 ): div (list<term>, string, list<term>)
-  ([], h.judgment-name, [t.to-term])
+  ([], judgment-name.s, [t.to-term])
 
 // Convert a typed judgement chain to a fact
 pub fun chain/to-fact(
@@ -317,10 +317,10 @@ pub fun tcons/to-policy-info(
 
 pub fun marker-end/to-policy-info(
   TCons(h, _t): t-cons<a, b>,
-  ?judgment-name: a -> string,
+  ?judgment-name: name<a>,
   ?join-policy: a -> join-policy
 ): div policy-info
-  Policy-info(h.judgment-name, h.join-policy)
+  Policy-info(judgment-name.s, h.join-policy)
 
 // Default join policy: set-join
 pub fun default/join-policy(_a: a): join-policy

@@ -26,20 +26,15 @@ pub type store
 // ----------------------------------------------------------------------------
 
 pub type var-expr
-pub fun var-expr/name/show(): name<var-expr>
-  Name("var")
+pub val var-expr/con-name: name<var-expr> = Name("var")
 pub type app-expr
-pub fun app-expr/name/show(): name<app-expr>
-  Name("app")
+pub val app-expr/con-name: name<app-expr> = Name("app")
 pub type lam-expr
-pub fun lam-expr/name/show(): name<lam-expr>
-  Name("lam")
+pub val lam-expr/con-name: name<lam-expr> = Name("lam")
 pub type snil-store
-pub fun snil-store/name/show(): name<snil-store>
-  Name("snil")
+pub val snil-store/con-name: name<snil-store> = Name("snil")
 pub type scons-store
-pub fun scons-store/name/show(): name<scons-store>
-  Name("scons")
+pub val scons-store/con-name: name<scons-store> = Name("scons")
 
 pub val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
   fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
@@ -128,8 +123,7 @@ val cfa/term-show-md: term-renderer =
 
 pub type r-eval
   REval
-pub fun r-eval/judgment-name(_: r-eval): string
-  "eval"
+pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 pub fun r-eval/show-md(_: r-eval): string
   "⇓"
 pub fun r-eval/show-latex(_: r-eval): string
@@ -137,8 +131,7 @@ pub fun r-eval/show-latex(_: r-eval): string
 
 pub type r-lookup
   RLookup
-pub fun r-lookup/judgment-name(_: r-lookup): string
-  "lookup"
+pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
 pub fun r-lookup/show-md(_: r-lookup): string
   "∈"
 pub fun r-lookup/show-latex(_: r-lookup): string
@@ -183,18 +176,9 @@ fun store-lookup-all(s: store, nm: string): div list<expr>
 fun cfa-relation()
   with with-pats
   val x  : pat<string> = fresh-pat("x")
-  val e  : pat<expr> = fresh-pat("e")
-  val e1 : pat<expr> = fresh-pat("e1")
-  val e2 : pat<expr> = fresh-pat("e2")
-  val e3 : pat<expr> = fresh-pat("e3")
-  val s  : pat<store> = fresh-pat("s")
-  val s0 : pat<store> = fresh-pat("s0")
-  val s1 : pat<store> = fresh-pat("s1")
-  val s2 : pat<store> = fresh-pat("s2")
-  val s3 : pat<store> = fresh-pat("s3")
-  val v  : pat<expr> = fresh-pat("v")
-  val v2 : pat<expr> = fresh-pat("v2")
-  val vl : pat<expr> = fresh-pat("val")
+  val (e, e1, e2, e3: pat<expr>) = four/fresh-pats("e")
+  val (s, s0, s1, s2, s3: pat<store>) = five/fresh-pats("s")
+  val (v, v2, vl: pat<expr>) = three/fresh-pats("v")
 
   with relation-def
   // E-Lam: λ values evaluate to themselves

@@ -19,11 +19,11 @@ import koka-redex/pattern
 // Relation markers
 pub type r-edge
   REdge
-pub fun r-edge/judgment-name(_: r-edge): string { "edge" }
+pub val r-edge/judgment-name: name<r-edge> = Name("edge")
 
 pub type r-reach
   RReach
-pub fun r-reach/judgment-name(_: r-reach): string { "reach" }
+pub val r-reach/judgment-name: name<r-reach> = Name("reach")
 
 // Pattern helpers
 fun n(i: int): pat<int> { PatTerm(TInt(i)) }
@@ -53,9 +53,8 @@ pub fun main()
   val goal = n(1) |- RReach \ pv("target", 0)
   val table = forward-search(goal, reach-relation())
   val goal-key = "reach(1)"
-  val results = table.flatmap fn(kv)
-    if kv.fst == goal-key then kv.snd else []
-  results.map(fn(f) f.show).foreach(println)
+  val results = table.filter(_.fst == goal-key).flatmap(snd)
+  results.foreach(_.println)
 </koka-editor>
 ~ end htmlraw
 
@@ -93,15 +92,15 @@ pub type store
 
 // Con-info descriptors for auto-derived to-term/from-term
 pub type var-expr
-pub fun var-expr/name/show(): name<var-expr> { Name("var") }
+pub val var-expr/con-name: name<var-expr> = Name("var")
 pub type app-expr
-pub fun app-expr/name/show(): name<app-expr> { Name("app") }
+pub val app-expr/con-name: name<app-expr> = Name("app")
 pub type lam-expr
-pub fun lam-expr/name/show(): name<lam-expr> { Name("lam") }
+pub val lam-expr/con-name: name<lam-expr> = Name("lam")
 pub type snil-store
-pub fun snil-store/name/show(): name<snil-store> { Name("snil") }
+pub val snil-store/con-name: name<snil-store> = Name("snil")
 pub type scons-store
-pub fun scons-store/name/show(): name<scons-store> { Name("scons") }
+pub val scons-store/con-name: name<scons-store> = Name("scons")
 
 pub val var-expr/con-info : con-info<var-expr, t-cons<string, t-nil>, expr> = Con-info(
   fn(e) match e { EVar(n) -> Just(n +: TNil); _ -> Nothing }, fn(TCons(n, _)) EVar(n))
@@ -136,10 +135,10 @@ pub fun store/from-term(t: term): <exn,div> store
 // Relation markers
 pub type r-eval
   REval
-pub fun r-eval/judgment-name(_: r-eval): string { "eval" }
+pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 pub type r-lookup
   RLookup
-pub fun r-lookup/judgment-name(_: r-lookup): string { "lookup" }
+pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
 
 // Pattern constructors
 fun p-var(nm: pat<string>): pat<expr>
@@ -165,18 +164,10 @@ fun store-lookup-all(s: store, nm: string): div list<expr>
 fun cfa-relation()
   with with-pats
   val x  : pat<string> = fresh-pat("x")
-  val e  : pat<expr> = fresh-pat("e")
-  val e1 : pat<expr> = fresh-pat("e1")
-  val e2 : pat<expr> = fresh-pat("e2")
-  val e3 : pat<expr> = fresh-pat("e3")
-  val s  : pat<store> = fresh-pat("s")
-  val s0 : pat<store> = fresh-pat("s0")
-  val s1 : pat<store> = fresh-pat("s1")
-  val s2 : pat<store> = fresh-pat("s2")
-  val s3 : pat<store> = fresh-pat("s3")
-  val v  : pat<expr> = fresh-pat("v")
-  val v2 : pat<expr> = fresh-pat("v2")
-  val vl : pat<expr> = fresh-pat("val")
+  val (e, e1, e2, e3: pat<expr>) = four/fresh-pats("e")
+  val (s, s0, s1, s2, s3: pat<store>) = five/fresh-pats("s")
+  val (v, v2, vl: pat<expr>) = three/fresh-pats("v")
+
   with relation-def
   with rule(
     axiom

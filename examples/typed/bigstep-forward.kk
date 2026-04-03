@@ -28,8 +28,7 @@ pub fun expr/to-term(e: expr): term
 
 pub type r-eval
   REval
-pub fun r-eval/judgment-name(_: r-eval): string
-  "eval"
+pub val r-eval/judgment-name: name<r-eval> = Name("eval")
 
 // e ⇓ v
 fun (~>)(e: expr, v: expr)

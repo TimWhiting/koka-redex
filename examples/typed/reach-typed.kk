@@ -13,13 +13,11 @@ fun n(i: int): term
 // Relation markers
 pub type r-edge
   REdge
-pub fun r-edge/judgment-name(_: r-edge): string
-  "edge"
+pub val r-edge/judgment-name: name<r-edge> = Name("edge")
 
 pub type r-reach
   RReach
-pub fun r-reach/judgment-name(_: r-reach): string
-  "reach"
+pub val r-reach/judgment-name: name<r-reach> = Name("reach")
 
 fun reach-relation()
   with relation-def

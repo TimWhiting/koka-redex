@@ -49,6 +49,11 @@ pub fun tcons/show-latex(l: t-cons<a, b>, ?show-latex-tokens: t-cons<a, b> -> e 
 pub fun default/show-latex-tokens(a: a, ?show-latex: a -> e string): e list<string>
   Cons(show-latex(a), Nil)
 
+// Default show-latex from name-latex val (for relation markers etc.)
+pub fun default/show-latex(_a: a, ?name-latex: name<a>): string
+  ?name-latex.s
+
+
 // ---- Rule rendering ----
 
 pub fun rule/show-latex(Rule(name, premises, conclusion): koka-redex/syntax/rule<n, p, c>, ?show-latex-premises: p -> e list<string>, ?conclusion/show-latex: c -> e string, ?name/show-latex: n -> e string): e string

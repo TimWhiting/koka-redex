@@ -48,6 +48,11 @@ pub fun tcons/show-markdown(TCons(h, t): t-cons<a, b>, ?show-md: a -> e string, 
 pub fun default/show-markdown(a: a, ?show-md: a -> e string): e list<string>
   Cons(show-md(a), Nil)
 
+// Default show-md from name-md val (for relation markers etc.)
+pub fun default/show-md(_a: a, ?name-md: name<a>): string
+  ?name-md.s
+
+
 // A judgement (tcons chain) as a single string
 pub fun tcons/show-md(l: t-cons<a, b>, ?show-markdown: t-cons<a, b> -> e list<string>): e string
   l.show-markdown.join(" ")

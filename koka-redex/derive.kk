@@ -240,12 +240,12 @@ pub fun end/build-string-tcons(
 pub alias render-fmt = (list<string>) -> <div,exn> string
 pub alias render-entry = (string, render-fmt)
 
-// Default name rendering: constructor name as-is
-pub fun default/name-latex(n: name<a>): string
-  n.s
+// Default name rendering: falls back to con-name
+pub fun default/name-latex(?con-name: name<a>): name<a>
+  ?con-name
 
-pub fun default/name-md(n: name<a>): string
-  n.s
+pub fun default/name-md(?con-name: name<a>): name<a>
+  ?con-name
 
 // ---- Backend-tagged wrapper types (for to-list dispatch) ----
 
@@ -276,10 +276,9 @@ pub fun default/node/latex/map-field<tag, whole>(ci: con-info<tag, t-cons<a, b>,
 
 pub fun nullary/latex/map-field<tag, whole>(ci: con-info<tag, t-nil, whole>,
   ?con-name: name<tag>,
-  ?name-latex: name<tag> -> string
+  ?name-latex: name<tag>
 ): latex-entry
-  val nm = ?con-name
-  Latex-entry((nm.s, fn(_) nm.name-latex))
+  Latex-entry((?con-name.s, fn(_) ?name-latex.s))
 
 // ---- Markdown map-field overloads ----
 
@@ -305,10 +304,9 @@ pub fun default/node/md/map-field<tag, whole>(ci: con-info<tag, t-cons<a, b>, wh
 
 pub fun nullary/md/map-field<tag, whole>(ci: con-info<tag, t-nil, whole>,
   ?con-name: name<tag>,
-  ?name-md: name<tag> -> string
+  ?name-md: name<tag>
 ): md-entry
-  val nm = ?con-name
-  Md-entry((nm.s, fn(_) nm.name-md))
+  Md-entry((?con-name.s, fn(_) ?name-md.s))
 
 // ============================================================================
 // Term renderer: dispatch by con-name, handle TVar/TAtom/TInt

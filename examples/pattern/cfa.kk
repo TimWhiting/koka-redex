@@ -84,8 +84,7 @@ fun lam-expr/render-latex(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<st
   "\\lambda " ++ x ++ ".\\; " ++ body
 fun scons-store/render-latex(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
   rest ++ "[" ++ n ++ " \\mapsto " ++ v ++ "]"
-fun snil-store/name-latex(_: name<snil-store>): string
-  "\\emptyset"
+val snil-store/name-latex : name<snil-store> = Name("\\emptyset")
 
 // ----------------------------------------------------------------------------
 // Markdown rendering (only where it differs)
@@ -97,8 +96,7 @@ fun lam-expr/render-md(_: name<lam-expr>, TCons(x, TCons(body, _)): t-cons<strin
   "λ" ++ x ++ ". " ++ body
 fun scons-store/render-md(_: name<scons-store>, TCons(n, TCons(v, TCons(rest, _))): t-cons<string, t-cons<string, t-cons<string, t-nil>>>): <div,exn> string
   rest ++ "[" ++ n ++ " ↦ " ++ v ++ "]"
-fun snil-store/name-md(_: name<snil-store>): string
-  "∅"
+val snil-store/name-md : name<snil-store> = Name("∅")
 
 // ----------------------------------------------------------------------------
 // Term renderers
@@ -124,24 +122,18 @@ val cfa/term-show-md: term-renderer =
 pub type r-eval
   REval
 pub val r-eval/judgment-name: name<r-eval> = Name("eval")
-pub fun r-eval/show-md(_: r-eval): string
-  "⇓"
-pub fun r-eval/show-latex(_: r-eval): string
-  "\\Downarrow"
+pub val r-eval/name-md : name<r-eval> = Name("⇓")
+pub val r-eval/name-latex : name<r-eval> = Name("\\Downarrow")
 
 pub type r-lookup
   RLookup
-pub val r-lookup/judgment-name: name<r-lookup> = Name("lookup")
-pub fun r-lookup/show-md(_: r-lookup): string
-  "∈"
-pub fun r-lookup/show-latex(_: r-lookup): string
-  "\\in"
+pub val r-lookup/judgment-name : name<r-lookup> = Name("lookup")
+pub val r-lookup/name-md : name<r-lookup> = Name("∈")
+pub val r-lookup/name-latex : name<r-lookup> = Name("\\in")
 
 // String rendering for rule names
-pub fun string/show-latex(s: string): string
-  s
-pub fun string/show-md(s: string): string
-  s
+pub fun string/show-latex(s: string): string { s }
+pub fun string/show-md(s: string): string { s }
 
 // ----------------------------------------------------------------------------
 // Pattern constructors
@@ -209,7 +201,7 @@ fun cfa-relation()
 
 pub fun main()
   with with-pats
-  val rel = cfa-relation()
+  val rel = cfa-relation() 
 
   println("--- LaTeX ---")
   println(rel.relation-to-latex)

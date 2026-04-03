@@ -100,7 +100,7 @@ pub fun main()
       fun rel()
         with relation-def
         with rule(axiom --- "edge-1-2" --> edge(n(1), n(2)))
-        single/rule(
+        rule(
           edge(v("x"), v("y"))
           --- "reach-edge" -->
           reach(v("x"), v("y")))
@@ -116,7 +116,7 @@ pub fun main()
           edge(v("x"), v("y"))
           --- "reach-edge" -->
           reach(v("x"), v("y")))
-        single/rule(
+        rule(
           edge(v("x"), v("y")) \\ reach(v("y"), v("z"))
           --- "reach-step" -->
           reach(v("x"), v("z")))
@@ -171,7 +171,7 @@ pub fun main()
           Fact("lookup", [tv("s"), tv("x"), tv("val")])
           --- "E-Var" -->
           eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s")))
-        single/rule(
+        rule(
           eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \\
           eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \\
           eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3"))
@@ -197,7 +197,7 @@ pub fun main()
           Fact("lookup", [tv("s"), tv("x"), tv("val")])
           --- "E-Var" -->
           eval-fact(TNode("var", [tv("x")]), tv("s"), tv("val"), tv("s")))
-        single/rule(
+        rule(
           eval-fact(tv("e1"), tv("s0"), TNode("lam", [tv("x"), tv("e3")]), tv("s1")) \\
           eval-fact(tv("e2"), tv("s1"), tv("v2"), tv("s2")) \\
           eval-fact(tv("e3"), scons-t(tv("x"), tv("v2"), tv("s2")), tv("v"), tv("s3"))

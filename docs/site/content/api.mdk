@@ -77,7 +77,7 @@ effect logic
 | `a \|- b` | Turnstile (visual marker) |
 | `a \\\\ b` | Premise separator |
 | `premises --- "name" --> conclusion` | Rule constructor |
-| `with rule(...)` / `single/rule(...)` | Add rule to relation-def |
+| `with rule(...)` / `rule(...)` | Add rule to relation-def |
 | `with external-rule(shape, solver)` | Add external solver |
 | `with relation-def` | Begin relation definition |
 

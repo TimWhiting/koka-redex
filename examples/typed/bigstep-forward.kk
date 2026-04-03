@@ -55,7 +55,7 @@ fun eval-rules()
     axiom
     --- "E-Lam" -->
     ELam("x", e) ~> ELam("x", e))
-  single/rule(
+  rule(
     (e1 ~> ELam("x", e3)) \\
     (e2 ~> v1)
     --- "E-App" -->

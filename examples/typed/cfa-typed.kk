@@ -107,7 +107,7 @@ fun cfa-relation()
     sv("s") \ x |- RLookup \ ev("val")
     --- "E-Var" -->
     EVar(x) \ sv("s") |- REval \ ev("val") \ sv("s"))
-  single/rule(
+  rule(
     ev("e1") \ sv("s0") |- REval \ ELam(x, ev("e3")) \ sv("s1") \\
     ev("e2") \ sv("s1") |- REval \ ev("v2") \ sv("s2") \\
     ev("e3") \ SCons(x, ev("v2"), sv("s2")) |- REval \ ev("v") \ sv("s3")

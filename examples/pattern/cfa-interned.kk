@@ -140,7 +140,7 @@ fun cfa-relation(?pool: ev<ref-pool<store>>)
     val v2-val : expr = expr/from-term(v2-term)
     val new-store = Cons((x-val, v2-val), s2-val)
     [Fact("extend", [s2-term, x-term, v2-term, ref/to-term(new-store)])]
-  single/rule(
+  rule(
     e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
     e2 \ s1 |- REval \ v2 \ s2 \\
     s2 \ x \ v2 |- RExtend \ s3 \\

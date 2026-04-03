@@ -39,7 +39,7 @@ fun reach-relation()
     x |- REdge \ y
     --- "reach-edge" -->
     x |- RReach \ y)
-  single/rule(
+  rule(
     x |- REdge \ y \\
     y |- RReach \ z
     --- "reach-step" -->

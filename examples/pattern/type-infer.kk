@@ -197,7 +197,7 @@ fun type-relation()
   with external-term-rule(t1 \ t2 |- RUnify \ TNil) fn([t1', t2'])
     unify(t1', t2')
     [Fact("unify-types", [resolve(t1'), resolve(t2')])]
-  single/rule(
+  rule(
     e1 \ env |- RInfer \ t1 \\
     e2 \ env |- RInfer \ t2 \\
     t1 \ p-arrow(t2, a) |- RUnify \ TNil

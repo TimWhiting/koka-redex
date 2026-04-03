@@ -28,7 +28,7 @@ fun reach-relation()
     v("x") |- REdge \ v("y")
     --- "reach-edge" -->
     v("x") |- RReach \ v("y"))
-  single/rule(
+  rule(
     v("x") |- REdge \ v("y") \\
     v("y") |- RReach \ v("z")
     --- "reach-step" -->

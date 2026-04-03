@@ -42,7 +42,7 @@ fun reach-relation()
     x |- REdge \ y
     --- "reach-edge" -->
     x |- RReach \ y)
-  single/rule(
+  rule(
     x |- REdge \ y \\
     y |- RReach \ z
     --- "reach-step" -->
@@ -65,7 +65,7 @@ pub fun main()
 - `\\` separates premises
 - `--- "name" -->` creates a named rule
 - `axiom` means no premises
-- `with rule(...)` chains rules, `single/rule(...)` ends the chain
+- `with rule(...)` chains rules, a plain `rule(...)` ends the chain
 
 ---
 
@@ -179,7 +179,7 @@ fun cfa-relation()
     s \ x |- RLookup \ vl
     --- "E-Var" -->
     p-var(x) \ s |- REval \ vl \ s)
-  single/rule(
+  rule(
     e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
     e2 \ s1 |- REval \ v2 \ s2 \\
     e3 \ p-scons(x, v2, s2) |- REval \ v \ s3

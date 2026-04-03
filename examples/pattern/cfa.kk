@@ -184,7 +184,7 @@ fun cfa-relation()
     --- "E-Var" -->
     p-var(x) \ s |- REval \ vl \ s)
   // E-App: application with store threading
-  single/rule(
+  rule(
     e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
     e2 \ s1 |- REval \ v2 \ s2 \\
     e3 \ p-scons(x, v2, s2) |- REval \ v \ s3

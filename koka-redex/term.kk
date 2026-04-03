@@ -24,7 +24,7 @@ pub type fact
 pub value struct rule
   name: string
   premises: list<fact>
-  conclusion: fact
+  conclusions: list<fact>
 
 pub type proof
   ByFact(fact: fact)

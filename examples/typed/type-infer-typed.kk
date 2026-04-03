@@ -163,7 +163,7 @@ fun run-infer(nm: string, program: expr)
   val rel = type-relation()
   val table = forward-search(goal, rel)
   // Use derived keys for result lookup too
-  val mk = keys-to-memo-key(rel.derive-keys)
+  val mk = sigs-to-memo-key(rel.collect-sigs)
   val goal-fact = chain/to-fact(goal)
   val top-key = mk(goal-fact)
   table.foreach fn(kv)

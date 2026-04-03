@@ -24,15 +24,15 @@ fun full-key(f: fact): div string
   f.show
 
 fun reach-rules(): list<rule>
-  [ Rule("edge-1-2", [], edge(n(1), n(2))),
-    Rule("edge-2-3", [], edge(n(2), n(3))),
-    Rule("edge-3-4", [], edge(n(3), n(4))),
+  [ Rule("edge-1-2", [], [edge(n(1), n(2))]),
+    Rule("edge-2-3", [], [edge(n(2), n(3))]),
+    Rule("edge-3-4", [], [edge(n(3), n(4))]),
     Rule("reach-edge",
       [edge(v("x"), v("y"))],
-      reach(v("x"), v("y"))),
+      [reach(v("x"), v("y"))]),
     Rule("reach-step",
       [edge(v("x"), v("y")), reach(v("y"), v("z"))],
-      reach(v("x"), v("z"))) ]
+      [reach(v("x"), v("z"))]) ]
 
 fun get-results(table: list<(string, list<fact>)>, pred: string): list<fact>
   table.flatmap fn(kv)
@@ -62,15 +62,15 @@ fun eval-fact(e: term, s-in: term, vl: term, s-out: term): fact
 
 fun cfa-rules(): list<rule>
   [ Rule("E-Lam", [],
-      eval-fact(TNode("lam", [v("x"), v("e")]), v("s"), TNode("lam", [v("x"), v("e")]), v("s"))),
+      [eval-fact(TNode("lam", [v("x"), v("e")]), v("s"), TNode("lam", [v("x"), v("e")]), v("s"))]),
     Rule("E-Var",
       [Fact("lookup", [v("s"), v("x"), v("val")])],
-      eval-fact(TNode("var", [v("x")]), v("s"), v("val"), v("s"))),
+      [eval-fact(TNode("var", [v("x")]), v("s"), v("val"), v("s"))]),
     Rule("E-App",
       [ eval-fact(v("e1"), v("s0"), TNode("lam", [v("x"), v("e3")]), v("s1")),
         eval-fact(v("e2"), v("s1"), v("v2"), v("s2")),
         eval-fact(v("e3"), scons(v("x"), v("v2"), v("s2")), v("v"), v("s3")) ],
-      eval-fact(eapp(v("e1"), v("e2")), v("s0"), v("v"), v("s3")))
+      [eval-fact(eapp(v("e1"), v("e2")), v("s0"), v("v"), v("s3"))])
   ]
 
 fun store-lookup-all(store: term, nm: term): div list<term>

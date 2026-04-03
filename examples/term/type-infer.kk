@@ -40,18 +40,18 @@ fun v(nm: string): term
 // Rules
 fun type-rules(): list<rule>
   [ Rule("T-Int", [],
-      infer(TNode("int", [v("n")]), v("env"), tint())),
+      [infer(TNode("int", [v("n")]), v("env"), tint())]),
     Rule("T-Var",
       [Fact("lookup", [v("env"), v("x"), v("t")])],
-      infer(TNode("var", [v("x")]), v("env"), v("t"))),
+      [infer(TNode("var", [v("x")]), v("env"), v("t"))]),
     Rule("T-Lam",
       [infer(v("e"), scons(v("x"), v("a"), v("env")), v("t"))],
-      infer(TNode("lam", [v("x"), v("e")]), v("env"), tarrow(v("a"), v("t")))),
+      [infer(TNode("lam", [v("x"), v("e")]), v("env"), tarrow(v("a"), v("t")))]),
     Rule("T-App",
       [ infer(v("e1"), v("env"), v("t1")),
         infer(v("e2"), v("env"), v("t2")),
         Fact("unify-types", [v("t1"), tarrow(v("t2"), v("a"))]) ],
-      infer(TNode("app", [v("e1"), v("e2")]), v("env"), v("a")))
+      [infer(TNode("app", [v("e1"), v("e2")]), v("env"), v("a"))])
   ]
 
 // External: lookup + unification

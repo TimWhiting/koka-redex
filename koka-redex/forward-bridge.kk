@@ -194,18 +194,18 @@ pub fun rule/to-forward-rule(
   r: koka-redex/syntax/rule<n, p, c>,
   ?name/show: n -> div string,
   ?to-premises: p -> div list<fact>,
-  ?to-fact: c -> div fact
+  ?conclusion/to-premises: c -> div list<fact>
 ): div koka-redex/term/rule
   match r
     Rule(name, premises, conclusion) ->
-      koka-redex/term/Rule(name.show, premises.to-premises, conclusion.to-fact)
+      koka-redex/term/Rule(name.show, premises.to-premises, conclusion.to-premises)
 
 // map-field for t-struct traversal (used by to-list)
 pub fun forward/map-field(
   r: koka-redex/syntax/rule<n, p, c>,
   ?name/show: n -> div string,
   ?to-premises: p -> div list<fact>,
-  ?to-fact: c -> div fact
+  ?conclusion/to-premises: c -> div list<fact>
 ): div koka-redex/term/rule
   r.rule/to-forward-rule
 
@@ -263,85 +263,88 @@ pub fun compose-externals(
             // throw("compose-externals: no solver found for predicate " ++ pred ++ " in " ++ solvers.map(fst).show)
 
 // ----------------------------------------------------------------------------
-// Key-info: per-relation memo-key derivation from relation structure
+// Judgment signatures: unified key + policy derivation (two-step bridge)
+//
+// Step 1: collect-sigs extracts judgment signatures from all conclusions
+// Step 2: sigs drive memo-key and lattice policy construction
 // ----------------------------------------------------------------------------
 
-// Key info for one relation: predicate name + number of input args
-pub value struct key-info
+pub value struct judgment-sig
   pred: string
   n-inputs: int
-
-// map-field for key extraction: extract key info from a rule's conclusion
-pub fun key/map-field(
-  Rule(_name, _premises, conclusion): koka-redex/syntax/rule<n, p, c>,
-  ?to-fact-args: c -> div (list<term>, string, list<term>)
-): div key-info
-  val (inputs, pred, _outputs) = conclusion.to-fact-args
-  Key-info(pred, inputs.length)
-
-// Derive key-infos from a relation-def, one per unique predicate
-pub fun relation/derive-keys(
-  RelationDef(rules): relation-def<r>,
-  ?to-list: r -> div list<key-info>
-): div list<key-info>
-  rules.to-list.unique-by-pred
-
-fun unique-by-pred(keys: list<key-info>): div list<key-info>
-  match keys
-    Nil -> Nil
-    Cons(k, rest) ->
-      Cons(k, rest.filter(fn(k2) k2.pred != k.pred).unique-by-pred)
-
-// ----------------------------------------------------------------------------
-// Lattice policy derivation: extract per-relation join policy from rules
-// ----------------------------------------------------------------------------
-
-pub value struct policy-info
-  pred: string
   policy: join-policy
-
-// map-field for policy extraction: extract from a rule's conclusion
-pub fun policy/map-field(
-  Rule(_name, _premises, conclusion): koka-redex/syntax/rule<n, p, c>,
-  ?to-policy-info: c -> div policy-info
-): div policy-info
-  conclusion.to-policy-info
-
-// Chain traversal: find the relation marker and extract its policy
-pub fun tcons/to-policy-info(
-  TCons(_h, t): t-cons<a, b>,
-  ?to-policy-info: b -> div policy-info,
-  ?before-judgment: b -> ()
-): div policy-info
-  t.to-policy-info
-
-pub fun marker-end/to-policy-info(
-  TCons(h, _t): t-cons<a, b>,
-  ?judgment-name: name<a>,
-  ?join-policy: a -> join-policy
-): div policy-info
-  Policy-info(judgment-name.s, h.join-policy)
 
 // Default join policy: set-join
 pub fun default/join-policy(_a: a): join-policy
   set-join
 
-// Derive policies from relation-def
-pub fun relation/derive-policies(
+// ---- Extract sigs from conclusion chains ----
+
+// Single judgement chain → one sig
+pub fun default/to-sigs(
+  c: a,
+  ?to-fact-args: a -> div (list<term>, string, list<term>)
+): div list<judgment-sig>
+  val (inputs, pred, _) = c.to-fact-args
+  [Judgment-sig(pred, inputs.length, set-join)]
+
+// Chain separated by \\ → multiple sigs
+pub fun chain-sep/to-sigs(
+  TCons(h, t): t-cons<t-cons<a1, a2>, t-cons<premise-sep, b>>,
+  ?to-fact-args: t-cons<a1, a2> -> div (list<term>, string, list<term>),
+  ?to-sigs: b -> div list<judgment-sig>
+): div list<judgment-sig>
+  val (inputs, pred, _) = h.to-fact-args
+  Cons(Judgment-sig(pred, inputs.length, set-join), t.tail.to-sigs)
+
+// Skip premise-sep in sig extraction
+pub fun sep/to-sigs(
+  TCons(_sep, t): t-cons<premise-sep, b>,
+  ?to-sigs: b -> div list<judgment-sig>
+): div list<judgment-sig>
+  t.to-sigs
+
+// ---- map-field overloads for sig collection ----
+
+pub fun sig/map-field(
+  Rule(_name, _premises, conclusion): koka-redex/syntax/rule<n, p, c>,
+  ?to-sigs: c -> div list<judgment-sig>
+): div list<judgment-sig>
+  conclusion.to-sigs
+
+pub fun ext-sig/map-field(e: external-entry): div list<judgment-sig>
+  [Judgment-sig(e.ext-pred, e.ext-n-inputs, set-join)]
+
+// ---- Collect and validate ----
+
+pub fun relation/collect-sigs(
   RelationDef(rules): relation-def<r>,
-  ?to-list: r -> div list<policy-info>
-): div list<(string, join-policy)>
-  rules.to-list.unique-policies
+  ?to-list: r -> div list<list<judgment-sig>>
+): <div,exn> list<judgment-sig>
+  rules.to-list.flatmap(id).validate-sigs
 
-fun unique-policies(infos: list<policy-info>): div list<(string, join-policy)>
-  match infos
-    Nil -> Nil
-    Cons(p, rest) ->
-      Cons((p.pred, p.policy), rest.filter(fn(p2) p2.pred != p.pred).unique-policies)
+fun validate-sigs(xs: list<judgment-sig>): <div,exn> list<judgment-sig>
+  fun go(remaining: list<judgment-sig>, acc: list<judgment-sig>): <div,exn> list<judgment-sig>
+    match remaining
+      Nil -> acc.reverse
+      Cons(x, rest) ->
+        match acc.find(fn(s) s.pred == x.pred)
+          Just(existing) ->
+            if existing.n-inputs != x.n-inputs then
+              throw("judgment '" ++ x.pred ++ "' used inconsistently: "
+                ++ existing.n-inputs.show ++ " inputs vs " ++ x.n-inputs.show ++ " inputs")
+            go(rest, acc)
+          Nothing ->
+            go(rest, Cons(x, acc))
+  go(xs, [])
 
-// Convert key-infos into a composed memo-key function
-pub fun keys-to-memo-key(keys: list<key-info>): ((fact) -> string)
-  compose-memo-keys(keys.map(fn(k) (k.pred, make-memo-key(k.pred, k.n-inputs))))
+// ---- Build memo-key and policies from sigs ----
+
+pub fun sigs-to-memo-key(sigs: list<judgment-sig>): div ((fact) -> string)
+  compose-memo-keys(sigs.map(fn(s) (s.pred, make-memo-key(s.pred, s.n-inputs))))
+
+pub fun sigs-to-policies(sigs: list<judgment-sig>): list<(string, join-policy)>
+  sigs.map(fn(s) (s.pred, s.policy))
 
 // ----------------------------------------------------------------------------
 // relation-entry: sum type for mixed rule/external t-struct traversal
@@ -356,7 +359,7 @@ pub fun rule-entry/map-field(
   r: koka-redex/syntax/rule<n, p, c>,
   ?name/show: n -> div string,
   ?to-premises: p -> div list<fact>,
-  ?to-fact: c -> div fact
+  ?conclusion/to-premises: c -> div list<fact>
 ): div relation-entry
   RuleEntry(r.rule/to-forward-rule)
 
@@ -364,13 +367,6 @@ pub fun rule-entry/map-field(
 pub fun ext-entry/map-field(e: external-entry): div relation-entry
   ExtEntry(e.ext-pred, e.ext-n-inputs, e.ext-solver)
 
-// key map-field: external-entry -> key-info
-pub fun ext-key/map-field(e: external-entry): div key-info
-  Key-info(e.ext-pred, e.ext-n-inputs)
-
-// policy map-field: external-entry -> policy-info (default set-join)
-pub fun ext-policy/map-field(e: external-entry): div policy-info
-  Policy-info(e.ext-pred, set-join)
 
 // Partition relation-entries into rules and external solvers
 fun partition-entries(entries: list<relation-entry>): (list<koka-redex/term/rule>, list<(string, (fact) -> <logic,div,exn> maybe<list<fact>>)>)
@@ -394,13 +390,13 @@ pub fun forward-search(
   rel: relation-def<r>,
   ?to-fact: g -> div fact,
   ?to-list: r -> div list<relation-entry>,
-  ?derive-keys: relation-def<r> -> div list<key-info>,
-  ?derive-policies: relation-def<r> -> div list<(string, join-policy)>
+  ?collect-sigs: relation-def<r> -> <div,exn> list<judgment-sig>
 ): <div,exn> list<(string, list<fact>)>
   val entries = to-list(rel.rules)
   val (rules, ext-pairs) = partition-entries(entries)
   val ext = compose-externals(ext-pairs)
-  val mk = keys-to-memo-key(rel.derive-keys)
-  val policies = rel.derive-policies
+  val sigs = rel.collect-sigs
+  val mk = sigs-to-memo-key(sigs)
+  val policies = sigs-to-policies(sigs)
   koka-redex/forward/forward-search(goal.to-fact, rules, ?external=ext, ?memo-key=mk, ?lattice-policies=policies)
 

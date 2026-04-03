@@ -18,15 +18,15 @@ fun n(i: int): term
   TInt(i)
 
 fun all-rules(): list<rule>
-  [ Rule("edge-1-2", [], edge(n(1), n(2))),
-    Rule("edge-2-3", [], edge(n(2), n(3))),
-    Rule("edge-3-4", [], edge(n(3), n(4))),
+  [ Rule("edge-1-2", [], [edge(n(1), n(2))]),
+    Rule("edge-2-3", [], [edge(n(2), n(3))]),
+    Rule("edge-3-4", [], [edge(n(3), n(4))]),
     Rule("reach-edge",
       [edge(v("x"), v("y"))],
-      reach(v("x"), v("y"))),
+      [reach(v("x"), v("y"))]),
     Rule("reach-step",
       [edge(v("x"), v("y")), reach(v("y"), v("z"))],
-      reach(v("x"), v("z"))) ]
+      [reach(v("x"), v("z"))]) ]
 
 fun memo-key(f: fact): div string
   f.show

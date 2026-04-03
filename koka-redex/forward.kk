@@ -110,15 +110,31 @@ pub fun forward-eval(
   ?memo-key: (fact) -> div string
 ): <cache<string, search-result>, logic, div, exn> search-result
   val key = memo-key(normalize-fact(resolve-fact(goal)))
+  trace("Memo: " ++ key)
   with each <- memo(key)
   // Each rule is a branch. Unification failure calls none() via on-fail,
   // which kills just this branch (scoped by do-each).
   val rule-branches = rules.map fn(r)
     fn()
       val rf = freshen-rule(r)
-      unify-facts(goal, rf.conclusion)
-      forward-premises(rf.premises, rules, ?external=external, ?memo-key=memo-key)
-      resolve-fact(rf.conclusion)
+      // Find which conclusion unifies with the goal
+      val matched = rf.conclusions.find fn(c)
+        val s = save()
+        try({ unify-facts(goal, c); True }) fn(_) { restore(s); False }
+      match matched
+        Nothing -> none()  // no conclusion matches
+        Just(primary) ->
+          unify-facts(goal, primary)  // re-unify to bind variables
+          forward-premises(rf.premises, rules, ?external=external, ?memo-key=memo-key)
+          // Add all resolved conclusions to their tables
+          val primary-resolved = normalize-fact(resolve-fact(primary))
+          rf.conclusions.foreach fn(c)
+            val resolved = normalize-fact(resolve-fact(c))
+            if !fact/eq(resolved, primary-resolved) then
+              val extra-key = memo-key(normalize-fact(resolved))
+              trace("Add result: " ++ extra-key ++ " resolved: " ++ resolved.show)
+              add-result(extra-key, normalize-fact(resolved))
+          primary-resolved
   val ext-branches : list<() -> <cache<string,search-result>,logic,div,exn> search-result> = match external(goal)
     Just(results) -> results.map(fn(r) fn() r)
     Nothing -> []

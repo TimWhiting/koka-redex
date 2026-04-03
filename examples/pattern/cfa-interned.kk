@@ -104,19 +104,10 @@ pub val r-extend/judgment-name: name<r-extend> = Name("extend")
 fun cfa-relation(?pool: ev<ref-pool<store>>)
   with with-pats
   val x  : pat<string> = fresh-pat("x")
-  val e  : pat<expr> = fresh-pat("e")
-  val e1 : pat<expr> = fresh-pat("e1")
-  val e2 : pat<expr> = fresh-pat("e2")
-  val e3 : pat<expr> = fresh-pat("e3")
-  val s  : pat<store> = fresh-pat("s")
-  val s0 : pat<store> = fresh-pat("s0")
-  val s1 : pat<store> = fresh-pat("s1")
-  val s2 : pat<store> = fresh-pat("s2")
-  val s3 : pat<store> = fresh-pat("s3")
-  val s4 : pat<store> = fresh-pat("s4")
-  val v  : pat<expr> = fresh-pat("v")
-  val v2 : pat<expr> = fresh-pat("v2")
-  val vl : pat<expr> = fresh-pat("val")
+  val (e, e1, e2, e3: pat<expr>) = four/fresh-pats("e")
+  val (s, s0, s1) = three/fresh-pats("s")
+  val (s2, s3, s4) = three/fresh-pats("s")
+  val (v, v2, vl: pat<expr>) = three/fresh-pats("v")
 
   with relation-def
   // E-Lam: λ values evaluate to themselves

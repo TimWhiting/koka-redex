@@ -82,10 +82,10 @@ fun freshen-facts(fs: list<fact>, rs: list<(string, int, term)>): <logic,div> (l
       (rs2, Cons(f1, rest1))
 
 pub fun freshen-rule(r: rule): <logic,div> rule
-  val Rule(name, premises, conclusion) = r
-  val (rs1, conc1) = freshen-fact(conclusion, [])
+  val Rule(name, premises, conclusions) = r
+  val (rs1, concs1) = freshen-facts(conclusions, [])
   val (_, prems1) = freshen-facts(premises, rs1)
-  Rule(name, prems1, conc1)
+  Rule(name, prems1, concs1)
 
 // ---------------------------------------------------------------------------
 // Handler: provides logic operations backed by a substitution list
@@ -98,7 +98,9 @@ pub fun with-logic(on-fail: () -> <div|e> (), action: () -> <logic,div|e> a): <d
   with handler
     fun unify(t1, t2)
       match unify-internal(t1, t2, subst)
-        Just(s) -> subst := s
+        Just(s) -> 
+          subst := s
+          // trace("New subst: " ++ subst.show)
         Nothing -> on-fail()
     fun walk(t)
       walk-internal(t, subst)

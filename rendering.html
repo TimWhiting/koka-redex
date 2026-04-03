@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+      
+    </meta>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+      
+    </meta>
+    <title>
+      Rendering · Koka Redex
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+      
+    </link>
+    <link href="styles/site.css" rel="stylesheet">
+      
+    </link>
+    <meta content="/koka-redex/playground/koka-playground.wasm" name="koka-wasm-url">
+      
+    </meta>
+    <meta content="/koka-redex/playground/" name="koka-stdlib-url">
+      
+    </meta>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <div class="nav-brand">
+        <a href="index.html">
+          Koka Redex
+        </a>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">
+          Overview
+        </a>
+        <a class="nav-link" href="tutorial.html">
+          Tutorial
+        </a>
+        <a class="nav-link" href="engine.html">
+          Engine
+        </a>
+        <a class="nav-link" href="derive.html">
+          Derive
+        </a>
+        <a class="nav-link" href="rendering.html">
+          Rendering
+        </a>
+        <a class="nav-link" href="api.html">
+          API
+        </a>
+      </div>
+    </nav>
+    <main class="site-content">
+      <div class="body madoko" style="line-adjust:0">
+<h2 id="sec-rendering--latex-and-markdown-from-rules" class="h1" data-heading-depth="1" style="display:block">Rendering: LaTeX and Markdown from Rules</h2>
+<p class="p noindent">Rules render to LaTeX and Markdown directly from their type-level structure.
+The user defines per-constructor format functions; the framework handles
+the rest.
+</p><h3 id="sec-per-constructor-rendering" class="h2" data-heading-depth="2" style="display:block">Per-Constructor Rendering</h3>
+<p class="p noindent">Each constructor gets a format function per backend, taking <code class="code code1">name&lt;tag&gt;</code> and
+a t-cons chain of pre-rendered field strings:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> LaTeX: formal notation</span>
+<span style="color:blue">fun</span> <span style="color:navy">lam-expr/</span>render-latex(_<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">&gt;</span>,
+  <span style="color:purple">TCons</span>(x, <span style="color:purple">TCons</span>(body, _))<span style="color:teal">:</span> <span style="color:teal">t</span>-cons&lt;string, t-cons&lt;string, t-nil&gt;&gt;)
+  <span style="color:maroon">&quot;</span><span style="color:gray">\\</span><span style="color:maroon">lambda </span><span style="color:maroon">&quot;</span> ++ x ++ <span style="color:maroon">&quot;</span><span style="color:maroon">.</span><span style="color:gray">\\</span><span style="color:maroon">; </span><span style="color:maroon">&quot;</span> ++ body  <span style="color:darkgreen">//</span><span style="color:darkgreen"> renders as: λ x. body</span>
+
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> Markdown: unicode</span>
+<span style="color:blue">fun</span> <span style="color:navy">lam-expr/</span>render-md(_<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">&gt;</span>,
+  <span style="color:purple">TCons</span>(x, <span style="color:purple">TCons</span>(body, _))<span style="color:teal">:</span> <span style="color:teal">t</span>-cons&lt;string, t-cons&lt;string, t-nil&gt;&gt;)
+  <span style="color:maroon">&quot;</span><span style="color:maroon">λ</span><span style="color:maroon">&quot;</span> ++ x ++ <span style="color:maroon">&quot;</span><span style="color:maroon">. </span><span style="color:maroon">&quot;</span> ++ body</code></pre>
+<p class="p noindent para-continued">The t-cons field type must match the constructor&#39;s con-info field count —
+wrong arity is a compile error.
+</p>
+<p class="p indent">Constructors without a custom render get the default: <code class="code code1">Name(f1, f2, ...)</code>.
+</p><h3 id="sec-nullary-constructor-names" class="h2" data-heading-depth="2" style="display:block">Nullary Constructor Names</h3>
+<p class="p noindent">Nullary constructors render via <code class="code code1">name-latex</code> / <code class="code code1">name-md</code>:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:blue">fun</span> <span style="color:navy">snil-store/</span>name-latex(_<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">snil-store</span><span style="color:teal">&gt;</span>)<span style="color:teal">:</span> <span style="color:teal">string</span> { <span style="color:maroon">&quot;</span><span style="color:gray">\\</span><span style="color:maroon">emptyset</span><span style="color:maroon">&quot;</span> }  <span style="color:darkgreen">//</span><span style="color:darkgreen"> renders as: ∅</span>
+<span style="color:blue">fun</span> <span style="color:navy">snil-store/</span>name-md(_<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">snil-store</span><span style="color:teal">&gt;</span>)<span style="color:teal">:</span> <span style="color:teal">string</span> { <span style="color:maroon">&quot;</span><span style="color:maroon">∅</span><span style="color:maroon">&quot;</span> }</code></pre>
+<p class="p noindent para-continued">Default: renders the constructor name as-is.
+</p><h3 id="sec-building-term-renderers" class="h2" data-heading-depth="2" style="display:block">Building Term Renderers</h3>
+<p class="p noindent">Term renderers are built from type-info via <code class="code code1">to-list</code>, selecting the backend by return-type annotation:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:blue">val</span> <span style="color:navy">cfa/</span>term-show-latex<span style="color:teal">:</span> <span style="color:teal">term-renderer</span> <span style="color:blue">=</span>
+  <span style="color:blue">val</span> expr-entries <span style="color:teal">:</span> <span style="color:teal">list</span><span style="color:teal">&lt;</span><span style="color:teal">latex-entry</span><span style="color:teal">&gt;</span> <span style="color:blue">=</span> expr-info<span style="color:blue">.</span>to-list
+  <span style="color:blue">val</span> store-entries <span style="color:teal">:</span> <span style="color:teal">list</span><span style="color:teal">&lt;</span><span style="color:teal">latex-entry</span><span style="color:teal">&gt;</span> <span style="color:blue">=</span> store-info<span style="color:blue">.</span>to-list
+  make-term-renderer(
+    expr-entries<span style="color:blue">.</span>map(entry) ++ store-entries<span style="color:blue">.</span>map(entry),
+    ?var-render<span style="color:blue">=</span><span style="color:navy">latex/</span>var-render)</code></pre>
+<p class="p noindent para-continued">The <code class="code code1">: list&lt;latex-entry&gt;</code> annotation selects the LaTeX backend.
+Change to <code class="code code1">list&lt;md-entry&gt;</code> for Markdown.
+</p><h3 id="sec-pattern-rendering" class="h2" data-heading-depth="2" style="display:block">Pattern Rendering</h3>
+<p class="p noindent">The framework provides generic pattern renderers:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> In latex.kk:</span>
+pub <span style="color:blue">fun</span> <span style="color:navy">pat/</span>show-latex(p<span style="color:teal">:</span> <span style="color:teal">pat</span><span style="color:teal">&lt;</span><span style="color:teal">a</span><span style="color:teal">&gt;</span>,
+  ?term-show-latex<span style="color:teal">:</span> <span style="color:teal">term-renderer</span>)<span style="color:teal">:</span> <span style="color:teal">&lt;</span><span style="color:teal">div</span><span style="color:teal">,</span><span style="color:teal">exn</span><span style="color:teal">&gt;</span> <span style="color:teal">string</span>
+  <span style="color:blue">match</span> p
+    <span style="color:purple">PatVar</span>(nm, id) <span style="color:blue">-&gt;</span> <span style="color:darkgreen">//</span><span style="color:darkgreen"> render metavar name with subscript</span>
+    <span style="color:purple">PatTerm</span>(t) <span style="color:blue">-&gt;</span> t<span style="color:blue">.</span>term-show-latex</code></pre>
+<p class="p noindent para-continued">With <code class="code code1">cfa/term-show-latex</code> in scope, <code class="code code1">pat/show-latex</code> resolves
+<code class="code code1">?term-show-latex</code> automatically — no per-type wrappers needed.
+</p><h3 id="sec-rule-rendering" class="h2" data-heading-depth="2" style="display:block">Rule Rendering</h3>
+<p class="p noindent"><code class="code code1">relation-to-latex</code> and <code class="code code1">relation-to-md</code> walk the relation-def&#39;s type-level
+structure, rendering each rule:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code>println(rel<span style="color:blue">.</span>relation-to-latex)  <span style="color:darkgreen">//</span><span style="color:darkgreen"> \begin{mathpar} \inferrule*[...] ...</span>
+println(rel<span style="color:blue">.</span>relation-to-md(<span style="color:maroon">&quot;</span><span style="color:maroon">eval/lookup</span><span style="color:maroon">&quot;</span>))  <span style="color:darkgreen">//</span><span style="color:darkgreen"> **E-Lam** ...</span></code></pre>
+<p class="p noindent para-continued">The rendering traversal uses <code class="code code1">show-latex</code> / <code class="code code1">show-md</code> implicits per element
+type in the judgement chains. Relation markers (<code class="code code1">REval</code>, <code class="code code1">RLookup</code>) define
+their own <code class="code code1">show-latex</code> / <code class="code code1">show-md</code>.
+</p><h3 id="sec-variable-rendering" class="h2" data-heading-depth="2" style="display:block">Variable Rendering</h3>
+<p class="p noindent">Built-in var renderers format metavariables:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> LaTeX: x_{1}</span>
+pub <span style="color:blue">fun</span> <span style="color:navy">latex/</span>var-render(nm, id) <span style="color:blue">=</span>
+  <span style="color:blue">if</span> id == <span class="constant" style="color:purple">0</span> <span style="color:blue">then</span> nm <span style="color:blue">else</span> nm ++ <span style="color:maroon">&quot;</span><span style="color:maroon">_{</span><span style="color:maroon">&quot;</span> ++ id<span style="color:blue">.</span>show ++ <span style="color:maroon">&quot;</span><span style="color:maroon">}</span><span style="color:maroon">&quot;</span>
+
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> Markdown: x1</span>
+pub <span style="color:blue">fun</span> <span style="color:navy">md/</span>var-render(nm, id) <span style="color:blue">=</span>
+  <span style="color:blue">if</span> id == <span class="constant" style="color:purple">0</span> <span style="color:blue">then</span> nm <span style="color:blue">else</span> nm ++ id<span style="color:blue">.</span>show</code></pre><span data-line=""></span></div>
+    </main>
+    <footer class="site-footer">
+      Koka Redex
+    </footer>
+    <script src="/koka-redex/playground/embed.js" type="module">
+      
+    </script>
+  </body>
+</html>

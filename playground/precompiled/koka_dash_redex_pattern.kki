@@ -1,0 +1,208 @@
+module interface koka-redex/pattern
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+pub import koka-redex/term = koka-redex/term = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub type pat[15,1,17,18] <a> :: V -> V {
+  pub con PatVar[16,3,16,8](nm: std/core/types/string, id: std/core/types/int){0,2,8} : forall<a> (nm : std/core/types/string, id : std/core/types/int) -> (pat :: V -> V)<a> = 1;
+  pub con PatTerm[17,3,17,9](t: koka-redex/term/term){0,1,8} : forall<a> (t : koka-redex/term/term) -> (pat :: V -> V)<a> = 2;
+};
+pub recursive effect type pat-fresh[31,1,32,21] <(e :: E),a> :: (E, V) -> V {
+  pub con @Hnd-pat-fresh[31,1,31,20](@cfc: std/core/types/int, @fun-fresh-id: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>){0,2,8} : forall<(e :: E),a> (std/core/types/int, (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) -> (pat-fresh :: (E, V) -> V)<(e :: E),a> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Tests for the `PatVar` constructor of the `:pat` type.
+pub fip fun is-patVar[16,3,16,8] : forall<a> (^ pat : (pat :: V -> V)<a>) -> std/core/types/bool;
+// Automatically generated. Tests for the `PatTerm` constructor of the `:pat` type.
+pub fip fun is-patTerm[17,3,17,9] : forall<a> (^ pat : (pat :: V -> V)<a>) -> std/core/types/bool;
+pub fun pattern/to-term[22,9,22,23] : forall<a> (p : (pat :: V -> V)<a>) -> koka-redex/term/term;
+// monadic lift
+fun term/@mlift-pat@10034[1,0,1,0] : (@y-x10001 : koka-redex/term/term) -> (std/core/pure :: E) (pat :: V -> V)<koka-redex/term/term>;
+pub fun term/pat[19,9,19,16] : forall<a> (t : a, ?to-term : (a) -> (std/core/pure :: E) koka-redex/term/term) -> (std/core/pure :: E) (pat :: V -> V)<koka-redex/term/term>;
+// Automatically generated. Retrieves the `@cfc` constructor field of the `:pat-fresh` type.
+fun pat-fresh/@cfc[31,1,31,20] : forall<(e :: E),a> (^ @this : (pat-fresh :: (E, V) -> V)<(e :: E),a>) -> std/core/types/int;
+// runtime tag for the effect `:pat-fresh`
+pub val pat-fresh/@tag[31,1,31,20] : (std/core/hnd/htag :: ((E, V) -> V) -> V)<(pat-fresh :: (E, V) -> V)>;
+// handler for the effect `:pat-fresh`
+pub fun pat-fresh/@handle[31,12,31,20] : forall<a,(e :: E),b> (hnd : (pat-fresh :: (E, V) -> V)<(e :: E),b>, ret : (res : a) -> (e :: E) b, action : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>|(e :: E)> a) -> (e :: E) b;
+// Automatically generated. Retrieves the `@fun-fresh-id` constructor field of the `:pat-fresh` type.
+fun pat-fresh/@fun-fresh-id[32,7,32,21] : forall<(e :: E),a> (^ @this : (pat-fresh :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>;
+// select `fresh-id` operation out of effect `:pat-fresh`
+pub fun fresh-id/@select[32,7,32,21] : forall<(e :: E),a> (^ hnd : (pat-fresh :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>;
+// Call the `fun fresh-id` operation of the effect `:pat-fresh`
+pub fun fresh-id[32,7,32,14] : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> std/core/types/int;
+// monadic lift
+fun @mlift-fresh-pat@10035[1,0,1,0] : forall<a> (nm : std/core/types/string, @y-x10004 : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> (pat :: V -> V)<a>;
+pub fun fresh-pat[34,9,34,17] : forall<a> (nm : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> (pat :: V -> V)<a>;
+// monadic lift
+fun two/@mlift-fresh-pats@10036[1,0,1,0] : forall<a> (@y-x10005 : (pat :: V -> V)<a>, @y-x10006 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun two/@mlift-fresh-pats@10037[1,0,1,0] : forall<a> (nm : std/core/types/string, @y-x10005 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>);
+pub fun two/fresh-pats[37,9,37,22] : forall<a> (nm : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun three/@mlift-fresh-pats@10038[1,0,1,0] : forall<a> (@y-x10007 : (pat :: V -> V)<a>, @y-x10008 : (pat :: V -> V)<a>, @y-x10009 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun three/@mlift-fresh-pats@10039[1,0,1,0] : forall<a> (@y-x10007 : (pat :: V -> V)<a>, nm : std/core/types/string, @y-x10008 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun three/@mlift-fresh-pats@10040[1,0,1,0] : forall<a> (nm : std/core/types/string, @y-x10007 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+pub fun three/fresh-pats[40,9,40,24] : forall<a> (nm : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun four/@mlift-fresh-pats@10041[1,0,1,0] : forall<a> (@y-x10010 : (pat :: V -> V)<a>, @y-x10011 : (pat :: V -> V)<a>, @y-x10012 : (pat :: V -> V)<a>, @y-x10013 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun four/@mlift-fresh-pats@10042[1,0,1,0] : forall<a> (@y-x10010 : (pat :: V -> V)<a>, @y-x10011 : (pat :: V -> V)<a>, nm : std/core/types/string, @y-x10012 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun four/@mlift-fresh-pats@10043[1,0,1,0] : forall<a> (@y-x10010 : (pat :: V -> V)<a>, nm : std/core/types/string, @y-x10011 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun four/@mlift-fresh-pats@10044[1,0,1,0] : forall<a> (nm : std/core/types/string, @y-x10010 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+pub fun four/fresh-pats[43,9,43,23] : forall<a> (nm : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun five/@mlift-fresh-pats@10045[1,0,1,0] : forall<a> (@y-x10014 : (pat :: V -> V)<a>, @y-x10015 : (pat :: V -> V)<a>, @y-x10016 : (pat :: V -> V)<a>, @y-x10017 : (pat :: V -> V)<a>, @y-x10018 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun five/@mlift-fresh-pats@10046[1,0,1,0] : forall<a> (@y-x10014 : (pat :: V -> V)<a>, @y-x10015 : (pat :: V -> V)<a>, @y-x10016 : (pat :: V -> V)<a>, nm : std/core/types/string, @y-x10017 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun five/@mlift-fresh-pats@10047[1,0,1,0] : forall<a> (@y-x10014 : (pat :: V -> V)<a>, @y-x10015 : (pat :: V -> V)<a>, nm : std/core/types/string, @y-x10016 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun five/@mlift-fresh-pats@10048[1,0,1,0] : forall<a> (@y-x10014 : (pat :: V -> V)<a>, nm : std/core/types/string, @y-x10015 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun five/@mlift-fresh-pats@10049[1,0,1,0] : forall<a> (nm : std/core/types/string, @y-x10014 : (pat :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+pub fun five/fresh-pats[46,9,46,23] : forall<a> (nm : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> ((pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>, (pat :: V -> V)<a>);
+// monadic lift
+fun @mlift-with-pats@10050[1,0,1,0] : forall<(h :: H),(e :: E)> (counter : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, wild_ : ()) -> <(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> std/core/types/int;
+// monadic lift
+fun @mlift-with-pats@10051[1,0,1,0] : forall<(h :: H),(e :: E)> (counter : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, @y-x10019 : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> std/core/types/int;
+// Run an action with fresh pattern variable allocation.
+// Returns the action's result with all metavar IDs assigned.
+pub fun with-pats[51,9,51,17] : forall<a,(e :: E)> (action : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>|(e :: E)> a) -> (e :: E) a;
+pub fun string/pat[69,9,69,18] : (s : std/core/types/string) -> (pat :: V -> V)<std/core/types/string>;
+pub fun int/pat[72,9,72,15] : (n : std/core/types/int) -> (pat :: V -> V)<std/core/types/int>;
+pub fun default/term/pat[75,9,75,24] : (t : koka-redex/term/term) -> (pat :: V -> V)<koka-redex/term/term>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+inline borrow "^" fip fun is-patVar // inline size: 1
+  = forall<a> fn(pat: (pat :: V -> V)<a>){
+    (match (pat) {
+      ((koka-redex/pattern/PatVar((@pat@0: std/core/types/string) : std/core/types/string, (@pat@1: std/core/types/int) : std/core/types/int) : (pat :: V -> V)<a> ) as @pat: ((pat :: V -> V)<a>))
+         -> std/core/types/True;
+      (@pat@2: ((pat :: V -> V)<a>))
+         -> std/core/types/False;
+    });
+  };
+inline borrow "^" fip fun is-patTerm // inline size: 1
+  = forall<a> fn(pat: (pat :: V -> V)<a>){
+    (match (pat) {
+      ((koka-redex/pattern/PatTerm((@pat@0: koka-redex/term/term) : koka-redex/term/term) : (pat :: V -> V)<a> ) as @pat: ((pat :: V -> V)<a>))
+         -> std/core/types/True;
+      (@pat@1: ((pat :: V -> V)<a>))
+         -> std/core/types/False;
+    });
+  };
+fun pattern/to-term // inline size: 2
+  = forall<a> fn(p: (pat :: V -> V)<a>){
+    (match (p) {
+      ((koka-redex/pattern/PatVar((nm: std/core/types/string) : std/core/types/string, (id: std/core/types/int) : std/core/types/int) : (pat :: V -> V)<a> ) as @pat: ((pat :: V -> V)<a>))
+         -> koka-redex/term/TVar(nm, id);
+      ((@skip koka-redex/pattern/PatTerm((t: koka-redex/term/term) : koka-redex/term/term) : (pat :: V -> V)<a> ) as @pat@0: ((pat :: V -> V)<a>))
+         -> t;
+    });
+  };
+fun term/pat // inline size: 2
+  = forall<a> fn<(std/core/pure :: E)>(t: a, @implicit/to-term: (a) -> (std/core/pure :: E) koka-redex/term/term){
+    koka-redex/pattern/PatTerm<koka-redex/term/term>((@implicit/to-term(t)));
+  };
+inline borrow "^" fun pat-fresh/@cfc // inline size: 0
+  = forall<(e :: E),a> fn(@this: (pat-fresh :: (E, V) -> V)<(e :: E),a>){
+    (match (@this) {
+      ((@skip koka-redex/pattern/@Hnd-pat-fresh((@x: std/core/types/int) : std/core/types/int, (@pat@0: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) : (pat-fresh :: (E, V) -> V)<(e :: E),a> ) as @pat: ((pat-fresh :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun pat-fresh/@fun-fresh-id // inline size: 0
+  = forall<(e :: E),a> fn(@this: (pat-fresh :: (E, V) -> V)<(e :: E),a>){
+    (match (@this) {
+      ((@skip koka-redex/pattern/@Hnd-pat-fresh((@pat@0: std/core/types/int) : std/core/types/int, (@x: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) : (pat-fresh :: (E, V) -> V)<(e :: E),a> ) as @pat: ((pat-fresh :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun fresh-id/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (pat-fresh :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/pattern/@Hnd-pat-fresh((@pat@0: std/core/types/int) : std/core/types/int, (@fun-fresh-id: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<std/core/types/int,(pat-fresh :: (E, V) -> V),(e :: E),a>) : (pat-fresh :: (E, V) -> V)<(e :: E),a> ) as @pat: ((pat-fresh :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-fresh-id;
+    });
+  };
+inline fun fresh-id // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>>>(){
+    std/core/hnd/@perform0<std/core/types/int,<(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>>,(pat-fresh :: (E, V) -> V)>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(pat-fresh :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(pat-fresh :: (E, V) -> V)>>((std/core/hnd/@evv-at<(pat-fresh :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/pattern/#fresh-id/@select);
+  };
+fun two/fresh-pats // inline size: 3
+  = forall<a> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>>>(nm: std/core/types/string){
+    std/core/types/Tuple2<(pat :: V -> V)<a>,(pat :: V -> V)<a>>((koka-redex/pattern/fresh-pat<a>(nm)), (koka-redex/pattern/fresh-pat<a>(nm)));
+  };
+fun three/fresh-pats // inline size: 4
+  = forall<a> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(pat-fresh :: (E, V) -> V)>>>(nm: std/core/types/string){
+    std/core/types/Tuple3<(pat :: V -> V)<a>,(pat :: V -> V)<a>,(pat :: V -> V)<a>>((koka-redex/pattern/fresh-pat<a>(nm)), (koka-redex/pattern/fresh-pat<a>(nm)), (koka-redex/pattern/fresh-pat<a>(nm)));
+  };
+fun string/pat // inline size: 2
+  = fn(s: std/core/types/string){
+    koka-redex/pattern/PatTerm<std/core/types/string>((koka-redex/term/TAtom(s)));
+  };
+fun int/pat // inline size: 2
+  = fn(n: std/core/types/int){
+    koka-redex/pattern/PatTerm<std/core/types/int>((koka-redex/term/TInt(n)));
+  };
+fun default/term/pat // inline size: 1
+  = fn(t: koka-redex/term/term){
+    koka-redex/pattern/PatTerm<koka-redex/term/term>(t);
+  };

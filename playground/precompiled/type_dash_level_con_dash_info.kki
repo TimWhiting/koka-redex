@@ -1,0 +1,181 @@
+/*----------------------------------------------------------------------------
+   Copyright 2024, Koka-Community Authors
+
+   Licensed under the MIT License ("The License"). You may not
+   use this file except in compliance with the License. A copy of the License
+   can be found in the LICENSE file at the root of this distribution.
+----------------------------------------------------------------------------*/
+module interface type-level/con-info
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+pub import type-level/structs = type-level/structs = "";
+pub import type-level/list = type-level/list = "";
+pub import type-level/nil = type-level/nil = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub type con-info[29,1,31,21] <a,b,c> :: (V, V, V) -> V {
+  pub con Con-info[29,12,29,19](con-match: (c) -> (std/core/types/maybe :: V -> V)<b>, con-build: (b) -> c){0,2,8} : forall<a,b,c> (con-match : (c) -> (std/core/types/maybe :: V -> V)<b>, con-build : (b) -> c) -> (con-info :: (V, V, V) -> V)<a,b,c> = 1;
+};
+pub alias show-matcher[42,1,42,52]<a> :: V -> V = (a) -> <(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<std/core/types/string> = 1;
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `con-match` constructor field of the `:con-info` type.
+pub fun con-info/con-match[30,3,30,11] : forall<a,b,c> (^ @this : (con-info :: (V, V, V) -> V)<a,b,c>) -> ((c) -> (std/core/types/maybe :: V -> V)<b>);
+// Automatically generated. Retrieves the `con-build` constructor field of the `:con-info` type.
+pub fun con-info/con-build[31,3,31,11] : forall<a,b,c> (^ @this : (con-info :: (V, V, V) -> V)<a,b,c>) -> ((b) -> c);
+pub fun con-info/@copy[29,12,29,19] : forall<a,b,c> (@this : (con-info :: (V, V, V) -> V)<a,b,c>, con-match : (std/core/types/@optional :: V -> V)<(c) -> (std/core/types/maybe :: V -> V)<b>>, con-build : (std/core/types/@optional :: V -> V)<(b) -> c>) -> (con-info :: (V, V, V) -> V)<a,b,c>;
+pub fun con-info/con-name[33,9,33,25] : forall<a,b,c> (ci : (con-info :: (V, V, V) -> V)<a,b,c>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> std/core/types/string;
+// Atom: con-info<tag, string, whole> — show as just the string value
+pub fun atom/show-con[45,9,45,21] : forall<a,b> (ci : (con-info :: (V, V, V) -> V)<a,std/core/types/string,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> (show-matcher :: V -> V)<b>;
+pub fun end/show-fields[69,9,69,23] : forall<a> (@pat-x69_25 : (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>, ?show : (a) -> <(std/core/types/div :: X)> std/core/types/string) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<std/core/types/string>;
+// show-fields: walk t-cons chain showing each element
+pub fun tcons/show-fields[65,9,65,25] : forall<a,b,c> (@pat-x65_27 : (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>, ?show : (a) -> <(std/core/types/div :: X)> std/core/types/string, ?tail/show-fields : ((type-level/list/t-cons :: (V, V) -> V)<b,c>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<std/core/types/string>;
+// Node: con-info<tag, t-cons<a, b>, whole> — show as "Name(fields...)"
+pub fun node/show-con[51,9,51,21] : forall<a,b,c,d> (ci : (con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<c,d>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?show-fields : ((type-level/list/t-cons :: (V, V) -> V)<c,d>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<std/core/types/string>) -> (show-matcher :: V -> V)<b>;
+// Nullary: con-info<tag, t-nil, whole> — show as just the name
+pub fun nullary/show-con[59,9,59,24] : forall<a,b> (ci : (con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> (show-matcher :: V -> V)<b>;
+pub fun nil/show-matchers[80,9,80,25] : forall<a,b,c,(e :: E),d> (s : (type-level/structs/t-struct :: (V, V, V) -> V)<d,(con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>, ?show-con : ((con-info :: (V, V, V) -> V)<a,b,c>) -> (show-matcher :: V -> V)<c>) -> (e :: E) (std/core/types/list :: V -> V)<(show-matcher :: V -> V)<c>>;
+// show-matchers: t-struct traversal collecting show-matcher list
+pub fun tstruct/show-matchers[74,9,74,29] : forall<a,b,c,d,a1,(e :: E),b1,c1,d1> (s : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(con-info :: (V, V, V) -> V)<b,d,a1>,d1>>, ?show-con : ((con-info :: (V, V, V) -> V)<a,c,a1>) -> (show-matcher :: V -> V)<a1>, ?show-matchers : ((type-level/structs/t-struct :: (V, V, V) -> V)<c1,(con-info :: (V, V, V) -> V)<b,d,a1>,d1>) -> (std/core/types/list :: V -> V)<(show-matcher :: V -> V)<a1>>) -> (e :: E) (std/core/types/list :: V -> V)<(show-matcher :: V -> V)<a1>>;
+// generic-show: try each show-matcher until one matches
+pub fun generic-show[86,9,86,20] : forall<a> (v : a, matchers : (std/core/types/list :: V -> V)<(show-matcher :: V -> V)<a>>) -> <(std/core/types/div :: X)> std/core/types/string;
+pub fun derive-show[93,9,93,19] : forall<a,b> (v : a, info : b, ?show-matchers : (b) -> (std/core/types/list :: V -> V)<(show-matcher :: V -> V)<a>>) -> <(std/core/types/div :: X)> std/core/types/string;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+inline borrow "^" fun con-info/con-match // inline size: 0
+  = forall<a,b,c> fn(@this: (con-info :: (V, V, V) -> V)<a,b,c>){
+    (match (@this) {
+      ((@skip type-level/con-info/Con-info((@x: (c) -> (std/core/types/maybe :: V -> V)<b>) : (c) -> (std/core/types/maybe :: V -> V)<b>, (@pat@0: (b) -> c) : (b) -> c) : (con-info :: (V, V, V) -> V)<a,b,c> ) as @pat: ((con-info :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun con-info/con-build // inline size: 0
+  = forall<a,b,c> fn(@this: (con-info :: (V, V, V) -> V)<a,b,c>){
+    (match (@this) {
+      ((@skip type-level/con-info/Con-info((@pat@0: (c) -> (std/core/types/maybe :: V -> V)<b>) : (c) -> (std/core/types/maybe :: V -> V)<b>, (@x: (b) -> c) : (b) -> c) : (con-info :: (V, V, V) -> V)<a,b,c> ) as @pat: ((con-info :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+fun con-info/@copy // inline size: 3
+  = forall<a,b,c> fn(@this: (con-info :: (V, V, V) -> V)<a,b,c>, con-match: (std/core/types/@optional :: V -> V)<(c) -> (std/core/types/maybe :: V -> V)<b>>, con-build: (std/core/types/@optional :: V -> V)<(b) -> c>){
+    type-level/con-info/Con-info<a,b,c>((match (con-match) {
+        ((std/core/types/@OptArg((@uniq-con-match@294: (c) -> (std/core/types/maybe :: V -> V)<b>) : (c) -> (std/core/types/maybe :: V -> V)<b>) : (std/core/types/@optional :: V -> V)<(c) -> (std/core/types/maybe :: V -> V)<b>> ) as @pat: ((std/core/types/@optional :: V -> V)<(c) -> (std/core/types/maybe :: V -> V)<b>>))
+           -> @uniq-con-match@294;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(c) -> (std/core/types/maybe :: V -> V)<b>> ) as @pat@0: ((std/core/types/@optional :: V -> V)<(c) -> (std/core/types/maybe :: V -> V)<b>>))
+           -> (match (@this) {
+            ((@skip type-level/con-info/Con-info((@x: (c) -> (std/core/types/maybe :: V -> V)<b>) : (c) -> (std/core/types/maybe :: V -> V)<b>, (@pat@0@0: (b) -> c) : (b) -> c) : (con-info :: (V, V, V) -> V)<a,b,c> ) as @pat@1: ((con-info :: (V, V, V) -> V)<a,b,c>))
+               -> @x;
+          });
+      }), (match (con-build) {
+        ((std/core/types/@OptArg((@uniq-con-build@314: (b) -> c) : (b) -> c) : (std/core/types/@optional :: V -> V)<(b) -> c> ) as @pat@1@0: ((std/core/types/@optional :: V -> V)<(b) -> c>))
+           -> @uniq-con-build@314;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(b) -> c> ) as @pat@2: ((std/core/types/@optional :: V -> V)<(b) -> c>))
+           -> (match (@this) {
+            ((@skip type-level/con-info/Con-info((@pat@0@1: (c) -> (std/core/types/maybe :: V -> V)<b>) : (c) -> (std/core/types/maybe :: V -> V)<b>, (@x@0: (b) -> c) : (b) -> c) : (con-info :: (V, V, V) -> V)<a,b,c> ) as @pat@3: ((con-info :: (V, V, V) -> V)<a,b,c>))
+               -> @x@0;
+          });
+      }));
+  };
+inline fun con-info/con-name // inline size: 0
+  = forall<a,b,c> fn(ci: (con-info :: (V, V, V) -> V)<a,b,c>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>){
+    (match (@implicit/con-name) {
+      ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+         -> @x;
+    });
+  };
+fun atom/show-con // inline size: 3
+  = forall<a,b> fn(ci: (con-info :: (V, V, V) -> V)<a,std/core/types/string,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>){
+    fn<<(std/core/types/div :: X)>>(v: b){
+      (match (ci) {
+        ((@skip type-level/con-info/Con-info((@x: (b) -> (std/core/types/maybe :: V -> V)<std/core/types/string>) : (b) -> (std/core/types/maybe :: V -> V)<std/core/types/string>, (@pat@0: (std/core/types/string) -> b) : (std/core/types/string) -> b) : (con-info :: (V, V, V) -> V)<a,std/core/types/string,b> ) as @pat: ((con-info :: (V, V, V) -> V)<a,std/core/types/string,b>))
+           -> (match ((@x(v))) {
+            ((std/core/types/Just((nm: std/core/types/string) : std/core/types/string) : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as @pat@1: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+               -> std/core/types/Just<std/core/types/string>(nm);
+            ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as @pat@0@0: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+               -> std/core/types/Nothing<std/core/types/string>;
+          });
+      });
+    };
+  };
+fun end/show-fields // inline size: 2
+  = forall<a> fn<<(std/core/types/div :: X)>>(@pat-x69_25: (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>, @implicit/show: (a) -> <(std/core/types/div :: X)> std/core/types/string){
+    (match (@pat-x69_25) {
+      ((@skip type-level/list/TCons((h: a) : a, ((@skip type-level/nil/TNil() : type-level/nil/t-nil ) as @pat@0: type-level/nil/t-nil) : type-level/nil/t-nil) : (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/show(h)), (std/core/types/Nil<std/core/types/string>));
+    });
+  };
+fun tcons/show-fields // inline size: 3
+  = forall<a,b,c> fn<<(std/core/types/div :: X)>>(@pat-x65_27: (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>, @implicit/show: (a) -> <(std/core/types/div :: X)> std/core/types/string, @implicit/tail/show-fields: ((type-level/list/t-cons :: (V, V) -> V)<b,c>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<std/core/types/string>){
+    (match (@pat-x65_27) {
+      ((@skip type-level/list/TCons((h: a) : a, (t: (type-level/list/t-cons :: (V, V) -> V)<b,c>) : (type-level/list/t-cons :: (V, V) -> V)<b,c>) : (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/show(h)), (@implicit/tail/show-fields(t)));
+    });
+  };
+fun nullary/show-con // inline size: 3
+  = forall<a,b> fn(ci: (con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>){
+    fn<<(std/core/types/div :: X)>>(v: b){
+      (match (ci) {
+        ((@skip type-level/con-info/Con-info((@x: (b) -> (std/core/types/maybe :: V -> V)<type-level/nil/t-nil>) : (b) -> (std/core/types/maybe :: V -> V)<type-level/nil/t-nil>, (@pat@0: (type-level/nil/t-nil) -> b) : (type-level/nil/t-nil) -> b) : (con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b> ) as @pat: ((con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>))
+           -> (match ((@x(v))) {
+            ((std/core/types/Just(((@skip type-level/nil/TNil() : type-level/nil/t-nil ) as @pat@0@0: type-level/nil/t-nil) : type-level/nil/t-nil) : (std/core/types/maybe :: V -> V)<type-level/nil/t-nil> ) as @pat@1: ((std/core/types/maybe :: V -> V)<type-level/nil/t-nil>))
+               -> std/core/types/Just<std/core/types/string>((match (@implicit/con-name) {
+                ((@skip type-level/structs/Name((@x@0: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat@2: ((type-level/structs/name :: V -> V)<a>))
+                   -> @x@0;
+              }));
+            ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<type-level/nil/t-nil> ) as @pat@1@0: ((std/core/types/maybe :: V -> V)<type-level/nil/t-nil>))
+               -> std/core/types/Nothing<std/core/types/string>;
+          });
+      });
+    };
+  };
+fun derive-show // inline size: 2
+  = forall<a,b> fn<<(std/core/types/div :: X)>>(v: a, info: b, @implicit/show-matchers: (b) -> (std/core/types/list :: V -> V)<(show-matcher :: V -> V)<a>>){
+    type-level/con-info/generic-show<a>(v, (@implicit/show-matchers(info)));
+  };

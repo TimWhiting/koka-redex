@@ -1,0 +1,354 @@
+/*----------------------------------------------------------------------------
+   Copyright 2024, Koka-Community Authors
+
+   Licensed under the MIT License ("The License"). You may not
+   use this file except in compliance with the License. A copy of the License
+   can be found in the LICENSE file at the root of this distribution.
+----------------------------------------------------------------------------*/
+module interface std/data/rb-map
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/data/rbtree = std/data/rbtree pub = "";
+import std/core = std/core = "";
+import std/data/rbtree-bu = std/data/rbtree-bu = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub value{0,1,8} type rbmap[12,1,13,19] <a,b> :: (V, V) -> V {
+  pub con Rbmap[12,18,12,22](tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>){0,1,8} : forall<a,b> (tree : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (rbmap :: (V, V) -> V)<a,b> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `tree` constructor field of the `:rbmap` type.
+pub fun rbmap/tree[13,3,13,6] : forall<a,b> (^ rbmap : (rbmap :: (V, V) -> V)<a,b>) -> (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>;
+pub fun rbmap/@copy[12,18,12,22] : forall<a,b> (@this : (rbmap :: (V, V) -> V)<a,b>, tree : (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,b>>) -> (rbmap :: (V, V) -> V)<a,b>;
+// monadic lift
+fun @mlift-set@10039[1,0,1,0] : forall<(e :: E),a,b> (@y-x10005 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+pub fun set[15,9,15,11] : forall<(e :: E),a,b> (s : (rbmap :: (V, V) -> V)<a,b>, k : a, v : b, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+// monadic lift
+fun @mlift-add@10040[1,0,1,0] : forall<(e :: E),a,b> (@y-x10007 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+pub fun add[19,9,19,11] : forall<(e :: E),a,b> (s : (rbmap :: (V, V) -> V)<a,b>, k : a, v : b, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+// monadic lift
+fun @mlift-insert@10041[1,0,1,0] : forall<(e :: E),a,b> (@y-x10009 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+pub fun insert[23,9,23,14] : forall<(e :: E),a,b> (s : (rbmap :: (V, V) -> V)<a,b>, k : a, f : ((std/core/types/maybe :: V -> V)<b>) -> (e :: E) b, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+pub fun contains[27,9,27,16] : forall<(e :: E),a,b> (s : (rbmap :: (V, V) -> V)<a,b>, k : a, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) std/core/types/bool;
+pub fun empty[31,9,31,13] : forall<a,b> () -> (rbmap :: (V, V) -> V)<a,b>;
+pub fun list[34,9,34,12] : forall<a,b> (s : (rbmap :: (V, V) -> V)<a,b>) -> (std/core/types/list :: V -> V)<(a, b)>;
+pub fun keys[38,9,38,12] : forall<a,b> (s : (rbmap :: (V, V) -> V)<a,b>) -> (std/core/types/list :: V -> V)<a>;
+pub fun values[42,9,42,14] : forall<a,b> (s : (rbmap :: (V, V) -> V)<a,b>) -> (std/core/types/list :: V -> V)<b>;
+pub fun lookup[46,9,46,14] : forall<(e :: E),a,b> (s : (rbmap :: (V, V) -> V)<a,b>, k : a, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
+pub fun show[50,9,50,12] : forall<(e :: E),a,b> (s : (rbmap :: (V, V) -> V)<a,b>, ?k/show : (a) -> (e :: E) std/core/types/string, ?v/show : (b) -> (e :: E) std/core/types/string) -> (e :: E) std/core/types/string;
+// monadic lift
+fun kvalue/@mlift-map@10042[1,0,1,0] : forall<(e :: E),a,b> (@y-x10018 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+pub fun kvalue/map[54,9,54,18] : forall<(e :: E),a,b,c> (s : (rbmap :: (V, V) -> V)<a,b>, f : (a, b) -> (e :: E) c) -> (e :: E) (rbmap :: (V, V) -> V)<a,c>;
+// monadic lift
+fun value/@mlift-map@10043[1,0,1,0] : forall<(e :: E),a,b> (@y-x10020 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (rbmap :: (V, V) -> V)<a,b>;
+pub fun value/map[58,9,58,17] : forall<(e :: E),a,b,c> (s : (rbmap :: (V, V) -> V)<a,b>, f : (b) -> (e :: E) c) -> (e :: E) (rbmap :: (V, V) -> V)<a,c>;
+// monadic lift
+fun rec/@mlift-order2@10044[1,0,1,0] : forall<(e :: E),a,b> (?k/order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, ?v/order2 : (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>, orig1 : (rbmap :: (V, V) -> V)<a,b>, orig2 : (rbmap :: (V, V) -> V)<a,b>, r1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, r2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, @y-x10024 : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>;
+// monadic lift
+fun rec/@mlift-order2@10045[1,0,1,0] : forall<(e :: E),a,b> (l1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, l2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, ?k/order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, ?v/order2 : (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>, orig1 : (rbmap :: (V, V) -> V)<a,b>, orig2 : (rbmap :: (V, V) -> V)<a,b>, r1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, r2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, @y-x10023 : (std/core/types/order2 :: V -> V)<b>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>;
+// monadic lift
+fun rec/@mlift-order2@10046[1,0,1,0] : forall<(e :: E),a,b> (l1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, l2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, ?k/order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, ?v/order2 : (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>, orig1 : (rbmap :: (V, V) -> V)<a,b>, orig2 : (rbmap :: (V, V) -> V)<a,b>, r1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, r2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, v1 : b, v2 : b, @y-x10022 : (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>;
+fun rec/order2[73,5,73,14] : forall<(e :: E),a,b> (t1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, t2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, orig1 : (rbmap :: (V, V) -> V)<a,b>, orig2 : (rbmap :: (V, V) -> V)<a,b>, ^ ?k/order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, ^ ?v/order2 : (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>;
+pub fun order2[67,9,67,14] : forall<(e :: E),a,b> (orig1 : (rbmap :: (V, V) -> V)<a,b>, orig2 : (rbmap :: (V, V) -> V)<a,b>, ^ ?k/order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, ^ ?v/order2 : (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>;
+// monadic lift
+fun (@mlift-x@10047==)[1,0,1,0] : forall<(e :: E),a,b> (@y-x10034 : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>) -> (e :: E) std/core/types/bool;
+pub fun (==)[62,9,62,12] : forall<(e :: E),a,b> (s1 : (rbmap :: (V, V) -> V)<a,b>, s2 : (rbmap :: (V, V) -> V)<a,b>, ^ ?k/order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, ^ ?v/order2 : (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>) -> (e :: E) std/core/types/bool;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "__**" borrow "__^^" fun (==) // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s1: (rbmap :: (V, V) -> V)<a,b>, s2: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, @implicit/v/order2: (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>){
+    (match (s1) {
+      ((@skip std/data/rb-map/Rbmap((t1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> (match (s2) {
+          ((@skip std/data/rb-map/Rbmap((t2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat@0: ((rbmap :: (V, V) -> V)<a,b>))
+             -> (match ((std/data/rb-map/#rec/order2<(e :: E),a,b>(t1, t2, s1, s2, @implicit/k/order2, @implicit/v/order2))) {
+              ((std/core/types/Eq2((@pat@0@0: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>) : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>> ) as @pat@1: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                 -> std/core/types/True;
+              (@pat@1@0: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                 -> std/core/types/False;
+            });
+        });
+    });
+  };
+specialize "___*" borrow "___^" fun add // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, v: b, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,b>((std/data/rbtree-bu/#bu/add<(e :: E),a,b>(tree, k, v, @implicit/order2)));
+    });
+  };
+specialize "__*" borrow "__^" fun contains // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/contains<(e :: E),a,b>(tree, k, @implicit/order2);
+    });
+  };
+specialize "__**" borrow "___^" fun insert // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, f: ((std/core/types/maybe :: V -> V)<b>) -> (e :: E) b, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,b>((std/data/rbtree-bu/#bu/insert<(e :: E),a,b>(tree, k, f, @implicit/order2)));
+    });
+  };
+specialize "__*" borrow "__^" fun lookup // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/lookup<(e :: E),a,b>(tree, k, @implicit/order2);
+    });
+  };
+specialize "_*" fun kvalue/map // inline size: 1
+  = forall<(e :: E),a,b,c> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, f: (a, b) -> (e :: E) c){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,c>((std/data/rbtree/#keyvalue/map<(e :: E),a,b,c>(tree, f)));
+    });
+  };
+specialize "_*" fun value/map // inline size: 1
+  = forall<(e :: E),a,b,c> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, f: (b) -> (e :: E) c){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,c>((std/data/rbtree/#rb/map<(e :: E),a,b,c>(tree, f)));
+    });
+  };
+specialize "__**" borrow "__^^" fun order2 // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(orig1: (rbmap :: (V, V) -> V)<a,b>, orig2: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, @implicit/v/order2: (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>){
+    (match (orig1) {
+      ((@skip std/data/rb-map/Rbmap((t1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> (match (orig2) {
+          ((@skip std/data/rb-map/Rbmap((t2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat@0: ((rbmap :: (V, V) -> V)<a,b>))
+             -> std/data/rb-map/#rec/order2<(e :: E),a,b>(t1, t2, orig1, orig2, @implicit/k/order2, @implicit/v/order2);
+        });
+    });
+  };
+recursive specialize "____**" borrow "____^^" fun rec/order2 // inline size: 22
+  = forall<(e :: E),a,b> fn<(e :: E)>(t1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, t2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, orig1: (rbmap :: (V, V) -> V)<a,b>, orig2: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, @implicit/v/order2: (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>){
+    (match (t1) {
+      ((std/data/rbtree/Leaf() : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b> ) as @pat: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,b>))
+         -> (match (t2) {
+          ((std/data/rbtree/Leaf() : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b> ) as @pat@0: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,b>))
+             -> std/core/types/Eq2<(rbmap :: (V, V) -> V)<a,b>>(orig1);
+          ((@skip std/data/rbtree/Node((@pat@2: std/data/rbtree/color) : std/data/rbtree/color, (@pat@3: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, (@pat@4: a) : a, (@pat@5: b) : b, (@pat@6: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b> ) as @pat@1: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,b>))
+             -> std/core/types/Lt2<(rbmap :: (V, V) -> V)<a,b>>(orig1, orig2);
+        });
+      ((@skip std/data/rbtree/Node((@pat@8: std/data/rbtree/color) : std/data/rbtree/color, (l1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, (k1: a) : a, (v1: b) : b, (r1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b> ) as @pat@7: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,b>))
+         -> (match (t2) {
+          ((std/data/rbtree/Leaf() : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b> ) as @pat@9: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,b>))
+             -> std/core/types/Gt2<(rbmap :: (V, V) -> V)<a,b>>(orig2, orig1);
+          ((@skip std/data/rbtree/Node((@pat@11: std/data/rbtree/color) : std/data/rbtree/color, (l2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>, (k2: a) : a, (v2: b) : b, (r2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b> ) as @pat@10: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,b>))
+             -> (match ((@implicit/k/order2(k1, k2))) {
+              ((std/core/types/Lt2((@pat@13: a) : a, (@pat@14: a) : a) : (std/core/types/order2 :: V -> V)<a> ) as @pat@12: ((std/core/types/order2 :: V -> V)<a>))
+                 -> std/core/types/Lt2<(rbmap :: (V, V) -> V)<a,b>>(orig1, orig2);
+              ((std/core/types/Gt2((@pat@16: a) : a, (@pat@17: a) : a) : (std/core/types/order2 :: V -> V)<a> ) as @pat@15: ((std/core/types/order2 :: V -> V)<a>))
+                 -> std/core/types/Gt2<(rbmap :: (V, V) -> V)<a,b>>(orig2, orig1);
+              ((@skip std/core/types/Eq2((@pat@19: a) : a) : (std/core/types/order2 :: V -> V)<a> ) as @pat@18: ((std/core/types/order2 :: V -> V)<a>))
+                 -> (match ((@implicit/v/order2(v1, v2))) {
+                  ((std/core/types/Lt2((@pat@21: b) : b, (@pat@22: b) : b) : (std/core/types/order2 :: V -> V)<b> ) as @pat@20: ((std/core/types/order2 :: V -> V)<b>))
+                     -> std/core/types/Lt2<(rbmap :: (V, V) -> V)<a,b>>(orig1, orig2);
+                  ((std/core/types/Gt2((@pat@24: b) : b, (@pat@25: b) : b) : (std/core/types/order2 :: V -> V)<b> ) as @pat@23: ((std/core/types/order2 :: V -> V)<b>))
+                     -> std/core/types/Gt2<(rbmap :: (V, V) -> V)<a,b>>(orig2, orig1);
+                  ((@skip std/core/types/Eq2((@pat@27: b) : b) : (std/core/types/order2 :: V -> V)<b> ) as @pat@26: ((std/core/types/order2 :: V -> V)<b>))
+                     -> (match ((std/data/rb-map/#rec/order2<(e :: E),a,b>(l1, l2, orig1, orig2, @implicit/k/order2, @implicit/v/order2))) {
+                      ((std/core/types/Lt2((@pat@29: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>, (@pat@30: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>) : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>> ) as @pat@28: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                         -> std/core/types/Lt2<(rbmap :: (V, V) -> V)<a,b>>(orig1, orig2);
+                      ((std/core/types/Gt2((@pat@32: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>, (@pat@33: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>) : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>> ) as @pat@31: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                         -> std/core/types/Gt2<(rbmap :: (V, V) -> V)<a,b>>(orig2, orig1);
+                      ((@skip std/core/types/Eq2((@pat@35: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>) : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>> ) as @pat@34: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                         -> std/data/rb-map/#rec/order2<(e :: E),a,b>(r1, r2, orig1, orig2, @implicit/k/order2, @implicit/v/order2);
+                    });
+                });
+            });
+        });
+    });
+  };
+specialize "___*" borrow "___^" fun set // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, v: b, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,b>((std/data/rbtree-bu/#bu/set<(e :: E),a,b>(tree, k, v, @implicit/order2)));
+    });
+  };
+specialize "_**" fun show // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/show: (a) -> (e :: E) std/core/types/string, @implicit/v/show: (b) -> (e :: E) std/core/types/string){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/core/list/show<(a, b),(e :: E)>((std/core/types/@open<(std/core/types/total :: E),(e :: E),(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (std/core/types/list :: V -> V)<(a, b)>,(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (std/core/types/list :: V -> V)<(a, b)>>((std/data/rbtree/list<a,b>))(tree)), (fn<(e :: E)>(@arg-x1: (a, b)){
+            (std/core/tuple/#tuple2/show<a,b,(e :: E)>(@arg-x1, @implicit/k/show, @implicit/v/show));
+          }));
+    });
+  };
+inline borrow "^" fun rbmap/tree // inline size: 0
+  = forall<a,b> fn(rbmap: (rbmap :: (V, V) -> V)<a,b>){
+    (match (rbmap) {
+      ((@skip std/data/rb-map/Rbmap((@x: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> @x;
+    });
+  };
+fun rbmap/@copy // inline size: 2
+  = forall<a,b> fn(@this: (rbmap :: (V, V) -> V)<a,b>, tree: (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,b>>){
+    std/data/rb-map/Rbmap<a,b>((match (tree) {
+      ((std/core/types/@OptArg((@uniq-tree@254: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,b>> ) as @pat: ((std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,b>>))
+         -> @uniq-tree@254;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,b>> ) as @pat@0: ((std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,b>>))
+         -> (match (@this) {
+          ((@skip std/data/rb-map/Rbmap((@x: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat@1: ((rbmap :: (V, V) -> V)<a,b>))
+             -> @x;
+        });
+    }));
+  };
+borrow "___^" fun set // inline size: 2
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, v: b, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,b>((std/data/rbtree-bu/#bu/set<(e :: E),a,b>(tree, k, v, @implicit/order2)));
+    });
+  };
+borrow "___^" fun add // inline size: 2
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, v: b, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,b>((std/data/rbtree-bu/#bu/add<(e :: E),a,b>(tree, k, v, @implicit/order2)));
+    });
+  };
+borrow "___^" fun insert // inline size: 2
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, f: ((std/core/types/maybe :: V -> V)<b>) -> (e :: E) b, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,b>((std/data/rbtree-bu/#bu/insert<(e :: E),a,b>(tree, k, f, @implicit/order2)));
+    });
+  };
+borrow "__^" fun contains // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/contains<(e :: E),a,b>(tree, k, @implicit/order2);
+    });
+  };
+fun empty // inline size: 1
+  = forall<a,b> fn(){
+    std/data/rb-map/Rbmap<a,b>((std/data/rbtree/Leaf<a,b>));
+  };
+fun list // inline size: 1
+  = forall<a,b> fn(s: (rbmap :: (V, V) -> V)<a,b>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/list<a,b>(tree);
+    });
+  };
+fun keys // inline size: 1
+  = forall<a,b> fn(s: (rbmap :: (V, V) -> V)<a,b>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/keys<a,b>(tree);
+    });
+  };
+fun values // inline size: 1
+  = forall<a,b> fn(s: (rbmap :: (V, V) -> V)<a,b>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/values<a,b>(tree);
+    });
+  };
+borrow "__^" fun lookup // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rbtree/lookup<(e :: E),a,b>(tree, k, @implicit/order2);
+    });
+  };
+fun show // inline size: 4
+  = forall<(e :: E),a,b> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/show: (a) -> (e :: E) std/core/types/string, @implicit/v/show: (b) -> (e :: E) std/core/types/string){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/core/list/show<(a, b),(e :: E)>((std/core/types/@open<(std/core/types/total :: E),(e :: E),(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (std/core/types/list :: V -> V)<(a, b)>,(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) -> (e :: E) (std/core/types/list :: V -> V)<(a, b)>>((std/data/rbtree/list<a,b>))(tree)), (fn<(e :: E)>(@arg-x1: (a, b)){
+            (std/core/tuple/#tuple2/show<a,b,(e :: E)>(@arg-x1, @implicit/k/show, @implicit/v/show));
+          }));
+    });
+  };
+fun kvalue/map // inline size: 2
+  = forall<(e :: E),a,b,c> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, f: (a, b) -> (e :: E) c){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,c>((std/data/rbtree/#keyvalue/map<(e :: E),a,b,c>(tree, f)));
+    });
+  };
+fun value/map // inline size: 2
+  = forall<(e :: E),a,b,c> fn<(e :: E)>(s: (rbmap :: (V, V) -> V)<a,b>, f: (b) -> (e :: E) c){
+    (match (s) {
+      ((@skip std/data/rb-map/Rbmap((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> std/data/rb-map/Rbmap<a,c>((std/data/rbtree/#rb/map<(e :: E),a,b,c>(tree, f)));
+    });
+  };
+borrow "__^^" fun order2 // inline size: 1
+  = forall<(e :: E),a,b> fn<(e :: E)>(orig1: (rbmap :: (V, V) -> V)<a,b>, orig2: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, @implicit/v/order2: (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>){
+    (match (orig1) {
+      ((@skip std/data/rb-map/Rbmap((t1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> (match (orig2) {
+          ((@skip std/data/rb-map/Rbmap((t2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat@0: ((rbmap :: (V, V) -> V)<a,b>))
+             -> std/data/rb-map/#rec/order2<(e :: E),a,b>(t1, t2, orig1, orig2, @implicit/k/order2, @implicit/v/order2);
+        });
+    });
+  };
+borrow "__^^" fun (==) // inline size: 2
+  = forall<(e :: E),a,b> fn<(e :: E)>(s1: (rbmap :: (V, V) -> V)<a,b>, s2: (rbmap :: (V, V) -> V)<a,b>, @implicit/k/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, @implicit/v/order2: (b, b) -> (e :: E) (std/core/types/order2 :: V -> V)<b>){
+    (match (s1) {
+      ((@skip std/data/rb-map/Rbmap((t1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat: ((rbmap :: (V, V) -> V)<a,b>))
+         -> (match (s2) {
+          ((@skip std/data/rb-map/Rbmap((t2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b> ) as @pat@0: ((rbmap :: (V, V) -> V)<a,b>))
+             -> (match ((std/data/rb-map/#rec/order2<(e :: E),a,b>(t1, t2, s1, s2, @implicit/k/order2, @implicit/v/order2))) {
+              ((std/core/types/Eq2((@pat@0@0: (rbmap :: (V, V) -> V)<a,b>) : (rbmap :: (V, V) -> V)<a,b>) : (std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>> ) as @pat@1: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                 -> std/core/types/True;
+              (@pat@1@0: ((std/core/types/order2 :: V -> V)<(rbmap :: (V, V) -> V)<a,b>>))
+                 -> std/core/types/False;
+            });
+        });
+    });
+  };

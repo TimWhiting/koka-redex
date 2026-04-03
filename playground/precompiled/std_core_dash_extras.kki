@@ -1,0 +1,500 @@
+module interface std/core-extras
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+import std/core/undiv = std/core/undiv = "";
+import std/core/exn = std/core/exn = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// A first-class constructor context where the hole is of the same type as the root of the structure.
+local alias std/core/types/ctx[503,1,503,28]<a> :: V -> V = (std/core/types/cctx :: (V, V) -> V)<a,a> = 1;
+// An `:error<a>` type represents a first-class exception result as a `:result<a,exception>`.
+local alias std/core/exn/error[65,1,65,40]<a> :: V -> V = (std/core/types/result :: (V, V) -> V)<a,std/core/exn/exception> = 1;
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+// Stateful functions can manipulate heap `:h` using allocations, reads and writes.
+local alias std/core/types/st[139,1,139,47]<(h :: H)> :: H -> E = <(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>,(std/core/types/alloc :: H -> X)<(h :: H)>> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub recursive effect type find[86,1,87,26] <a,(e :: E),b> :: (V, E, V) -> V {
+  pub con @Hnd-find[86,1,86,15](@cfc: std/core/types/int, @brk-found: forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,c,(find :: (V, E, V) -> V)<a>,(e :: E),b>){0,2,8} : forall<a,(e :: E),b> (std/core/types/int, forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,c,(find :: (V, E, V) -> V)<a>,(e :: E),b>) -> (find :: (V, E, V) -> V)<a,(e :: E),b> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+pub fun pretend-not-reachable[16,9,16,29] : forall<a> (?kk-file-line : std/core/types/string) -> a;
+pub fun list/contains[25,9,25,21] : forall<a,(e :: E)> (l : (std/core/types/list :: V -> V)<a>, v : a, ?(==) : (a, a) -> (e :: E) std/core/types/bool) -> (e :: E) std/core/types/bool;
+pub fun list/and[38,9,38,16] : (l : (std/core/types/list :: V -> V)<std/core/types/bool>) -> std/core/types/bool;
+// String and char utilities
+pub fun string/is-prefix-of[64,9,64,27] : (s1 : std/core/types/string, s2 : std/core/types/string) -> std/core/types/bool;
+// monadic lift
+fun list/@mlift-is-prefix-of@10093[1,0,1,0] : forall<a,(e :: E)> (?(==) : (a, a) -> (e :: E) std/core/types/bool, t1 : (std/core/types/list :: V -> V)<a>, t2 : (std/core/types/list :: V -> V)<a>, @y-x10047 : std/core/types/bool) -> (e :: E) std/core/types/bool;
+pub fun list/is-prefix-of[44,9,44,25] : forall<a,(e :: E)> (l1 : (std/core/types/list :: V -> V)<a>, l2 : (std/core/types/list :: V -> V)<a>, ?(==) : (a, a) -> (e :: E) std/core/types/bool) -> (e :: E) std/core/types/bool;
+// monadic lift
+fun list/@mlift-lift-maximum-by@2946@10094[1,0,1,0] : forall<a,(e :: E)> (acc : (std/core/types/maybe :: V -> V)<a>, cmp : (a, a) -> (e :: E) std/core/types/order, h : a, t : (std/core/types/list :: V -> V)<a>, @y-x10052 : std/core/types/order) -> (e :: E) (std/core/types/maybe :: V -> V)<a>;
+// lifted local: list/maximum-by, loop
+fun list/@lift-maximum-by@2946[1,0,1,0] : forall<a,(e :: E)> (l : (std/core/types/list :: V -> V)<a>, acc : (std/core/types/maybe :: V -> V)<a>, cmp : (a, a) -> (e :: E) std/core/types/order) -> (e :: E) (std/core/types/maybe :: V -> V)<a>;
+pub fun list/maximum-by[50,9,50,23] : forall<a,(e :: E)> (l0 : (std/core/types/list :: V -> V)<a>, cmp0 : (a, a) -> (e :: E) std/core/types/order) -> (e :: E) (std/core/types/maybe :: V -> V)<a>;
+// Automatically generated. Retrieves the `@cfc` constructor field of the `:find` type.
+fun find/@cfc[86,1,86,15] : forall<a,(e :: E),b> (^ find : (find :: (V, E, V) -> V)<a,(e :: E),b>) -> std/core/types/int;
+// runtime tag for the effect `:find`
+pub val find/@tag[86,1,86,15] : forall<a> (std/core/hnd/htag :: ((E, V) -> V) -> V)<(find :: (V, E, V) -> V)<a>>;
+// handler for the effect `:find`
+pub fun find/@handle[86,12,86,15] : forall<a,b,(e :: E),c> (hnd : (find :: (V, E, V) -> V)<a,(e :: E),c>, ret : (res : b) -> (e :: E) c, action : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>|(e :: E)> b) -> (e :: E) c;
+// Automatically generated. Retrieves the `@brk-found` constructor field of the `:find` type.
+fun find/@brk-found[87,13,87,26] : forall<a,(e :: E),b,c> (^ find : (find :: (V, E, V) -> V)<a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,c,(find :: (V, E, V) -> V)<a>,(e :: E),b>;
+// select `found` operation out of effect `:find`
+pub fun found/@select[87,13,87,26] : forall<a,b,(e :: E),c> (^ hnd : (find :: (V, E, V) -> V)<a,(e :: E),c>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,b,(find :: (V, E, V) -> V)<a>,(e :: E),c>;
+// Call the `final ctl found` operation of the effect `:find`
+pub fun found[87,13,87,17] : forall<a,b> (a : a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>> b;
+pub fun find[89,9,89,12] : forall<a,(e :: E)> (f : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>|(e :: E)> a) -> (e :: E) a;
+// Maybe utilities
+pub fun flatten[94,16,94,22] : forall<a> (item : (std/core/types/maybe :: V -> V)<(std/core/types/maybe :: V -> V)<a>>) -> (std/core/types/maybe :: V -> V)<a>;
+pub fun maybe/foreach[99,9,99,21] : forall<a,(e :: E)> (v : (std/core/types/maybe :: V -> V)<a>, f : (a) -> (e :: E) ()) -> (e :: E) ();
+pub fun is-space[116,9,116,16] : (c : std/core/types/char) -> std/core/types/bool;
+pub fip fun ssize_t/incr[241,16,241,27] : (i : std/core/types/ssize_t) -> std/core/types/ssize_t;
+// monadic lift
+fun @mlift-lift-forz@2947@10095[1,0,1,0] : forall<(e :: E)> (action : (std/core/types/ssize_t) -> (e :: E) (), i : std/core/types/ssize_t, n : std/core/types/ssize_t, wild_ : ()) -> (e :: E) ();
+// lifted local: forz, rep
+fun @lift-forz@2947[1,0,1,0] : forall<(e :: E)> (action : (std/core/types/ssize_t) -> (e :: E) (), n : std/core/types/ssize_t, i : std/core/types/ssize_t) -> (e :: E) ();
+// Executes `action` `n` times for each integer between [`0`,`n`)  (excluding `n` ).
+// If `n <= 0`  the function returns without any call to `action` .
+pub fun forz[234,9,234,12] : forall<(e :: E)> (n : std/core/types/ssize_t, action : (std/core/types/ssize_t) -> (e :: E) ()) -> (e :: E) ();
+pub fun foreach-indexedz[228,9,228,24] : forall<a,(e :: E)> (v : (std/core/types/vector :: V -> V)<a>, f : (std/core/types/ssize_t, a) -> (e :: E) ()) -> (e :: E) ();
+// Apply a total function `f` to each element in a vector `v`
+// Since the vector consists of boxed values we can ignore type incompatibilities
+// However, we also cannot allow exception effects in f, because then the vector would be left in an inconsistent state which would be observable and unreversable
+// We could allow div, but then this is always div even when f is not div
+pub fun unique/map[144,9,144,18] : forall<a,b> (v : (std/core/types/vector :: V -> V)<a>, f : (a) -> b) -> (std/core/types/vector :: V -> V)<b>;
+// TODO: use core/std/exit after https://github.com/koka-lang/koka/pull/703 is released
+pub fun exit[251,12,251,15] : (i : std/core/types/int) -> <(std/core/types/st :: H -> E)<(std/core/types/global :: H)>,(std/core/console/console :: X),(std/core/types/div :: X),(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/ui :: X)> ();
+// Show instance for `error<t>`
+pub fun error/show[256,9,256,18] : forall<(e :: E),a> (a : (std/core/exn/error :: V -> V)<a>, ?show : (a) -> (e :: E) std/core/types/string) -> (e :: E) std/core/types/string;
+pub fun no-effect-top[19,9,19,21] : forall<a> (a : () -> (std/core/pure :: E) a, ?kk-file-line : std/core/types/string) -> a;
+pub fun string/reverse[67,9,67,22] : (s : std/core/types/string) -> std/core/types/string;
+// monadic lift
+fun @mlift-lift-nub@2948@10096[1,0,1,0] : forall<a,(e :: E)> (?(==) : (a, a) -> (e :: E) std/core/types/bool, acc : (std/core/types/list :: V -> V)<a>, h : a, t : (std/core/types/list :: V -> V)<a>, @y-x10073 : std/core/types/bool) -> (e :: E) (std/core/types/list :: V -> V)<a>;
+// lifted local: nub, loop
+fun @lift-nub@2948[1,0,1,0] : forall<a,(e :: E)> (?(==) : (a, a) -> (e :: E) std/core/types/bool, l' : (std/core/types/list :: V -> V)<a>, acc : (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>;
+pub fun nub[28,9,28,11] : forall<a,(e :: E)> (l : (std/core/types/list :: V -> V)<a>, ?(==) : (a, a) -> (e :: E) std/core/types/bool) -> (e :: E) (std/core/types/list :: V -> V)<a>;
+pub fun to-upper[70,9,70,16] : (c : std/core/types/char) -> std/core/types/char;
+pub fun to-lower[73,9,73,16] : (c : std/core/types/char) -> std/core/types/char;
+// lifted local: split-by, loop
+fun @lift-split-by@2949[1,0,1,0] : (pred : (std/core/types/char) -> std/core/types/bool, sl : std/core/sslice/sslice, numchars : std/core/types/int, acc : (std/core/types/ctx :: V -> V)<(std/core/types/list :: V -> V)<std/core/types/string>>) -> (std/core/types/list :: V -> V)<std/core/types/string>;
+pub fun split-by[76,9,76,16] : (s : std/core/types/string, pred : (std/core/types/char) -> std/core/types/bool) -> (std/core/types/list :: V -> V)<std/core/types/string>;
+// lifted local: vector-init-list, assigns
+fun @lift-vector-init-list@2950[1,0,1,0] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, xs' : (std/core/types/list :: V -> V)<(std/core/types/int, a)>) -> ();
+// Vector utilities
+pub fun vector-init-list[105,9,105,24] : forall<a> (^ n : std/core/types/int, xs : (std/core/types/list :: V -> V)<(std/core/types/int, a)>) -> (std/core/types/vector :: V -> V)<a>;
+// This function takes a vector `v` and a position to stop at `stop`
+// If you supply a `stop` larger than the length, then the length of the vector is used instead.
+// This function shouldn't be called directly unless you know exactly what you are doing.
+pub fun unsafe-vector-clear[131,12,131,30] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, stop : std/core/types/ssize_t) -> ();
+// This function takes a vector `v` and a `position` to clear at.
+// This is all done without a bounds check, so make sure to get it right.
+// This function shouldn't be called directly unless you know exactly what you are doing.
+pub fun unsafe-vector-clear-at[137,12,137,33] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, position : std/core/types/ssize_t) -> ();
+// Set the element at position `index` in vector `v` without bounds check!
+pub fun unsafe-set[157,9,157,18] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, ^ index : std/core/types/int, value : a) -> (std/core/types/vector :: V -> V)<a>;
+pub fun a/unsafe-swap[168,9,168,21] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, ^ idx1 : std/core/types/int, ^ idx2 : std/core/types/int) -> (std/core/types/vector :: V -> V)<a>;
+// This variant mutates in-place
+pub fun unit/unsafe-swap[182,9,182,24] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, ^ idx1 : std/core/types/int, ^ idx2 : std/core/types/int) -> ();
+pub fun read-byte-file[247,12,247,25] : (path : std/core/types/string) -> (std/core/types/vector :: V -> V)<std/core/types/int8>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+// Copies a vector
+pub extern copy[120,19,120,22] : forall<a> (v : (std/core/types/vector :: V -> V)<a>) -> (std/core/types/vector :: V -> V)<a> {
+  c inline "kk_vector_copy(#1,kk_context())";
+  js inline "[...(#1)]";
+};
+pub extern realloc[124,19,124,25] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, new_capacity : std/core/types/ssize_t) -> (std/core/types/vector :: V -> V)<a> {
+  c inline "kk_vector_realloc(#1, #2, kk_box_null(), kk_context())";
+  js inline "[...(#1)]";
+};
+pub extern is-ref-unique[187,19,187,31] : forall<a> (^ x : a) -> std/core/types/bool {
+  c inline "!kk_box_is_ptr(#1, kk_context()) || kk_block_is_unique(kk_box_to_ptr(#1, kk_context()))";
+};
+pub extern is-vec-unique[190,19,190,31] : forall<a> (^ v : (std/core/types/vector :: V -> V)<a>) -> std/core/types/bool {
+  c inline "kk_datatype_is_unique(#1, kk_context())";
+};
+pub extern unsafe-box-drop[193,19,193,33] : forall<a> (^ x : a) -> () {
+  c inline "kk_box_drop(#1, kk_context())";
+};
+pub extern drop-at[196,19,196,25] : forall<a> (^ v : (std/core/types/vector :: V -> V)<a>, index : std/core/types/ssize_t) -> () {
+  c inline "kk_vector_dup(#1, kk_context()); kk_box_drop(kk_vector_at_borrow(#1, #2, kk_context()), kk_context()); kk_vector_unsafe_assign(#1, #2, kk_box_null(), kk_context())";
+};
+// Valid only for boxed values
+pub extern unsafe-ignore-type[200,19,200,36] : forall<a,b> (x : a) -> b = inline "#1";
+// Make the following preexisting functions public, or make them public in an unsafe module
+pub extern unsafe-vector[204,19,204,31] : forall<a> (n : std/core/types/ssize_t) -> (std/core/types/vector :: V -> V)<a> {
+  c inline "kk_vector_alloc(#1,kk_box_null(),kk_context())";
+  cs inline "(new ##1[#1])";
+  js inline "Array(#1)";
+};
+// This function should never be called directly unless you know exactly what you are doing
+pub extern unsafe-assign[210,19,210,31] : forall<a> (v : (std/core/types/vector :: V -> V)<a>, i : std/core/types/ssize_t, x : a) -> () {
+  c inline "kk_vector_unsafe_assign(#1,#2,#3,kk_context())";
+  cs inline "(#1)[#2] = #3";
+  js inline "(#1)[#2] = #3";
+};
+// Return the element at position `index` in vector `v` without bounds check!
+// This function should never be called directly unless you know exactly what you are doing
+pub extern unsafe-idx[217,19,217,28] : forall<a> (^ v : (std/core/types/vector :: V -> V)<a>, index : std/core/types/ssize_t) -> a {
+  c inline "kk_vector_at_borrow(#1,#2,kk_context())";
+  cs inline "(#1)[#2]";
+  js inline "(#1)[#2]";
+};
+// Length of a vector.
+pub extern lengthz[223,19,223,25] : forall<a> (^ v : (std/core/types/vector :: V -> V)<a>) -> std/core/types/ssize_t {
+  c inline "kk_vector_len_borrow(#1,kk_context())";
+  cs inline "((#1).Length)";
+  js inline "((#1).length)";
+};
+pub fip extern ssize_t/(<)[244,23,244,33] : (std/core/types/ssize_t, std/core/types/ssize_t) -> std/core/types/bool = inline "(#1 < #2)";
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+recursive specialize "*__" fun @lift-forz@2947 // inline size: 9
+  = forall<(e :: E)> fn<(e :: E)>(action: (std/core/types/ssize_t) -> (e :: E) (), n: std/core/types/ssize_t, i: std/core/types/ssize_t){
+    (match ((std/core/types/@open<(std/core/types/total :: E),(e :: E),(std/core/types/ssize_t, std/core/types/ssize_t) -> std/core/types/bool,(std/core/types/ssize_t, std/core/types/ssize_t) -> (e :: E) std/core/types/bool>(std/core-extras/#ssize_t/(<))(i, n))) {
+      ((std/core/types/True() : std/core/types/bool ) as @pat: std/core/types/bool)
+         -> val _[237,7,237,15] : ()
+              = action(i);
+            val i@0@10001[1,0,1,0] : std/core/types/ssize_t
+              = std/core/types/@open<(std/core/types/total :: E),(e :: E),(x : std/core/types/ssize_t) -> std/core/types/ssize_t,(x : std/core/types/ssize_t) -> (e :: E) std/core/types/ssize_t>((std/core/undiv/pretend-decreasing<std/core/types/ssize_t>))((std/core/types/@open<(std/core/types/total :: E),(e :: E),(i : std/core/types/ssize_t) -> std/core/types/ssize_t,(i : std/core/types/ssize_t) -> (e :: E) std/core/types/ssize_t>(std/core-extras/#ssize_t/incr)(i)));
+        std/core-extras/@lift-forz@2947<(e :: E)>(action, n, i@0@10001);
+      ((@skip std/core/types/False() : std/core/types/bool ) as @pat@0: std/core/types/bool)
+         -> std/core/types/Unit;
+    });
+  };
+specialize "*__" fun @lift-nub@2948 // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(@implicit/(==): (a, a) -> (e :: E) std/core/types/bool, l': (std/core/types/list :: V -> V)<a>, acc: (std/core/types/list :: V -> V)<a>){
+    (match (l') {
+      ((std/core/types/Nil() : (std/core/types/list :: V -> V)<a> ) as @pat: ((std/core/types/list :: V -> V)<a>))
+         -> std/core/types/@open<(std/core/types/total :: E),(e :: E),(xs : (std/core/types/list :: V -> V)<a>) -> (std/core/types/list :: V -> V)<a>,(xs : (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>>((fn(xs: (std/core/types/list :: V -> V)<a>){
+          (std/core/list/reverse-acc<a>((std/core/types/Nil<a>), xs));
+        }))(acc);
+      ((@skip std/core/types/Cons((h: a) : a, (t: (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a> ) as @pat@0: ((std/core/types/list :: V -> V)<a>))
+         -> (match ((std/core/list/any<a,(e :: E)>(acc, (fn<(e :: E)>(@eta-x26_9: a){
+            (@implicit/(==)(@eta-x26_9, h));
+          })))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@1: std/core/types/bool)
+             -> val l@0@10013'[1,0,1,0] : (std/core/types/list :: V -> V)<a>
+                      = std/core/types/@open<(std/core/types/total :: E),(e :: E),(x : (std/core/types/list :: V -> V)<a>) -> (std/core/types/list :: V -> V)<a>,(x : (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>>((std/core/undiv/pretend-decreasing<(std/core/types/list :: V -> V)<a>>))(t);
+            std/core-extras/@lift-nub@2948<a,(e :: E)>(@implicit/(==), l@0@10013', acc);
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@2: std/core/types/bool)
+             -> val l@1@10015'[1,0,1,0] : (std/core/types/list :: V -> V)<a>
+                      = std/core/types/@open<(std/core/types/total :: E),(e :: E),(x : (std/core/types/list :: V -> V)<a>) -> (std/core/types/list :: V -> V)<a>,(x : (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>>((std/core/undiv/pretend-decreasing<(std/core/types/list :: V -> V)<a>>))(t);
+            std/core-extras/@lift-nub@2948<a,(e :: E)>(@implicit/(==), l@1@10015', (std/core/types/Cons<a>(h, acc)));
+        });
+    });
+  };
+recursive specialize "*___" fun @lift-split-by@2949 // inline size: 20
+  = fn(pred: (std/core/types/char) -> std/core/types/bool, sl: std/core/sslice/sslice, numchars: std/core/types/int, acc: (std/core/types/ctx :: V -> V)<(std/core/types/list :: V -> V)<std/core/types/string>>){
+    match ((std/core/sslice/next(sl))) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/char, std/core/sslice/sslice)> ) as @pat: ((std/core/types/maybe :: V -> V)<(std/core/types/char, std/core/sslice/sslice)>))
+         -> std/core/types/#cctx/(++.)<(std/core/types/list :: V -> V)<std/core/types/string>,(std/core/types/list :: V -> V)<std/core/types/string>>(acc, (std/core/types/Nil<std/core/types/string>));
+      ((@skip std/core/types/Just(((@skip std/core/types/Tuple2((c: std/core/types/char) : std/core/types/char, ((@skip std/core/sslice/Sslice((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: std/core/types/int) : std/core/types/int, (@pat@4: std/core/types/int) : std/core/types/int) : std/core/sslice/sslice ) as sl': std/core/sslice/sslice) : std/core/sslice/sslice) : (std/core/types/char, std/core/sslice/sslice) ) as @pat@1: (std/core/types/char, std/core/sslice/sslice)) : (std/core/types/char, std/core/sslice/sslice)) : (std/core/types/maybe :: V -> V)<(std/core/types/char, std/core/sslice/sslice)> ) as @pat@0: ((std/core/types/maybe :: V -> V)<(std/core/types/char, std/core/sslice/sslice)>))
+         -> (match ((pred(c))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@5: std/core/types/bool)
+             -> val slice@0@10023[1,0,1,0] : std/core/sslice/sslice
+                  = std/core/sslice/advance(sl', (std/core/int/int-sub(0, numchars)));
+                val @cctx-x2513[1,0,1,0] : (std/core/types/list :: V -> V)<std/core/types/string>
+                  = std/core/types/Cons<std/core/types/string>((std/core/sslice/string((std/core/sslice/extend((std/core/sslice/Sslice((match (slice@0@10023) {
+                          ((@skip std/core/sslice/Sslice((@x: std/core/types/string) : std/core/types/string, (@pat@0@0: std/core/types/int) : std/core/types/int, (@pat@1@0: std/core/types/int) : std/core/types/int) : std/core/sslice/sslice ) as @pat@6: std/core/sslice/sslice)
+                             -> @x;
+                        }), (match (slice@0@10023) {
+                          ((@skip std/core/sslice/Sslice((@pat@0@0@0: std/core/types/string) : std/core/types/string, (@x@0: std/core/types/int) : std/core/types/int, (@pat@1@0@0: std/core/types/int) : std/core/types/int) : std/core/sslice/sslice ) as @pat@2@0: std/core/sslice/sslice)
+                             -> @x@0;
+                        }), 0)), numchars)))), (std/core/types/@cctx-hole-create<(std/core/types/list :: V -> V)<std/core/types/string>>()));
+                val @cctx-x2514[1,0,1,0] : (std/core/types/@field-addr :: V -> V)<(std/core/types/list :: V -> V)<std/core/types/string>>
+                  = std/core/types/@field-addr-of<(std/core/types/list :: V -> V)<std/core/types/string>>(@cctx-x2513, "(\x22std/core/types\x22,\x22\x22,\x22Cons\x22)", "(\x22\x22,\x22\x22,\x22tail\x22)");
+                val sl@0@10026[1,0,1,0] : std/core/sslice/sslice
+                  = std/core/undiv/pretend-decreasing<std/core/sslice/sslice>(sl');
+                val acc@0@10028[1,0,1,0] : ((std/core/types/ctx :: V -> V)<(std/core/types/list :: V -> V)<std/core/types/string>> == 1 (std/core/types/cctx :: (V, V) -> V)<(std/core/types/list :: V -> V)<std/core/types/string>,(std/core/types/list :: V -> V)<std/core/types/string>>)
+                  = std/core/types/#cctx/(++)<(std/core/types/list :: V -> V)<std/core/types/string>,(std/core/types/list :: V -> V)<std/core/types/string>,(std/core/types/list :: V -> V)<std/core/types/string>>(acc, (std/core/types/@cctx-create<(std/core/types/list :: V -> V)<std/core/types/string>,(std/core/types/list :: V -> V)<std/core/types/string>>(@cctx-x2513, @cctx-x2514)));
+            std/core-extras/@lift-split-by@2949(pred, sl@0@10026, 0, acc@0@10028);
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@6@0: std/core/types/bool)
+             -> val sl@1@10029[1,0,1,0] : std/core/sslice/sslice
+                  = std/core/undiv/pretend-decreasing<std/core/sslice/sslice>(sl');
+                val numchars@1@10030[1,0,1,0] : std/core/types/int
+                  = std/core/int/int-add(numchars, 1);
+            std/core-extras/@lift-split-by@2949(pred, sl@1@10029, numchars@1@10030, acc);
+        });
+    };
+  };
+recursive specialize "__*" fun list/@lift-maximum-by@2946 // inline size: 9
+  = forall<a,(e :: E)> fn<(e :: E)>(l: (std/core/types/list :: V -> V)<a>, acc: (std/core/types/maybe :: V -> V)<a>, cmp: (a, a) -> (e :: E) std/core/types/order){
+    (match (l) {
+      ((std/core/types/Nil() : (std/core/types/list :: V -> V)<a> ) as @pat: ((std/core/types/list :: V -> V)<a>))
+         -> acc;
+      ((@skip std/core/types/Cons((h: a) : a, (t: (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a> ) as @pat@0: ((std/core/types/list :: V -> V)<a>))
+         -> (match (acc) {
+          ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<a> ) as @pat@1: ((std/core/types/maybe :: V -> V)<a>))
+             -> std/core-extras/#list/@lift-maximum-by@2946<a,(e :: E)>(t, (std/core/types/Just<a>(h)), cmp);
+          ((@skip std/core/types/Just((max: a) : a) : (std/core/types/maybe :: V -> V)<a> ) as @pat@2: ((std/core/types/maybe :: V -> V)<a>))
+             -> (match ((cmp(h, max))) {
+              ((std/core/types/Gt() : std/core/types/order ) as @pat@3: std/core/types/order)
+                 -> std/core-extras/#list/@lift-maximum-by@2946<a,(e :: E)>(t, (std/core/types/Just<a>(h)), cmp);
+              (@pat@4: std/core/types/order)
+                 -> std/core-extras/#list/@lift-maximum-by@2946<a,(e :: E)>(t, acc, cmp);
+            });
+        });
+    });
+  };
+specialize "_**" fun list/contains // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(l: (std/core/types/list :: V -> V)<a>, v: a, @implicit/(==): (a, a) -> (e :: E) std/core/types/bool){
+    std/core/list/any<a,(e :: E)>(l, (fn<(e :: E)>(@eta-x26_9: a){
+        (@implicit/(==)(@eta-x26_9, v));
+      }));
+  };
+specialize "**" fun foreach-indexedz // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(v: (std/core/types/vector :: V -> V)<a>, f: (std/core/types/ssize_t, a) -> (e :: E) ()){
+    val n@10002[1,0,1,0] : std/core/types/ssize_t
+      = std/core/types/@open<(std/core/types/total :: E),(e :: E),(v : (std/core/types/vector :: V -> V)<a>) -> std/core/types/ssize_t,(v : (std/core/types/vector :: V -> V)<a>) -> (e :: E) std/core/types/ssize_t>((std/core-extras/lengthz<a>))(v);
+    val i[1,0,1,0] : std/core/types/ssize_t
+      = std/core/types/@open<(std/core/types/total :: E),(e :: E),(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> (e :: E) std/core/types/ssize_t>(std/core/int/ssize_t)(0);
+    std/core-extras/@lift-forz@2947<(e :: E)>((fn<(e :: E)>(i@0: std/core/types/ssize_t){
+        (f(i@0, (std/core/types/@open<(std/core/types/total :: E),(e :: E),(v : (std/core/types/vector :: V -> V)<a>, index : std/core/types/ssize_t) -> a,(v : (std/core/types/vector :: V -> V)<a>, index : std/core/types/ssize_t) -> (e :: E) a>((std/core-extras/unsafe-idx<a>))(v, i@0))));
+      }), n@10002, i);
+  };
+specialize "_*" fun forz // inline size: 1
+  = forall<(e :: E)> fn<(e :: E)>(n: std/core/types/ssize_t, action: (std/core/types/ssize_t) -> (e :: E) ()){
+    val i[1,0,1,0] : std/core/types/ssize_t
+          = std/core/types/@open<(std/core/types/total :: E),(e :: E),(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> (e :: E) std/core/types/ssize_t>(std/core/int/ssize_t)(0);
+    std/core-extras/@lift-forz@2947<(e :: E)>(action, n, i);
+  };
+recursive specialize "__*" fun list/is-prefix-of // inline size: 7
+  = forall<a,(e :: E)> fn<(e :: E)>(l1: (std/core/types/list :: V -> V)<a>, l2: (std/core/types/list :: V -> V)<a>, @implicit/(==): (a, a) -> (e :: E) std/core/types/bool){
+    (match (l1, l2) {
+      (@pat@1: (std/core/types/list :: V -> V)<a>), ((std/core/types/Nil() : (std/core/types/list :: V -> V)<a> ) as @pat@0: ((std/core/types/list :: V -> V)<a>))
+         -> std/core/types/True;
+      ((std/core/types/Nil() : (std/core/types/list :: V -> V)<a> ) as @pat@4: ((std/core/types/list :: V -> V)<a>)), (@pat@3: ((std/core/types/list :: V -> V)<a>))
+         -> std/core/types/False;
+      ((@skip std/core/types/Cons((h2: a) : a, (t2: (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a> ) as @pat@7: (std/core/types/list :: V -> V)<a>), ((@skip std/core/types/Cons((h1: a) : a, (t1: (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a>) : (std/core/types/list :: V -> V)<a> ) as @pat@6: ((std/core/types/list :: V -> V)<a>))
+         -> (match ((@implicit/(==)(h1, h2))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@8: std/core/types/bool)
+             -> std/core-extras/#list/is-prefix-of<a,(e :: E)>((std/core/types/@open<(std/core/types/total :: E),(e :: E),(x : (std/core/types/list :: V -> V)<a>) -> (std/core/types/list :: V -> V)<a>,(x : (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>>((std/core/undiv/pretend-decreasing<(std/core/types/list :: V -> V)<a>>))(t1)), t2, @implicit/(==));
+          (@pat@9: std/core/types/bool)
+             -> std/core/types/False;
+        });
+    });
+  };
+specialize "**" fun unique/map // inline size: 1
+  = forall<a,b> fn(v: (std/core/types/vector :: V -> V)<a>, f: (a) -> b){
+    (match ((std/core-extras/is-vec-unique<a>(v))) {
+      ((std/core/types/True() : std/core/types/bool ) as @pat: std/core/types/bool)
+         -> val n@10002[1,0,1,0] : std/core/types/ssize_t
+              = std/core-extras/lengthz<a>(v);
+            val i[1,0,1,0] : std/core/types/ssize_t
+              = std/core/int/ssize_t(0);
+            val _[147,5,147,87] : ()
+              = std/core-extras/@lift-forz@2947<(std/core/types/total :: E)>((fn(i@0: std/core/types/ssize_t){
+                  val x@10042[1,0,1,0] : a
+                        = (std/core-extras/unsafe-idx<a>(v, i@0));
+                  (std/core-extras/unsafe-assign<a>(v, i@0, (std/core-extras/unsafe-ignore-type<b,a>((f(x@10042))))));
+                }), n@10002, i);
+        std/core-extras/unsafe-ignore-type<(std/core/types/vector :: V -> V)<a>,(std/core/types/vector :: V -> V)<b>>(v);
+      ((@skip std/core/types/False() : std/core/types/bool ) as @pat@0: std/core/types/bool)
+         -> val w[151,9,151,9] : (std/core/types/vector :: V -> V)<b>
+              = std/core-extras/unsafe-vector<b>((std/core/int/ssize_t((std/core/int/#ssize_t/int((std/core/vector/lengthz<a>(v)))))));
+            val n@10002@0[1,0,1,0] : std/core/types/ssize_t
+              = std/core-extras/lengthz<a>(v);
+            val i@2[1,0,1,0] : std/core/types/ssize_t
+              = std/core/int/ssize_t(0);
+            val _@0[152,5,152,22] : ()
+              = std/core-extras/@lift-forz@2947<(std/core/types/total :: E)>((fn(i@0@0: std/core/types/ssize_t){
+                  val x@0@10044[1,0,1,0] : a
+                        = (std/core-extras/unsafe-idx<a>(v, i@0@0));
+                  (std/core-extras/unsafe-assign<b>(w, i@0@0, (f(x@0@10044))));
+                }), n@10002@0, i@2);
+        w;
+    });
+  };
+specialize "_*" fun list/maximum-by // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(l0: (std/core/types/list :: V -> V)<a>, cmp0: (a, a) -> (e :: E) std/core/types/order){
+    std/core-extras/#list/@lift-maximum-by@2946<a,(e :: E)>(l0, (std/core/types/Nothing<a>), cmp0);
+  };
+specialize "_*" fun nub // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(l: (std/core/types/list :: V -> V)<a>, @implicit/(==): (a, a) -> (e :: E) std/core/types/bool){
+    std/core-extras/@lift-nub@2948<a,(e :: E)>(@implicit/(==), l, (std/core/types/Nil<a>));
+  };
+specialize "_*" fun split-by // inline size: 1
+  = fn(s: std/core/types/string, pred: (std/core/types/char) -> std/core/types/bool){
+    val sl[1,0,1,0] : std/core/sslice/sslice
+      = std/core/sslice/Sslice(s, 0, (std/core/sslice/length(s)));
+    val acc[1,0,1,0] : (std/core/types/ctx :: V -> V)<(std/core/types/list :: V -> V)<std/core/types/string>>
+      = std/core/types/#cctx/empty<(std/core/types/list :: V -> V)<std/core/types/string>>();
+    std/core-extras/@lift-split-by@2949(pred, sl, 0, acc);
+  };
+fun pretend-not-reachable // inline size: 1
+  = forall<a> fn(@implicit/kk-file-line: std/core/types/string){
+    std/core/debug/impossible<a>((std/core/types/@NoOptArg<std/core/types/string>), @implicit/kk-file-line);
+  };
+fun list/contains // inline size: 2
+  = forall<a,(e :: E)> fn<(e :: E)>(l: (std/core/types/list :: V -> V)<a>, v: a, @implicit/(==): (a, a) -> (e :: E) std/core/types/bool){
+    std/core/list/any<a,(e :: E)>(l, (fn<(e :: E)>(@eta-x26_9: a){
+        (@implicit/(==)(@eta-x26_9, v));
+      }));
+  };
+fun string/is-prefix-of // inline size: 2
+  = fn(s1: std/core/types/string, s2: std/core/types/string){
+    val mb@10000[1,0,1,0] : (std/core/types/maybe :: V -> V)<std/core/sslice/sslice>
+          = std/core/sslice/starts-with(s2, s1);
+    match (mb@10000) {
+      ((std/core/types/Just((@pat@0: std/core/sslice/sslice) : std/core/sslice/sslice) : (std/core/types/maybe :: V -> V)<std/core/sslice/sslice> ) as @pat: ((std/core/types/maybe :: V -> V)<std/core/sslice/sslice>))
+         -> std/core/types/True;
+      ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/sslice/sslice> ) as @pat@1: ((std/core/types/maybe :: V -> V)<std/core/sslice/sslice>))
+         -> std/core/types/False;
+    };
+  };
+fun list/maximum-by // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(l0: (std/core/types/list :: V -> V)<a>, cmp0: (a, a) -> (e :: E) std/core/types/order){
+    std/core-extras/#list/@lift-maximum-by@2946<a,(e :: E)>(l0, (std/core/types/Nothing<a>), cmp0);
+  };
+inline borrow "^" fun find/@cfc // inline size: 0
+  = forall<a,(e :: E),b> fn(find@0: (find :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (find@0) {
+      ((@skip std/core-extras/@Hnd-find((@x: std/core/types/int) : std/core/types/int, (@pat@0: (forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,c,(find :: (V, E, V) -> V)<a>,(e :: E),b>)) : (forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,c,(find :: (V, E, V) -> V)<a>,(e :: E),b>)) : (find :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((find :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun find/@brk-found // inline size: 0
+  = forall<a,(e :: E),b,c> fn(find@0: (find :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (find@0) {
+      ((@skip std/core-extras/@Hnd-find((@pat@0: std/core/types/int) : std/core/types/int, (@x: (forall<d> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,d,(find :: (V, E, V) -> V)<a>,(e :: E),b>)) : (forall<d> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,d,(find :: (V, E, V) -> V)<a>,(e :: E),b>)) : (find :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((find :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @x<c>;
+    });
+  };
+inline borrow "^" fun found/@select // inline size: 0
+  = forall<a,b,(e :: E),c> fn(hnd: (find :: (V, E, V) -> V)<a,(e :: E),c>){
+    (match (hnd) {
+      ((@skip std/core-extras/@Hnd-find((@pat@0: std/core/types/int) : std/core/types/int, (@brk-found: (forall<d> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,d,(find :: (V, E, V) -> V)<a>,(e :: E),c>)) : (forall<d> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,d,(find :: (V, E, V) -> V)<a>,(e :: E),c>)) : (find :: (V, E, V) -> V)<a,(e :: E),c> ) as @pat: ((find :: (V, E, V) -> V)<a,(e :: E),c>))
+         -> @brk-found<b>;
+    });
+  };
+inline fun found // inline size: 5
+  = forall<a,b> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>>>(a: a){
+    std/core/hnd/@perform1<a,b,(find :: (V, E, V) -> V)<a>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(find :: (V, E, V) -> V)<a>>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(find :: (V, E, V) -> V)<a>>>((std/core/hnd/@evv-at<(find :: (V, E, V) -> V)<a>>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), (forall<(e :: E),c> std/core-extras/#found/@select<a,b,(e :: E),c>), a);
+  };
+fun find // inline size: 4
+  = forall<a,(e :: E)> fn<(e :: E)>(f: () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(find :: (V, E, V) -> V)<a>>|(e :: E)> a){
+    std/core-extras/#find/@handle<a,a,(e :: E),a>((std/core-extras/@Hnd-find<a,(e :: E),a>(0, (forall<b> std/core/types/@open<(std/core/types/total :: E),(e :: E),(op : (a) -> (e :: E) a) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,b,(find :: (V, E, V) -> V)<a>,(e :: E),a>,(op : (a) -> (e :: E) a) -> (e :: E) (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,b,(find :: (V, E, V) -> V)<a>,(e :: E),a>>((std/core/hnd/clause-never1<a,b,(e :: E),(find :: (V, E, V) -> V)<a>,a>))((fn<(e :: E)>(a: a){
+          a;
+        }))))), (fn<(e :: E)>(@res: a){
+        @res;
+      }), f);
+  };
+inline fun flatten // inline size: 1
+  = forall<a> fn(item: (std/core/types/maybe :: V -> V)<(std/core/types/maybe :: V -> V)<a>>){
+    (match (item) {
+      ((std/core/types/Just((x: (std/core/types/maybe :: V -> V)<a>) : (std/core/types/maybe :: V -> V)<a>) : (std/core/types/maybe :: V -> V)<(std/core/types/maybe :: V -> V)<a>> ) as @pat: ((std/core/types/maybe :: V -> V)<(std/core/types/maybe :: V -> V)<a>>))
+         -> x;
+      ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/maybe :: V -> V)<a>> ) as @pat@0: ((std/core/types/maybe :: V -> V)<(std/core/types/maybe :: V -> V)<a>>))
+         -> std/core/types/Nothing<a>;
+    });
+  };
+fun maybe/foreach // inline size: 2
+  = forall<a,(e :: E)> fn<(e :: E)>(v: (std/core/types/maybe :: V -> V)<a>, f: (a) -> (e :: E) ()){
+    (match (v) {
+      ((std/core/types/Just((x: a) : a) : (std/core/types/maybe :: V -> V)<a> ) as @pat: ((std/core/types/maybe :: V -> V)<a>))
+         -> f(x);
+      ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<a> ) as @pat@0: ((std/core/types/maybe :: V -> V)<a>))
+         -> std/core/types/Unit;
+    });
+  };
+fun is-space // inline size: 3
+  = fn(c: std/core/types/char){
+    match ((std/core/char/(==)(c, ' '))) {
+      ((std/core/types/True() : std/core/types/bool ) as @pat: std/core/types/bool)
+         -> std/core/types/True;
+      (@pat@0: std/core/types/bool)
+         -> std/core/char/(==)(c, '\x09');
+    };
+  };
+fun forz // inline size: 3
+  = forall<(e :: E)> fn<(e :: E)>(n: std/core/types/ssize_t, action: (std/core/types/ssize_t) -> (e :: E) ()){
+    val i[1,0,1,0] : std/core/types/ssize_t
+          = std/core/types/@open<(std/core/types/total :: E),(e :: E),(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> (e :: E) std/core/types/ssize_t>(std/core/int/ssize_t)(0);
+    std/core-extras/@lift-forz@2947<(e :: E)>(action, n, i);
+  };
+fun error/show // inline size: 4
+  = forall<(e :: E),a> fn<(e :: E)>(a: (std/core/exn/error :: V -> V)<a>, @implicit/show: (a) -> (e :: E) std/core/types/string){
+    (match (a) {
+      ((std/core/types/Ok((a@0: a) : a) : (std/core/types/result :: (V, V) -> V)<a,std/core/exn/exception> ) as @pat: ((std/core/exn/error :: V -> V)<a> == 1 (std/core/types/result :: (V, V) -> V)<a,std/core/exn/exception>))
+         -> @implicit/show(a@0);
+      ((@skip std/core/types/Error(((@skip std/core/exn/Exception((@pat@1: std/core/types/string) : std/core/types/string, (@pat@2: std/core/exn/exception-info) : std/core/exn/exception-info) : std/core/exn/exception ) as e: std/core/exn/exception) : std/core/exn/exception) : (std/core/types/result :: (V, V) -> V)<a,std/core/exn/exception> ) as @pat@0: ((std/core/exn/error :: V -> V)<a> == 1 (std/core/types/result :: (V, V) -> V)<a,std/core/exn/exception>))
+         -> std/core/types/@open<(std/core/types/total :: E),(e :: E),(exn : std/core/exn/exception) -> std/core/types/string,(exn : std/core/exn/exception) -> (e :: E) std/core/types/string>((fn(exn: std/core/exn/exception){
+          (match (exn) {
+            ((@skip std/core/exn/Exception((@x: std/core/types/string) : std/core/types/string, (@pat@0@0: std/core/exn/exception-info) : std/core/exn/exception-info) : std/core/exn/exception ) as @pat@3: std/core/exn/exception)
+               -> @x;
+          });
+        }))(e);
+    });
+  };
+fun string/reverse // inline size: 3
+  = fn(s: std/core/types/string){
+    val xs@10009[1,0,1,0] : (std/core/types/list :: V -> V)<std/core/types/char>
+          = std/core/string/list(s);
+    std/core/string/#listchar/string((std/core/list/reverse-acc<std/core/types/char>((std/core/types/Nil<std/core/types/char>), xs@10009)));
+  };
+fun nub // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(l: (std/core/types/list :: V -> V)<a>, @implicit/(==): (a, a) -> (e :: E) std/core/types/bool){
+    std/core-extras/@lift-nub@2948<a,(e :: E)>(@implicit/(==), l, (std/core/types/Nil<a>));
+  };
+fun split-by // inline size: 4
+  = fn(s: std/core/types/string, pred: (std/core/types/char) -> std/core/types/bool){
+    val sl[1,0,1,0] : std/core/sslice/sslice
+      = std/core/sslice/Sslice(s, 0, (std/core/sslice/length(s)));
+    val acc[1,0,1,0] : (std/core/types/ctx :: V -> V)<(std/core/types/list :: V -> V)<std/core/types/string>>
+      = std/core/types/#cctx/empty<(std/core/types/list :: V -> V)<std/core/types/string>>();
+    std/core-extras/@lift-split-by@2949(pred, sl, 0, acc);
+  };
+borrow "^_" fun vector-init-list // inline size: 3
+  = forall<a> fn(n: std/core/types/int, xs: (std/core/types/list :: V -> V)<(std/core/types/int, a)>){
+    val v[106,7,106,7] : (std/core/types/vector :: V -> V)<a>
+      = std/core-extras/unsafe-vector<a>((std/core/int/ssize_t(n)));
+    val _@0[113,3,113,13] : ()
+      = std/core-extras/@lift-vector-init-list@2950<a>(v, xs);
+    v;
+  };

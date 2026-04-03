@@ -1,0 +1,187 @@
+module interface koka-redex/latex
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import koka-redex/term = koka-redex/term pub = "";
+import std/core = std/core = "";
+import type-level/structs = type-level/structs = "";
+import type-level/list = type-level/list = "";
+import type-level/nil = type-level/nil = "";
+import koka-redex/syntax = koka-redex/syntax = "";
+import koka-redex/pattern = koka-redex/pattern = "";
+import std/core/undiv = std/core/undiv = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub value{0,1,8} type latexstr[60,1,60,38] {
+  pub con Latexstr[60,18,60,25](s: std/core/types/string){0,1,8} : (s : std/core/types/string) -> latexstr = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// No premises
+pub fun tnil/show-latex-premises[17,9,17,32] : forall<(e :: E)> (@x@_wildcard-x17_34 : type-level/nil/t-nil) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Format `t-nil`
+pub fun tnil/show-latex-tokens[37,9,37,30] : forall<(e :: E)> (@x@_wildcard-x37_32 : type-level/nil/t-nil) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Automatically generated. Retrieves the `s` constructor field of the `:latexstr` type.
+pub fun latexstr/s[60,28,60,28] : (^ latexstr : latexstr) -> std/core/types/string;
+pub fun latexstr/@copy[60,18,60,25] : (@this : latexstr, s : (std/core/types/@optional :: V -> V)<std/core/types/string>) -> latexstr;
+pub fun pat/show-latex[80,9,80,22] : forall<a> (p : (koka-redex/pattern/pat :: V -> V)<a>, ?term-show-latex : (koka-redex/term/term) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string;
+// monadic lift
+fun default/@mlift-show-latex-premises@10073[1,0,1,0] : forall<(e :: E)> (@y-x10004 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Single premise (bare value, not tcons) — base case
+pub fun default/show-latex-premises[31,9,31,35] : forall<a,(e :: E)> (a : a, ?show-latex : (a) -> (e :: E) std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun default/@mlift-show-latex-tokens@10074[1,0,1,0] : forall<(e :: E)> (@y-x10005 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Single element as list
+pub fun default/show-latex-tokens[49,9,49,33] : forall<a,(e :: E)> (a : a, ?show-latex : (a) -> (e :: E) std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun rule/@mlift-show-latex@10075[1,0,1,0] : forall<(e :: E)> (conc-str : std/core/types/string, premises-str : std/core/types/string, @y-x10008 : std/core/types/string) -> (e :: E) std/core/types/string;
+// monadic lift
+fun rule/@mlift-show-latex@10076[1,0,1,0] : forall<(e :: E),a> (name : a, premises-str : std/core/types/string, ?name/show-latex : (a) -> (e :: E) std/core/types/string, conc-str : std/core/types/string) -> (e :: E) std/core/types/string;
+// monadic lift
+fun rule/@mlift-show-latex@10077[1,0,1,0] : forall<a,(e :: E),b> (conclusion : a, name : b, ?conclusion/show-latex : (a) -> (e :: E) std/core/types/string, ?name/show-latex : (b) -> (e :: E) std/core/types/string, @y-x10006 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) std/core/types/string;
+pub fun rule/show-latex[54,9,54,23] : forall<a,(e :: E),b,c> (@pat-x54_25 : (koka-redex/syntax/rule :: (V, V, V) -> V)<b,c,a>, ?show-latex-premises : (c) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>, ?conclusion/show-latex : (a) -> (e :: E) std/core/types/string, ?name/show-latex : (b) -> (e :: E) std/core/types/string) -> (e :: E) std/core/types/string;
+// Skip premise-sep marker, continue with tail
+pub fun sep/show-latex-premises[21,9,21,31] : forall<a,(e :: E)> (@pat-x21_33 : (type-level/list/t-cons :: (V, V) -> V)<koka-redex/syntax/premise-sep,a>, ?show-latex-premises : (a) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun tcons/@mlift-show-latex@10078[1,0,1,0] : forall<(e :: E)> (@y-x10011 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) std/core/types/string;
+// A judgement (tcons chain) rendered as a single string by joining tokens with spaces
+pub fun tcons/show-latex[45,9,45,24] : forall<a,b,(e :: E)> (l : (type-level/list/t-cons :: (V, V) -> V)<a,b>, ?show-latex-tokens : ((type-level/list/t-cons :: (V, V) -> V)<a,b>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) std/core/types/string;
+// monadic lift
+fun tcons/@mlift-show-latex-tokens@10079[1,0,1,0] : forall<(e :: E)> (@y-x10012 : std/core/types/string, @y-x10013 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun tcons/@mlift-show-latex-tokens@10080[1,0,1,0] : forall<a,(e :: E)> (?show-latex-tokens : (a) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>, t : a, @y-x10012 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Format `tcons` within a judgement — each element is one token
+pub fun tcons/show-latex-tokens[41,9,41,31] : forall<a,b,(e :: E)> (@pat-x41_33 : (type-level/list/t-cons :: (V, V) -> V)<a,b>, ?show-latex : (a) -> (e :: E) std/core/types/string, ?show-latex-tokens : (b) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun tcons-prem/@mlift-show-latex-premises@10081[1,0,1,0] : forall<(e :: E)> (@y-x10015 : std/core/types/string, @y-x10016 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun tcons-prem/@mlift-show-latex-premises@10082[1,0,1,0] : forall<a,(e :: E)> (?show-latex-premises : (a) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>, t : a, @y-x10015 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Premise whose head is a judgement chain (tcons) — render as one joined string
+pub fun tcons-prem/show-latex-premises[25,9,25,38] : forall<a,b,c,(e :: E)> (@pat-x25_40 : (type-level/list/t-cons :: (V, V) -> V)<(type-level/list/t-cons :: (V, V) -> V)<a,b>,c>, ?show-latex : ((type-level/list/t-cons :: (V, V) -> V)<a,b>) -> (e :: E) std/core/types/string, ?show-latex-premises : (c) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun @mlift-map-field@10083[1,0,1,0] : forall<(e :: E)> (@y-x10018 : std/core/types/string) -> (e :: E) latexstr;
+pub fun map-field[62,9,62,17] : forall<a,(e :: E),b,c> (r : (koka-redex/syntax/rule :: (V, V, V) -> V)<b,c,a>, ?show-latex : ((koka-redex/syntax/rule :: (V, V, V) -> V)<b,c,a>) -> (e :: E) std/core/types/string) -> (e :: E) latexstr;
+// External entries are skipped in LaTeX rendering
+pub fun ext/map-field[66,9,66,21] : forall<(e :: E)> (@x@_wildcard-x66_23 : koka-redex/syntax/external-entry) -> (e :: E) latexstr;
+// monadic lift
+fun @mlift-relation-to-latex@10084[1,0,1,0] : forall<(e :: E)> (@y-x10021 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) std/core/types/string;
+// monadic lift
+fun @mlift-relation-to-latex@10085[1,0,1,0] : forall<(e :: E)> (@y-x10020 : (std/core/types/list :: V -> V)<latexstr>) -> (e :: E) std/core/types/string;
+// monadic lift
+fun @mlift-relation-to-latex@10086[1,0,1,0] : forall<(e :: E)> (@y-x10019 : (std/core/types/list :: V -> V)<latexstr>) -> (e :: E) std/core/types/string;
+pub fun relation-to-latex[69,9,69,25] : forall<(e :: E),a> (@pat-x69_27 : (koka-redex/syntax/relation-def :: V -> V)<a>, ?to-list : (a) -> (e :: E) (std/core/types/list :: V -> V)<latexstr>) -> (e :: E) std/core/types/string;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+inline fun tnil/show-latex-premises // inline size: 0
+  = forall<(e :: E)> fn<(e :: E)>(@x@_wildcard-x17_34: type-level/nil/t-nil){
+    std/core/types/Nil<std/core/types/string>;
+  };
+inline fun tnil/show-latex-tokens // inline size: 0
+  = forall<(e :: E)> fn<(e :: E)>(@x@_wildcard-x37_32: type-level/nil/t-nil){
+    std/core/types/Nil<std/core/types/string>;
+  };
+inline borrow "^" fun latexstr/s // inline size: 0
+  = fn(latexstr: latexstr){
+    match (latexstr) {
+      ((@skip koka-redex/latex/Latexstr((@x: std/core/types/string) : std/core/types/string) : latexstr ) as @pat: latexstr)
+         -> @x;
+    };
+  };
+fun latexstr/@copy // inline size: 2
+  = fn(@this: latexstr, s: (std/core/types/@optional :: V -> V)<std/core/types/string>){
+    koka-redex/latex/Latexstr((match (s) {
+      ((std/core/types/@OptArg((@uniq-s@182: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+         -> @uniq-s@182;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+         -> (match (@this) {
+          ((@skip koka-redex/latex/Latexstr((@x: std/core/types/string) : std/core/types/string) : latexstr ) as @pat@1: latexstr)
+             -> @x;
+        });
+    }));
+  };
+fun default/show-latex-premises // inline size: 2
+  = forall<a,(e :: E)> fn<(e :: E)>(a: a, @implicit/show-latex: (a) -> (e :: E) std/core/types/string){
+    std/core/types/Cons<std/core/types/string>((@implicit/show-latex(a)), (std/core/types/Nil<std/core/types/string>));
+  };
+fun default/show-latex-tokens // inline size: 2
+  = forall<a,(e :: E)> fn<(e :: E)>(a: a, @implicit/show-latex: (a) -> (e :: E) std/core/types/string){
+    std/core/types/Cons<std/core/types/string>((@implicit/show-latex(a)), (std/core/types/Nil<std/core/types/string>));
+  };
+fun sep/show-latex-premises // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(@pat-x21_33: (type-level/list/t-cons :: (V, V) -> V)<koka-redex/syntax/premise-sep,a>, @implicit/show-latex-premises: (a) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>){
+    @implicit/show-latex-premises((match (@pat-x21_33) {
+      ((@skip type-level/list/TCons(((@skip koka-redex/syntax/PremiseSep() : koka-redex/syntax/premise-sep ) as @pat@0: koka-redex/syntax/premise-sep) : koka-redex/syntax/premise-sep, (t: a) : a) : (type-level/list/t-cons :: (V, V) -> V)<koka-redex/syntax/premise-sep,a> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<koka-redex/syntax/premise-sep,a>))
+         -> t;
+    }));
+  };
+fun tcons/show-latex // inline size: 3
+  = forall<a,b,(e :: E)> fn<(e :: E)>(l: (type-level/list/t-cons :: (V, V) -> V)<a,b>, @implicit/show-latex-tokens: ((type-level/list/t-cons :: (V, V) -> V)<a,b>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>){
+    std/core/types/@open<(std/core/types/total :: E),(e :: E),(xs : (std/core/types/list :: V -> V)<std/core/types/string>, sep : std/core/types/string) -> std/core/types/string,(xs : (std/core/types/list :: V -> V)<std/core/types/string>, sep : std/core/types/string) -> (e :: E) std/core/types/string>(std/core/list/joinsep)((@implicit/show-latex-tokens(l)), " ");
+  };
+fun tcons/show-latex-tokens // inline size: 3
+  = forall<a,b,(e :: E)> fn<(e :: E)>(@pat-x41_33: (type-level/list/t-cons :: (V, V) -> V)<a,b>, @implicit/show-latex: (a) -> (e :: E) std/core/types/string, @implicit/show-latex-tokens: (b) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>){
+    (match (@pat-x41_33) {
+      ((@skip type-level/list/TCons((h: a) : a, (t: b) : b) : (type-level/list/t-cons :: (V, V) -> V)<a,b> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<a,b>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/show-latex(h)), (@implicit/show-latex-tokens(t)));
+    });
+  };
+fun tcons-prem/show-latex-premises // inline size: 3
+  = forall<a,b,c,(e :: E)> fn<(e :: E)>(@pat-x25_40: (type-level/list/t-cons :: (V, V) -> V)<(type-level/list/t-cons :: (V, V) -> V)<a,b>,c>, @implicit/show-latex: ((type-level/list/t-cons :: (V, V) -> V)<a,b>) -> (e :: E) std/core/types/string, @implicit/show-latex-premises: (c) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>){
+    (match (@pat-x25_40) {
+      ((@skip type-level/list/TCons((h: (type-level/list/t-cons :: (V, V) -> V)<a,b>) : (type-level/list/t-cons :: (V, V) -> V)<a,b>, (t: c) : c) : (type-level/list/t-cons :: (V, V) -> V)<(type-level/list/t-cons :: (V, V) -> V)<a,b>,c> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<(type-level/list/t-cons :: (V, V) -> V)<a,b>,c>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/show-latex(h)), (@implicit/show-latex-premises(t)));
+    });
+  };
+fun map-field // inline size: 2
+  = forall<a,(e :: E),b,c> fn<(e :: E)>(r: (koka-redex/syntax/rule :: (V, V, V) -> V)<b,c,a>, @implicit/show-latex: ((koka-redex/syntax/rule :: (V, V, V) -> V)<b,c,a>) -> (e :: E) std/core/types/string){
+    koka-redex/latex/Latexstr((@implicit/show-latex(r)));
+  };
+fun ext/map-field // inline size: 1
+  = forall<(e :: E)> fn<(e :: E)>(@x@_wildcard-x66_23: koka-redex/syntax/external-entry){
+    koka-redex/latex/Latexstr("");
+  };

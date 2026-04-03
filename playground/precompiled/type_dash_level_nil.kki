@@ -1,0 +1,109 @@
+/*----------------------------------------------------------------------------
+   Copyright 2024, Koka-Community Authors
+
+   Licensed under the MIT License ("The License"). You may not
+   use this file except in compliance with the License. A copy of the License
+   can be found in the LICENSE file at the root of this distribution.
+----------------------------------------------------------------------------*/
+module interface type-level/nil
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+// An empty type-level list
+pub value{1,0,1} type t-nil[11,1,12,6] {
+  pub con TNil[12,3,12,6]{0,0,0} : t-nil = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+pub fun t-nil/@copy[12,3,12,6] : (@this : t-nil) -> t-nil;
+// List operations for t-nil
+pub fun append[15,9,15,14] : forall<a> (@x@_wildcard-x15_16 : t-nil, r : a) -> a;
+pub fun (++)[17,9,17,12] : forall<a> (@x@_wildcard-x17_14 : t-nil, r : a) -> a;
+pub fun map[19,9,19,11] : (l : t-nil) -> t-nil;
+pub fun to-list[21,9,21,15] : forall<a> (@x@_wildcard-x21_17 : t-nil) -> (std/core/types/list :: V -> V)<a>;
+pub fun (==)[23,9,23,12] : (@x@_wildcard-x23_14 : t-nil, @x@_wildcard-x23_24 : t-nil) -> std/core/types/bool;
+// Show instances for t-nil
+pub fun strlist/show[27,9,27,20] : (@x@_wildcard-x27_22 : t-nil) -> (std/core/types/list :: V -> V)<std/core/types/string>;
+pub fun default/empty/show[29,9,29,26] : (@x@_wildcard-x29_28 : t-nil) -> std/core/types/string;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+inline fun t-nil/@copy // inline size: 0
+  = fn(@this: t-nil){
+    type-level/nil/TNil;
+  };
+inline fun append // inline size: 0
+  = forall<a> fn(@x@_wildcard-x15_16: t-nil, r: a){
+    r;
+  };
+inline fun (++) // inline size: 0
+  = forall<a> fn(@x@_wildcard-x17_14: t-nil, r: a){
+    r;
+  };
+inline fun map // inline size: 0
+  = fn(l: t-nil){
+    l;
+  };
+inline fun to-list // inline size: 0
+  = forall<a> fn(@x@_wildcard-x21_17: t-nil){
+    std/core/types/Nil<a>;
+  };
+inline fun (==) // inline size: 0
+  = fn(@x@_wildcard-x23_14: t-nil, @x@_wildcard-x23_24: t-nil){
+    std/core/types/True;
+  };
+inline fun strlist/show // inline size: 0
+  = fn(@x@_wildcard-x27_22: t-nil){
+    std/core/types/Nil<std/core/types/string>;
+  };
+inline fun default/empty/show // inline size: 0
+  = fn(@x@_wildcard-x29_28: t-nil){
+    "[]";
+  };

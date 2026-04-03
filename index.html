@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+      
+    </meta>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+      
+    </meta>
+    <title>
+      Koka Redex
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+      
+    </link>
+    <link href="styles/site.css" rel="stylesheet">
+      
+    </link>
+    <meta content="/koka-redex/playground/koka-playground.wasm" name="koka-wasm-url">
+      
+    </meta>
+    <meta content="/koka-redex/playground/" name="koka-stdlib-url">
+      
+    </meta>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <div class="nav-brand">
+        <a href="index.html">
+          Koka Redex
+        </a>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">
+          Overview
+        </a>
+        <a class="nav-link" href="tutorial.html">
+          Tutorial
+        </a>
+        <a class="nav-link" href="engine.html">
+          Engine
+        </a>
+        <a class="nav-link" href="derive.html">
+          Derive
+        </a>
+        <a class="nav-link" href="rendering.html">
+          Rendering
+        </a>
+        <a class="nav-link" href="api.html">
+          API
+        </a>
+      </div>
+    </nav>
+    <main class="site-content">
+      <div class="body madoko" style="line-adjust:0">
+<h2 id="sec-koka-redex" class="h1" data-heading-depth="1" style="display:block">Koka Redex</h2>
+<p class="p noindent">A typed rule schema framework for program analysis in Koka. Write declarative
+inference rules — the framework derives execution, rendering, and term encoding
+automatically via implicits and algebraic effects.
+</p>
+<div class="project-section">
+<h3 id="sec-overview" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Overview</h3>
+<p class="p noindent">Koka Redex bridges the gap between declarative rule specifications and
+executable fixpoint engines. A single typed rule representation drives:
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Demand-driven tabled resolution</strong> with per-relation lattice policies
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">LaTeX and Markdown rendering</strong> of inference rules
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Auto-derived term encoding</strong> from constructor descriptors
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">External solver dispatch</strong> for domain-specific operations
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Interned abstract domains</strong> via first-class handler values
+</li></ul></div>
+<div class="project-section">
+<h3 id="sec-quick-example" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Quick Example</h3>
+<p class="p noindent">A complete 0CFA analysis in Koka Redex:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> Domain types — clean, no framework noise</span>
+<span style="color:blue">type</span> <span style="color:teal">expr</span>
+  <span style="color:teal">EVar</span><span style="color:teal">(</span><span style="color:teal">nm</span><span style="color:teal">:</span> <span style="color:teal">string</span><span style="color:teal">)</span>
+  <span style="color:teal">EApp</span><span style="color:teal">(</span><span style="color:teal">e1</span><span style="color:teal">:</span> <span style="color:teal">expr</span><span style="color:teal">,</span> <span style="color:teal">e2</span><span style="color:teal">:</span> <span style="color:teal">expr</span><span style="color:teal">)</span>
+  <span style="color:teal">ELam</span><span style="color:teal">(</span><span style="color:teal">x</span><span style="color:teal">:</span> <span style="color:teal">string</span><span style="color:teal">,</span> <span style="color:teal">body</span><span style="color:teal">:</span> <span style="color:teal">expr</span><span style="color:teal">)</span></code></pre>
+<p class="p noindent para-continued">Rules read like inference rules from a paper:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> E-Lam: lambda values evaluate to themselves</span>
+<span style="color:blue">with</span> rule(
+  axiom
+  --- <span style="color:maroon">&quot;</span><span style="color:maroon">E-Lam</span><span style="color:maroon">&quot;</span> --&gt;
+  p-lam(x, e) \ s |- <span style="color:purple">REval</span> \ p-lam(x, e) \ s)
+
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> E-App: application with store threading</span>
+<span style="color:navy">single/</span>rule(
+  e1 \ s0 |- <span style="color:purple">REval</span> \ p-lam(x, e3) \ s1 \\
+  e2 \ s1 |- <span style="color:purple">REval</span> \ v2 \ s2 \\
+  e3 \ p-scons(x, v2, s2) |- <span style="color:purple">REval</span> \ v \ s3
+  --- <span style="color:maroon">&quot;</span><span style="color:maroon">E-App</span><span style="color:maroon">&quot;</span> --&gt;
+  p-app(e1, e2) \ s0 |- <span style="color:purple">REval</span> \ v \ s3)</code></pre>
+<p class="p noindent para-continued">Run the analysis:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:blue">val</span> id-fn <span style="color:blue">=</span> <span style="color:purple">ELam</span>(<span style="color:maroon">&quot;</span><span style="color:maroon">x</span><span style="color:maroon">&quot;</span>, <span style="color:purple">EVar</span>(<span style="color:maroon">&quot;</span><span style="color:maroon">x</span><span style="color:maroon">&quot;</span>))
+<span style="color:blue">val</span> goal <span style="color:blue">=</span> pat(<span style="color:purple">EApp</span>(id-fn, <span style="color:purple">ELam</span>(<span style="color:maroon">&quot;</span><span style="color:maroon">z</span><span style="color:maroon">&quot;</span>, <span style="color:purple">EVar</span>(<span style="color:maroon">&quot;</span><span style="color:maroon">z</span><span style="color:maroon">&quot;</span>))))
+         \ pat(<span style="color:purple">SNil</span>) |- <span style="color:purple">REval</span> \ fresh-pat(<span style="color:maroon">&quot;</span><span style="color:maroon">v</span><span style="color:maroon">&quot;</span>)
+         \ (fresh-pat(<span style="color:maroon">&quot;</span><span style="color:maroon">s</span><span style="color:maroon">&quot;</span>) <span style="color:teal">:</span> <span style="color:teal">pat</span><span style="color:teal">&lt;</span><span style="color:teal">store</span><span style="color:teal">&gt;</span>)
+<span style="color:blue">val</span> table <span style="color:blue">=</span> forward-search(goal, rel)</code></pre>
+<p class="p noindent para-continued">The same rules render as LaTeX:
+</p>
+<pre class="para-block pre-fenced pre-fenced3" style="display:block"><code>\inferrule*[Right=E-App]
+  { e1 s0 ⇓ λ x. e3 s1 \\
+    e2 s1 ⇓ v2 s2 \\
+    e3 s2[x ↦ v2] ⇓ v s3 }
+  { e1\; e2 s0 ⇓ v s3 }</code></pre></div>
+<div class="project-section">
+<h3 id="sec-engine--demand-driven-tabled-resolution" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Engine: Demand-Driven Tabled Resolution</h3>
+<p class="p noindent">The engine combines ideas from SLG resolution (XSB Prolog), Datalog, and
+algebraic effects:
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Goal-directed</strong>: starts from a query, selects rules by unifying with conclusions
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Tabled with continuation resumption</strong>: when a sub-goal discovers a new answer, all dependent computations re-execute automatically
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Premise reordering</strong>: after goal unification, premises are sorted by groundness (most ground args first) and re-sorted after each evaluation. The user writes premises in any order — the engine finds the optimal data-flow order
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Per-relation lattice policies</strong>: <code class="code code1">set-join</code> (collect all results), <code class="code code1">single-join</code> (error on multiple distinct results), or custom — derived from relation marker types via implicits
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Memo key canonicalization</strong>: <code class="code code1">normalize-fact</code> replaces unbound variables with canonical names preserving sharing (<code class="code code1">reach(X,X)</code> distinct from <code class="code code1">reach(X,Y)</code>)
+</li></ul>
+
+<p class="p noindent">For the stratified Datalog fragment, the engine is complete — the tabled fixpoint
+converges to the same results as bottom-up evaluation.
+</p></div>
+<div class="project-section">
+<h3 id="sec-constructor-descriptors-and-auto-derivation" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Constructor Descriptors and Auto-Derivation</h3>
+<p class="p noindent">The <code class="code code1">con-info&lt;tag, fields, whole&gt;</code> descriptor captures a constructor&#39;s structure
+once. The framework derives everything else:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> Phantom tags identify constructors</span>
+<span style="color:blue">type</span> <span style="color:teal">lam-expr</span>
+<span style="color:blue">fun</span> <span style="color:navy">lam-expr/name/</span>show()<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">&gt;</span> { <span style="color:purple">Name</span>(<span style="color:maroon">&quot;</span><span style="color:maroon">lam</span><span style="color:maroon">&quot;</span>) }
+
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> One descriptor per constructor</span>
+<span style="color:blue">val</span> <span style="color:navy">lam-expr/</span>con-info <span style="color:teal">:</span>
+  <span style="color:teal">con-info</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">,</span> <span style="color:teal">t</span>-cons&lt;string, t-cons&lt;expr, t-nil&gt;&gt;, expr&gt; <span style="color:blue">=</span>
+  <span style="color:purple">Con-info</span>(
+    <span style="color:blue">fn</span>(e) <span style="color:blue">match</span> e { <span style="color:purple">ELam</span>(x, body) <span style="color:blue">-&gt;</span> <span style="color:purple">Just</span>(x +: body +: <span style="color:purple">TNil</span>); _ <span style="color:blue">-&gt;</span> <span style="color:purple">Nothing</span> },
+    <span style="color:blue">fn</span>(<span style="color:purple">TCons</span>(x, <span style="color:purple">TCons</span>(body, _))) <span style="color:purple">ELam</span>(x, body))</code></pre>
+<p class="p noindent para-continued">From this, the framework auto-derives:
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">to-term</code></strong>: <code class="code code1">ELam(&quot;x&quot;, EVar(&quot;x&quot;))</code> → <code class="code code1">TNode(&quot;lam&quot;, [TAtom(&quot;x&quot;), TNode(&quot;var&quot;, [TAtom(&quot;x&quot;)])])</code>
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">from-term</code></strong>: roundtrip back to domain types
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">show</code></strong>: <code class="code code1">lam(x, var(x))</code>
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">LaTeX rendering</strong>: <code class="code code1">λ x. var(x)</code> (with per-constructor format functions)
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Markdown rendering</strong>: <code class="code code1">λ x. var(x)</code> (separate backend, different format)
+</li></ul>
+
+<p class="p noindent">For recursive types, bind <code class="code code1">to-term</code> as a local implicit before calling <code class="code code1">derive-to-term</code>:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code>pub <span style="color:blue">fun</span> <span style="color:navy">expr/</span>to-term(e<span style="color:teal">:</span> <span style="color:teal">expr</span>)<span style="color:teal">:</span> <span style="color:teal">div</span> <span style="color:teal">term</span>
+  <span style="color:blue">val</span> <span style="color:navy">n/</span>to-term <span style="color:blue">=</span> <span style="color:navy">expr/</span>to-term
+  derive-to-term(e, expr-info)</code></pre></div>
+<div class="project-section">
+<h3 id="sec-external-solvers-and-interned-domains" class="h2 project-section-heading" data-heading-depth="2" style="display:block">External Solvers and Interned Domains</h3>
+<p class="p noindent">Relations that are better computed than searched can be implemented as
+external Koka functions:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> Store lookup as external relation</span>
+<span style="color:blue">with</span> external-rule(s \ x |- <span style="color:purple">RLookup</span> \ v,
+  <span style="color:blue">fn</span>(<span style="color:purple">TCons</span>(s-val<span style="color:teal">:</span> <span style="color:teal">store</span>, x-val<span style="color:teal">:</span> <span style="color:teal">string</span>))
+    s-val<span style="color:blue">.</span>filter(<span style="color:blue">fn</span>((n, _)) n == x-val)<span style="color:blue">.</span>map(snd))</code></pre>
+<p class="p noindent para-continued">Abstract domains can be <strong class="strong-star2">interned</strong> as opaque references for O(1) comparison.
+The <code class="code code1">ref-pool</code> is a first-class named handler value — no effect in caller types:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> Create a pool — scoped to the analysis run</span>
+<span style="color:blue">val</span> <span style="color:navy">store/</span>pool <span style="color:teal">:</span> <span style="color:teal">ev</span><span style="color:teal">&lt;</span><span style="color:teal">ref-pool</span><span style="color:teal">&lt;</span><span style="color:teal">store</span><span style="color:teal">&gt;</span><span style="color:teal">&gt;</span> <span style="color:blue">=</span> make-pool(stor<span style="color:navy">e/</span>(==))
+
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> to-term automatically interns via the ?pool implicit</span>
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> Engine sees TRef(42) — opaque, ground, O(1) equality</span></code></pre></div>
+<div class="project-section">
+<h3 id="sec-rendering" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Rendering</h3>
+<p class="p noindent">Rules render to LaTeX and Markdown from the same type-level structure.
+Per-constructor format functions control the output:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:darkgreen">//</span><span style="color:darkgreen"> LaTeX: formal notation</span>
+<span style="color:blue">fun</span> <span style="color:navy">lam-expr/</span>render-latex(_<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">&gt;</span>,
+  <span style="color:purple">TCons</span>(x, <span style="color:purple">TCons</span>(body, _))<span style="color:teal">:</span> <span style="color:teal">t</span>-cons&lt;string, t-cons&lt;string, t-nil&gt;&gt;)
+  <span style="color:maroon">&quot;</span><span style="color:gray">\\</span><span style="color:maroon">lambda </span><span style="color:maroon">&quot;</span> ++ x ++ <span style="color:maroon">&quot;</span><span style="color:maroon">.</span><span style="color:gray">\\</span><span style="color:maroon">; </span><span style="color:maroon">&quot;</span> ++ body
+
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> Markdown: unicode</span>
+<span style="color:blue">fun</span> <span style="color:navy">lam-expr/</span>render-md(_<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">&gt;</span>,
+  <span style="color:purple">TCons</span>(x, <span style="color:purple">TCons</span>(body, _))<span style="color:teal">:</span> <span style="color:teal">t</span>-cons&lt;string, t-cons&lt;string, t-nil&gt;&gt;)
+  <span style="color:maroon">&quot;</span><span style="color:maroon">λ</span><span style="color:maroon">&quot;</span> ++ x ++ <span style="color:maroon">&quot;</span><span style="color:maroon">. </span><span style="color:maroon">&quot;</span> ++ body</code></pre>
+<p class="p noindent para-continued">The return type annotation (<code class="code code1">latex-entry</code> vs <code class="code code1">md-entry</code>) selects the
+rendering backend — same <code class="code code1">to-list</code> call, different output.
+</p></div>
+<div class="project-section">
+<h3 id="sec-algebraic-effects" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Algebraic Effects</h3>
+<p class="p noindent">The framework uses Koka&#39;s algebraic effects throughout:
+</p><table class="madoko block">
+<thead><tr><th class="col thead tr-odd tr-last tr-first col-odd col-first" data-row="1" data-col="1" style="font-weight:bold;text-align:left"> Effect </th><th class="col thead tr-odd tr-last tr-first col-even col-last" data-row="1" data-col="2" style="font-weight:bold;text-align:left"> Purpose </th></tr></thead>
+<tbody><tr><td class="tbody tr-even col cell-line col-odd col-first" data-row="0" data-col="1" style="text-align:left"></td><td class="tbody tr-even col cell-line col-even col-last" data-row="0" data-col="2" style="text-align:left"></td></tr>
+<tr><td class="tbody tr-odd tr-first col col-odd col-first" data-row="1" data-col="1" style="text-align:left"> <code class="code code1">logic</code> </td><td class="tbody tr-odd tr-first col col-even col-last" data-row="1" data-col="2" style="text-align:left"> Unification: <code class="code code1">unify</code>, <code class="code code1">resolve</code>, <code class="code code1">freshv</code>, <code class="code code1">save</code>/<code class="code code1">restore</code> </td></tr>
+<tr><td class="tbody tr-even col col-odd col-first" data-row="2" data-col="1" style="text-align:left"> <code class="code code1">cache</code> (fixpoint-memo) </td><td class="tbody tr-even col col-even col-last" data-row="2" data-col="2" style="text-align:left"> Tabled memoization: <code class="code code1">memo</code>, <code class="code code1">depend</code>, <code class="code code1">add-result</code>, <code class="code code1">do-each</code> </td></tr>
+<tr><td class="tbody tr-odd col col-odd col-first" data-row="3" data-col="1" style="text-align:left"> <code class="code code1">ref-pool</code> (named) </td><td class="tbody tr-odd col col-even col-last" data-row="3" data-col="2" style="text-align:left"> First-class intern pools — value, not effect in caller types </td></tr>
+<tr><td class="tbody tr-even tr-last col col-odd col-first" data-row="4" data-col="1" style="text-align:left"> <code class="code code1">pat-fresh</code> </td><td class="tbody tr-even tr-last col col-even col-last" data-row="4" data-col="2" style="text-align:left"> Fresh pattern variable generation for rule metavariables </td></tr></tbody></table>
+<p class="p noindent">The <code class="code code1">logic</code> effect expressing unification as algebraic effects is, to our
+knowledge, novel in the effects literature.
+</p></div>
+<div class="project-section">
+<h3 id="sec-architecture" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Architecture</h3>
+<pre class="para-block pre-fenced pre-fenced3" style="display:block"><code>Rules (syntax.kk)         Con-info (type-level/con-info.kk)
+  rule&lt;n,p,c&gt;               con-info&lt;tag, fields, whole&gt;
+  relation-def&lt;r&gt;            name&lt;tag&gt;
+       |                          |
+       v                          v
+Bridge (forward-bridge.kk)  Derive (derive.kk)
+  to-fact-args, derive-keys   to-term, from-term, show
+  derive-policies             render-latex, render-md
+  external-rule
+       |                          |
+       v                          v
+Engine (forward.kk)         Rendering (latex.kk, markdown.kk)
+  forward-eval                relation-to-latex
+  memo/depend/add-result      relation-to-md
+  normalize-fact              pat/show-latex, pat/show-md
+  premise reordering
+       |
+       v
+Logic (logic.kk)
+  unify, resolve, freshv
+  with-logic handler</code></pre></div>
+<div class="project-section">
+<h3 id="sec-examples" class="h2 project-section-heading" data-heading-depth="2" style="display:block">Examples</h3><table class="madoko block">
+<thead><tr><th class="col thead tr-odd tr-last tr-first col-odd col-first" data-row="1" data-col="1" style="font-weight:bold;text-align:left"> Example </th><th class="col thead tr-odd tr-last tr-first col-even col-last" data-row="1" data-col="2" style="font-weight:bold;text-align:left"> Description </th></tr></thead>
+<tbody><tr><td class="tbody tr-even col cell-line col-odd col-first" data-row="0" data-col="1" style="text-align:left"></td><td class="tbody tr-even col cell-line col-even col-last" data-row="0" data-col="2" style="text-align:left"></td></tr>
+<tr><td class="tbody tr-odd tr-first col col-odd col-first" data-row="1" data-col="1" style="text-align:left"> <code class="code code1">pattern/cfa.kk</code> </td><td class="tbody tr-odd tr-first col col-even col-last" data-row="1" data-col="2" style="text-align:left"> 0CFA with store-passing, LaTeX/Markdown rendering </td></tr>
+<tr><td class="tbody tr-even col col-odd col-first" data-row="2" data-col="1" style="text-align:left"> <code class="code code1">pattern/cfa-interned.kk</code> </td><td class="tbody tr-even col col-even col-last" data-row="2" data-col="2" style="text-align:left"> 0CFA with interned stores via <code class="code code1">ref-pool</code> </td></tr>
+<tr><td class="tbody tr-odd col col-odd col-first" data-row="3" data-col="1" style="text-align:left"> <code class="code code1">pattern/type-infer.kk</code> </td><td class="tbody tr-odd col col-even col-last" data-row="3" data-col="2" style="text-align:left"> Type inference with unification as external solver </td></tr>
+<tr><td class="tbody tr-even col col-odd col-first" data-row="4" data-col="1" style="text-align:left"> <code class="code code1">pattern/reachability.kk</code> </td><td class="tbody tr-even col col-even col-last" data-row="4" data-col="2" style="text-align:left"> Reachability with ground/partial/open queries </td></tr>
+<tr><td class="tbody tr-odd col col-odd col-first" data-row="5" data-col="1" style="text-align:left"> <code class="code code1">typed/cfa-typed.kk</code> </td><td class="tbody tr-odd col col-even col-last" data-row="5" data-col="2" style="text-align:left"> 0CFA with manual metavar constructors </td></tr>
+<tr><td class="tbody tr-even tr-last col col-odd col-first" data-row="6" data-col="1" style="text-align:left"> <code class="code code1">typed/type-infer-typed.kk</code> </td><td class="tbody tr-even tr-last col col-even col-last" data-row="6" data-col="2" style="text-align:left"> Type inference with manual metavars </td></tr></tbody></table>
+<p class="p noindent">39 tests across 3 test files validate the engine, bridge, and derive system.
+</p>
+<p class="p indent"><a href="https://github.com/timwhiting/koka-redex" class="learn externalref">GitHub →</a>
+</p></div><span data-line=""></span></div>
+    </main>
+    <footer class="site-footer">
+      Koka Redex
+    </footer>
+    <script src="/koka-redex/playground/embed.js" type="module">
+      
+    </script>
+  </body>
+</html>

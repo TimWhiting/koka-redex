@@ -1,0 +1,462 @@
+module interface koka-redex/derive
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+pub import type-level/con-info = type-level/con-info = "";
+pub import type-level/structs = type-level/structs = "";
+pub import type-level/list = type-level/list = "";
+pub import type-level/nil = type-level/nil = "";
+pub import koka-redex/term = koka-redex/term = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+// Phantom witness carrying the field tail type for structural recursion
+pub value{1,0,1} type field-witness[209,1,210,14] <a> :: V -> V {
+  pub con FieldWitness[210,3,210,14]{0,0,0} : forall<a> (field-witness :: V -> V)<a> = 1;
+};
+pub alias from-term-matcher[128,1,128,61]<a> :: V -> V = (koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<a> = 1;
+pub alias render-fmt[240,1,240,57] = ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string = 1;
+pub alias render-entry[241,1,241,45] = (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) = 2;
+pub value{0,2,8} type latex-entry[252,1,252,49] {
+  pub con Latex-entry[252,18,252,28](entry: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))){0,2,8} : (entry : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) -> latex-entry = 1;
+};
+pub value{0,2,8} type md-entry[253,1,253,46] {
+  pub con Md-entry[253,18,253,25](entry: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))){0,2,8} : (entry : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) -> md-entry = 1;
+};
+pub alias term-renderer[317,1,317,52] = (koka-redex/term/term) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string = 1;
+pub alias to-term-matcher[70,1,70,53]<a> :: V -> V = (a) -> <(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<koka-redex/term/term> = 1;
+ 
+//------------------------------
+//#kki: declarations
+ 
+pub fun end/fields-to-terms[33,9,33,27] : forall<a> (@pat-x33_29 : (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>, ?to-term : (a) -> <(std/core/types/div :: X)> koka-redex/term/term) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>;
+pub fun default/end/fields-to-terms[37,9,37,35] : forall<a,b> (@pat-x37_37 : (type-level/list/t-cons :: (V, V) -> V)<a,b>, ?a/to-term : (a) -> <(std/core/types/div :: X)> koka-redex/term/term, ?b/to-term : (b) -> <(std/core/types/div :: X)> koka-redex/term/term) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>;
+pub fun tcons/fields-to-terms[28,9,28,29] : forall<a,b,c> (@pat-x28_31 : (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>, ?to-term : (a) -> <(std/core/types/div :: X)> koka-redex/term/term, ?tail/fields-to-terms : ((type-level/list/t-cons :: (V, V) -> V)<b,c>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>;
+// monadic lift
+fun end/@mlift-terms-to-fields@10159[1,0,1,0] : forall<a> (@y-x10036 : a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>;
+pub fun end/terms-to-fields[58,9,58,27] : forall<a> (args : (std/core/types/list :: V -> V)<koka-redex/term/term>, ?from-term : (koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>;
+// monadic lift
+fun tcons/@mlift-terms-to-fields@10160[1,0,1,0] : forall<a,b,c> (@y-x10039 : a, @y-x10040 : (type-level/list/t-cons :: (V, V) -> V)<b,c>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>;
+// monadic lift
+fun tcons/@mlift-terms-to-fields@10161[1,0,1,0] : forall<a,b,c> (t : (std/core/types/list :: V -> V)<koka-redex/term/term>, ?tail/terms-to-fields : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<b,c>, @y-x10039 : a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>;
+pub fun tcons/terms-to-fields[49,9,49,29] : forall<a,b,c> (args : (std/core/types/list :: V -> V)<koka-redex/term/term>, ?from-term : (koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a, ?tail/terms-to-fields : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<b,c>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>;
+// fields = string → TAtom
+pub fun atom/to-matcher[73,9,73,23] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>) -> (to-term-matcher :: V -> V)<b>;
+// fields = t-cons<a, b> → TNode(name, fields)
+pub fun node/to-matcher[79,9,79,23] : forall<a,b,c,d> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<c,d>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?fields-to-terms : ((type-level/list/t-cons :: (V, V) -> V)<c,d>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>) -> (to-term-matcher :: V -> V)<b>;
+// fields = t-nil → TNode(name, [])
+pub fun nullary/to-matcher[88,9,88,26] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> (to-term-matcher :: V -> V)<b>;
+pub fun nil/to-matchers[104,9,104,23] : forall<a,b,c,d> (s : (type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>, ?to-matcher : ((type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) -> (to-term-matcher :: V -> V)<c>) -> (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<c>>;
+pub fun tstruct/to-matchers[98,9,98,27] : forall<a,b,c,d,a1,b1,c1,d1> (s : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>, ?to-matcher : ((type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) -> (to-term-matcher :: V -> V)<a1>, ?to-matchers : ((type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) -> (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<a1>>) -> (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<a1>>;
+pub fun generic-to-term[113,9,113,23] : forall<a> (v : a, matchers : (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<a>>) -> <(std/core/types/div :: X)> koka-redex/term/term;
+pub fun derive-to-term[120,9,120,22] : forall<a,b> (v : a, info : b, ?to-matchers : (b) -> (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<a>>) -> <(std/core/types/div :: X)> koka-redex/term/term;
+// fields = string → match TAtom
+pub fun atom/from-matcher[131,9,131,25] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>) -> (from-term-matcher :: V -> V)<b>;
+// monadic lift
+fun node/@mlift-from-matcher@10162[1,0,1,0] : forall<a,b,c,d> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<c,d>,b>, @y-x10044 : (type-level/list/t-cons :: (V, V) -> V)<c,d>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<b>;
+// fields = t-cons<a, b> → match TNode(name, args), convert args to fields
+pub fun node/from-matcher[137,9,137,25] : forall<a,b,c,d> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<c,d>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?terms-to-fields : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> (type-level/list/t-cons :: (V, V) -> V)<c,d>) -> (from-term-matcher :: V -> V)<b>;
+// fields = t-nil → match TNode(name, [])
+pub fun nullary/from-matcher[146,9,146,28] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> (from-term-matcher :: V -> V)<b>;
+pub fun nil/from-matchers[162,9,162,25] : forall<a,b,c,d> (s : (type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>, ?from-matcher : ((type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) -> (from-term-matcher :: V -> V)<c>) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<c>>;
+pub fun struct/from-matchers[156,9,156,28] : forall<a,b,c,d,a1,b1,c1,d1> (s : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>, ?from-matcher : ((type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) -> (from-term-matcher :: V -> V)<a1>, ?from-matchers : ((type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a1>>) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a1>>;
+// monadic lift
+fun @mlift-generic-from-term@10163[1,0,1,0] : forall<a> (rest : (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a>>, t : koka-redex/term/term, @y-x10047 : (std/core/types/maybe :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a;
+pub fun generic-from-term[171,9,171,25] : forall<a> (t : koka-redex/term/term, matchers : (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a>>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a;
+pub fun derive-from-term[178,9,178,24] : forall<a,b> (t : koka-redex/term/term, info : b, ?from-matchers : (b) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a>>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a;
+pub fun field-witness/@copy[210,3,210,14] : forall<a> (@this : (field-witness :: V -> V)<a>) -> (field-witness :: V -> V)<a>;
+pub fun end/build-string-tcons[221,9,221,30] : (ss : (std/core/types/list :: V -> V)<std/core/types/string>, @x@_wildcard-x223_3 : (field-witness :: V -> V)<type-level/nil/t-nil>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,type-level/nil/t-nil>;
+// monadic lift
+fun tcons/@mlift-build-string-tcons@10164[1,0,1,0] : forall<a> (h : std/core/types/string, @y-x10055 : (type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,(type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,a>>;
+pub fun tcons/build-string-tcons[212,9,212,32] : forall<a,b,c> (ss : (std/core/types/list :: V -> V)<std/core/types/string>, @x@_wildcard-x214_3 : (field-witness :: V -> V)<(type-level/list/t-cons :: (V, V) -> V)<a,b>>, ?tail/build-string-tcons : ((std/core/types/list :: V -> V)<std/core/types/string>, (field-witness :: V -> V)<b>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,c>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,(type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,c>>;
+// Default name rendering: constructor name as-is
+pub fun default/name-latex[244,9,244,26] : forall<a> (n : (type-level/structs/name :: V -> V)<a>) -> std/core/types/string;
+pub fun default/name-md[247,9,247,23] : forall<a> (n : (type-level/structs/name :: V -> V)<a>) -> std/core/types/string;
+// Automatically generated. Retrieves the `entry` constructor field of the `:latex-entry` type.
+pub fun latex-entry/entry[252,30,252,34] : (^ @this : latex-entry) -> render-entry;
+pub fun latex-entry/@copy[252,18,252,28] : (@this : latex-entry, entry : (std/core/types/@optional :: V -> V)<render-entry>) -> latex-entry;
+// Automatically generated. Retrieves the `entry` constructor field of the `:md-entry` type.
+pub fun md-entry/entry[253,27,253,31] : (^ @this : md-entry) -> render-entry;
+pub fun md-entry/@copy[253,18,253,25] : (@this : md-entry, entry : (std/core/types/@optional :: V -> V)<render-entry>) -> md-entry;
+pub fun atom/latex/map-field[257,9,257,28] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> latex-entry;
+// monadic lift
+fun node/latex/@mlift-map-field@10165[1,0,1,0] : forall<a,b> (?con-name : (type-level/structs/name :: V -> V)<a>, ?render-latex : ((type-level/structs/name :: V -> V)<a>, b) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string, @y-x10060 : b) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string;
+pub fun node/latex/map-field[262,9,262,28] : forall<a,b,c,d,a1> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<d,a1>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?render-latex : ((type-level/structs/name :: V -> V)<a>, c) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string, ?build-string-tcons : ((std/core/types/list :: V -> V)<std/core/types/string>, (field-witness :: V -> V)<a1>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> c) -> latex-entry;
+pub fun default/node/latex/map-field[271,9,271,36] : forall<a,b,c,d> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<c,d>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> latex-entry;
+pub fun nullary/latex/map-field[277,9,277,31] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?name-latex : ((type-level/structs/name :: V -> V)<a>) -> std/core/types/string) -> latex-entry;
+pub fun atom/md/map-field[286,9,286,25] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> md-entry;
+// monadic lift
+fun node/md/@mlift-map-field@10166[1,0,1,0] : forall<a,b> (?con-name : (type-level/structs/name :: V -> V)<a>, ?render-md : ((type-level/structs/name :: V -> V)<a>, b) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string, @y-x10064 : b) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string;
+pub fun node/md/map-field[291,9,291,25] : forall<a,b,c,d,a1> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<d,a1>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?render-md : ((type-level/structs/name :: V -> V)<a>, c) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string, ?build-string-tcons : ((std/core/types/list :: V -> V)<std/core/types/string>, (field-witness :: V -> V)<a1>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> c) -> md-entry;
+pub fun default/node/md/map-field[300,9,300,33] : forall<a,b,c,d> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<c,d>,b>, ?con-name : (type-level/structs/name :: V -> V)<a>) -> md-entry;
+pub fun nullary/md/map-field[306,9,306,28] : forall<a,b> (ci : (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, ?con-name : (type-level/structs/name :: V -> V)<a>, ?name-md : ((type-level/structs/name :: V -> V)<a>) -> std/core/types/string) -> md-entry;
+// monadic lift
+fun @mlift-render-term@10167[1,0,1,0] : (name : std/core/types/string, rendered-args : (std/core/types/list :: V -> V)<std/core/types/string>, @y-x10069 : (std/core/types/maybe :: V -> V)<render-entry>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string;
+// monadic lift
+fun @mlift-render-term@10168[1,0,1,0] : (entries : (std/core/types/list :: V -> V)<render-entry>, name : std/core/types/string, rendered-args : (std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string;
+fun render-term[322,5,322,15] : (t : koka-redex/term/term, entries : (std/core/types/list :: V -> V)<render-entry>, var-render : (std/core/types/string, std/core/types/int) -> <(std/core/pure :: E)> std/core/types/string) -> <(std/core/pure :: E)> std/core/types/string;
+// Default var renderers
+pub fun latex/var-render[334,9,334,24] : (nm : std/core/types/string, id : std/core/types/int) -> <(std/core/pure :: E)> std/core/types/string;
+pub fun md/var-render[337,9,337,21] : (nm : std/core/types/string, id : std/core/types/int) -> <(std/core/pure :: E)> std/core/types/string;
+pub fun make-term-renderer[319,9,319,26] : (entries : (std/core/types/list :: V -> V)<render-entry>, ?var-render : (std/core/types/string, std/core/types/int) -> <(std/core/pure :: E)> std/core/types/string) -> term-renderer;
+pub fun derive-term-renderer[340,9,340,28] : forall<a,b> (info : b, ?to-render-entries : (b) -> (std/core/types/list :: V -> V)<render-entry>, ?var-render : (std/core/types/string, std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string) -> term-renderer;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "__*" fun derive-term-renderer // inline size: 1
+  = forall<a,b> fn(info: b, @implicit/to-render-entries: (b) -> (std/core/types/list :: V -> V)<render-entry>, @implicit/var-render: (std/core/types/string, std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string){
+    val entries@10034[1,0,1,0] : (std/core/types/list :: V -> V)<render-entry>
+          = @implicit/to-render-entries(info);
+    fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(t: koka-redex/term/term){
+      koka-redex/derive/render-term(t, entries@10034, @implicit/var-render);
+    };
+  };
+specialize "**" fun make-term-renderer // inline size: 1
+  = fn(entries: (std/core/types/list :: V -> V)<render-entry>, @implicit/var-render: (std/core/types/string, std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string){
+    fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(t: koka-redex/term/term){
+      koka-redex/derive/render-term(t, entries, @implicit/var-render);
+    };
+  };
+specialize "_**" fun render-term // inline size: 1
+  = fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(t: koka-redex/term/term, entries: (std/core/types/list :: V -> V)<render-entry>, var-render: (std/core/types/string, std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string){
+    match (t) {
+      ((koka-redex/term/TVar((nm: std/core/types/string) : std/core/types/string, (id: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat: koka-redex/term/term)
+         -> var-render(nm, id);
+      ((koka-redex/term/TAtom((nm@0: std/core/types/string) : std/core/types/string) : koka-redex/term/term ) as @pat@0: koka-redex/term/term)
+         -> nm@0;
+      ((koka-redex/term/TInt((n: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@1: koka-redex/term/term)
+         -> std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/string,(i : std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(std/core/int/show)(n);
+      ((koka-redex/term/TNode((name: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/term ) as @pat@2: koka-redex/term/term)
+         -> val rendered-args[328,11,328,23] : (std/core/types/list :: V -> V)<std/core/types/string>
+                  = std/core/list/map<koka-redex/term/term,std/core/types/string,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(args, (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(a: koka-redex/term/term){
+                      (koka-redex/derive/render-term(a, entries, var-render));
+                    }));
+        (match ((std/core/list/find<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string))),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(entries, (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(e: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))){
+            (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(std/core/types/string, std/core/types/string) -> std/core/types/bool,(std/core/types/string, std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/bool>(std/core/string/(==))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(tuple2 : (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string))) -> std/core/types/string,(tuple2 : (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string))) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>((fn(tuple2: (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string))){
+                (match (tuple2) {
+                  ((@skip std/core/types/Tuple2((@x: std/core/types/string) : std/core/types/string, (@pat@0@0: (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) : (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) : (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) ) as @pat@3: (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))
+                     -> @x;
+                });
+              }))(e)), name));
+          })))) {
+          ((std/core/types/Just(((@skip std/core/types/Tuple2((@pat@5: std/core/types/string) : std/core/types/string, (fmt: (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) : (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) : (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)) ) as @pat@4: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (std/core/types/maybe :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))> ) as @pat@3@0: ((std/core/types/maybe :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))>))
+             -> fmt(rendered-args);
+          ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))> ) as @pat@6: ((std/core/types/maybe :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))>))
+             -> std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(x : std/core/types/string, y : std/core/types/string) -> std/core/types/string,(x : std/core/types/string, y : std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(std/core/types/(++))(name, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(x : std/core/types/string, y : std/core/types/string) -> std/core/types/string,(x : std/core/types/string, y : std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(std/core/types/(++))("(", (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(x : std/core/types/string, y : std/core/types/string) -> std/core/types/string,(x : std/core/types/string, y : std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(std/core/types/(++))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(xs : (std/core/types/list :: V -> V)<std/core/types/string>, sep : std/core/types/string) -> std/core/types/string,(xs : (std/core/types/list :: V -> V)<std/core/types/string>, sep : std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(std/core/list/joinsep)(rendered-args, ", ")), ")")))));
+        });
+      (@pat@7: koka-redex/term/term)
+         -> std/core/exn/error-pattern<std/core/types/string>("koka-redex/derive(323, 3)", "render-term");
+    };
+  };
+fun end/fields-to-terms // inline size: 2
+  = forall<a> fn<<(std/core/types/div :: X)>>(@pat-x33_29: (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>, @implicit/to-term: (a) -> <(std/core/types/div :: X)> koka-redex/term/term){
+    (match (@pat-x33_29) {
+      ((@skip type-level/list/TCons((h: a) : a, ((@skip type-level/nil/TNil() : type-level/nil/t-nil ) as @pat@0: type-level/nil/t-nil) : type-level/nil/t-nil) : (type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>))
+         -> std/core/types/Cons<koka-redex/term/term>((@implicit/to-term(h)), (std/core/types/Nil<koka-redex/term/term>));
+    });
+  };
+fun default/end/fields-to-terms // inline size: 4
+  = forall<a,b> fn<<(std/core/types/div :: X)>>(@pat-x37_37: (type-level/list/t-cons :: (V, V) -> V)<a,b>, @implicit/a/to-term: (a) -> <(std/core/types/div :: X)> koka-redex/term/term, @implicit/b/to-term: (b) -> <(std/core/types/div :: X)> koka-redex/term/term){
+    (match (@pat-x37_37) {
+      ((@skip type-level/list/TCons((h: a) : a, (tl: b) : b) : (type-level/list/t-cons :: (V, V) -> V)<a,b> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<a,b>))
+         -> std/core/types/Cons<koka-redex/term/term>((@implicit/a/to-term(h)), (std/core/types/Cons<koka-redex/term/term>((@implicit/b/to-term(tl)), (std/core/types/Nil<koka-redex/term/term>))));
+    });
+  };
+fun tcons/fields-to-terms // inline size: 3
+  = forall<a,b,c> fn<<(std/core/types/div :: X)>>(@pat-x28_31: (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>, @implicit/to-term: (a) -> <(std/core/types/div :: X)> koka-redex/term/term, @implicit/tail/fields-to-terms: ((type-level/list/t-cons :: (V, V) -> V)<b,c>) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>){
+    (match (@pat-x28_31) {
+      ((@skip type-level/list/TCons((h: a) : a, (t: (type-level/list/t-cons :: (V, V) -> V)<b,c>) : (type-level/list/t-cons :: (V, V) -> V)<b,c>) : (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>> ) as @pat: ((type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<b,c>>))
+         -> std/core/types/Cons<koka-redex/term/term>((@implicit/to-term(h)), (@implicit/tail/fields-to-terms(t)));
+    });
+  };
+fun end/terms-to-fields // inline size: 4
+  = forall<a> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>>(args: (std/core/types/list :: V -> V)<koka-redex/term/term>, @implicit/from-term: (koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a){
+    (match (args) {
+      ((std/core/types/Cons((h: koka-redex/term/term) : koka-redex/term/term, (@pat@0: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term> ) as @pat: ((std/core/types/list :: V -> V)<koka-redex/term/term>))
+         -> type-level/list/TCons<a,type-level/nil/t-nil>((@implicit/from-term(h)), type-level/nil/TNil);
+      ((@skip std/core/types/Nil() : (std/core/types/list :: V -> V)<koka-redex/term/term> ) as @pat@1: ((std/core/types/list :: V -> V)<koka-redex/term/term>))
+         -> std/core/exn/throw<(type-level/list/t-cons :: (V, V) -> V)<a,type-level/nil/t-nil>>("terms-to-fields: not enough args", (std/core/types/@NoOptArg<std/core/exn/exception-info>));
+    });
+  };
+fun atom/to-matcher // inline size: 4
+  = forall<a,b> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>){
+    fn<<(std/core/types/div :: X)>>(v: b){
+      (match (ci) {
+        ((@skip type-level/con-info/Con-info((@x: (b) -> (std/core/types/maybe :: V -> V)<std/core/types/string>) : (b) -> (std/core/types/maybe :: V -> V)<std/core/types/string>, (@pat@0: (std/core/types/string) -> b) : (std/core/types/string) -> b) : (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b> ) as @pat: ((type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>))
+           -> (match ((@x(v))) {
+            ((std/core/types/Just((nm: std/core/types/string) : std/core/types/string) : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as @pat@1: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+               -> std/core/types/Just<koka-redex/term/term>((koka-redex/term/TAtom(nm)));
+            ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as @pat@0@0: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+               -> std/core/types/Nothing<koka-redex/term/term>;
+          });
+      });
+    };
+  };
+fun nullary/to-matcher // inline size: 4
+  = forall<a,b> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>){
+    fn<<(std/core/types/div :: X)>>(v: b){
+      (match (ci) {
+        ((@skip type-level/con-info/Con-info((@x@0: (b) -> (std/core/types/maybe :: V -> V)<type-level/nil/t-nil>) : (b) -> (std/core/types/maybe :: V -> V)<type-level/nil/t-nil>, (@pat@0@0: (type-level/nil/t-nil) -> b) : (type-level/nil/t-nil) -> b) : (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b> ) as @pat@0: ((type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>))
+           -> (match ((@x@0(v))) {
+            ((std/core/types/Just(((@skip type-level/nil/TNil() : type-level/nil/t-nil ) as @pat@0@1: type-level/nil/t-nil) : type-level/nil/t-nil) : (std/core/types/maybe :: V -> V)<type-level/nil/t-nil> ) as @pat@1: ((std/core/types/maybe :: V -> V)<type-level/nil/t-nil>))
+               -> std/core/types/Just<koka-redex/term/term>((koka-redex/term/TNode((match (@implicit/con-name) {
+                  ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+                     -> @x;
+                }), (std/core/types/Nil<koka-redex/term/term>))));
+            ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<type-level/nil/t-nil> ) as @pat@1@0: ((std/core/types/maybe :: V -> V)<type-level/nil/t-nil>))
+               -> std/core/types/Nothing<koka-redex/term/term>;
+          });
+      });
+    };
+  };
+fun nil/to-matchers // inline size: 2
+  = forall<a,b,c,d> fn(s: (type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>, @implicit/to-matcher: ((type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) -> (to-term-matcher :: V -> V)<c>){
+    std/core/types/Cons<(to-term-matcher :: V -> V)<c>>((@implicit/to-matcher((match (s) {
+        ((@skip type-level/structs/TStruct((@x@0: (type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>>) : (type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>>, (@pat@0@0: type-level/nil/t-nil) : type-level/nil/t-nil) : (type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil> ) as @pat@0: ((type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>))
+           -> (match (@x@0) {
+            ((@skip type-level/structs/Field((@x: (type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) : (type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) : (type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>> ) as @pat: ((type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>>))
+               -> @x;
+          });
+      }))), (std/core/types/Nil<(to-term-matcher :: V -> V)<c>>));
+  };
+fun tstruct/to-matchers // inline size: 3
+  = forall<a,b,c,d,a1,b1,c1,d1> fn(s: (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>, @implicit/to-matcher: ((type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) -> (to-term-matcher :: V -> V)<a1>, @implicit/to-matchers: ((type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) -> (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<a1>>){
+    std/core/types/Cons<(to-term-matcher :: V -> V)<a1>>((@implicit/to-matcher((match (s) {
+        ((@skip type-level/structs/TStruct((@x@0: (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>) : (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>, (@pat@0@0: (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>> ) as @pat@0: ((type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>))
+           -> (match (@x@0) {
+            ((@skip type-level/structs/Field((@x: (type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) : (type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) : (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>> ) as @pat: ((type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>))
+               -> @x;
+          });
+      }))), (@implicit/to-matchers((match (s) {
+        ((@skip type-level/structs/TStruct((@pat@0@1: (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>) : (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>, (@x@1: (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>> ) as @pat@1: ((type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>))
+           -> @x@1;
+      }))));
+  };
+fun derive-to-term // inline size: 2
+  = forall<a,b> fn<<(std/core/types/div :: X)>>(v: a, info: b, @implicit/to-matchers: (b) -> (std/core/types/list :: V -> V)<(to-term-matcher :: V -> V)<a>>){
+    koka-redex/derive/generic-to-term<a>(v, (@implicit/to-matchers(info)));
+  };
+fun nil/from-matchers // inline size: 2
+  = forall<a,b,c,d> fn(s: (type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>, @implicit/from-matcher: ((type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) -> (from-term-matcher :: V -> V)<c>){
+    std/core/types/Cons<(from-term-matcher :: V -> V)<c>>((@implicit/from-matcher((match (s) {
+        ((@skip type-level/structs/TStruct((@x@0: (type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>>) : (type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>>, (@pat@0@0: type-level/nil/t-nil) : type-level/nil/t-nil) : (type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil> ) as @pat@0: ((type-level/structs/t-struct :: (V, V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>,type-level/nil/t-nil>))
+           -> (match (@x@0) {
+            ((@skip type-level/structs/Field((@x: (type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) : (type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>) : (type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>> ) as @pat: ((type-level/structs/field :: (V, V) -> V)<d,(type-level/con-info/con-info :: (V, V, V) -> V)<a,b,c>>))
+               -> @x;
+          });
+      }))), (std/core/types/Nil<(from-term-matcher :: V -> V)<c>>));
+  };
+fun struct/from-matchers // inline size: 3
+  = forall<a,b,c,d,a1,b1,c1,d1> fn(s: (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>, @implicit/from-matcher: ((type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) -> (from-term-matcher :: V -> V)<a1>, @implicit/from-matchers: ((type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a1>>){
+    std/core/types/Cons<(from-term-matcher :: V -> V)<a1>>((@implicit/from-matcher((match (s) {
+        ((@skip type-level/structs/TStruct((@x@0: (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>) : (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>, (@pat@0@0: (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>> ) as @pat@0: ((type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>))
+           -> (match (@x@0) {
+            ((@skip type-level/structs/Field((@x: (type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) : (type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>) : (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>> ) as @pat: ((type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>))
+               -> @x;
+          });
+      }))), (@implicit/from-matchers((match (s) {
+        ((@skip type-level/structs/TStruct((@pat@0@1: (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>) : (type-level/structs/field :: (V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>>, (@x@1: (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>) : (type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>> ) as @pat@1: ((type-level/structs/t-struct :: (V, V, V) -> V)<b1,(type-level/con-info/con-info :: (V, V, V) -> V)<a,c,a1>,(type-level/structs/t-struct :: (V, V, V) -> V)<c1,(type-level/con-info/con-info :: (V, V, V) -> V)<b,d,a1>,d1>>))
+           -> @x@1;
+      }))));
+  };
+fun derive-from-term // inline size: 3
+  = forall<a,b> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>>(t: koka-redex/term/term, info: b, @implicit/from-matchers: (b) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a>>){
+    koka-redex/derive/generic-from-term<a>(t, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(b) -> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a>>,(b) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<(from-term-matcher :: V -> V)<a>>>(@implicit/from-matchers)(info)));
+  };
+inline fun field-witness/@copy // inline size: 0
+  = forall<a> fn(@this: (field-witness :: V -> V)<a>){
+    koka-redex/derive/FieldWitness<a>;
+  };
+fun end/build-string-tcons // inline size: 3
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(ss: (std/core/types/list :: V -> V)<std/core/types/string>, @x@_wildcard-x223_3: (field-witness :: V -> V)<type-level/nil/t-nil>){
+    match (ss) {
+      ((std/core/types/Cons((h: std/core/types/string) : std/core/types/string, (@pat@0: (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/list :: V -> V)<std/core/types/string>))
+         -> type-level/list/TCons<std/core/types/string,type-level/nil/t-nil>(h, type-level/nil/TNil);
+      ((@skip std/core/types/Nil() : (std/core/types/list :: V -> V)<std/core/types/string> ) as @pat@1: ((std/core/types/list :: V -> V)<std/core/types/string>))
+         -> std/core/exn/throw<(type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,type-level/nil/t-nil>>("build-string-tcons: not enough strings", (std/core/types/@NoOptArg<std/core/exn/exception-info>));
+    };
+  };
+fun tcons/build-string-tcons // inline size: 4
+  = forall<a,b,c> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(ss: (std/core/types/list :: V -> V)<std/core/types/string>, @x@_wildcard-x214_3: (field-witness :: V -> V)<(type-level/list/t-cons :: (V, V) -> V)<a,b>>, @implicit/tail/build-string-tcons: ((std/core/types/list :: V -> V)<std/core/types/string>, (field-witness :: V -> V)<b>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,c>){
+    (match (ss) {
+      ((std/core/types/Cons((h: std/core/types/string) : std/core/types/string, (t: (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/list :: V -> V)<std/core/types/string>))
+         -> type-level/list/TCons<std/core/types/string,(type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,c>>(h, (@implicit/tail/build-string-tcons(t, (koka-redex/derive/FieldWitness<b>))));
+      ((@skip std/core/types/Nil() : (std/core/types/list :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/list :: V -> V)<std/core/types/string>))
+         -> std/core/exn/throw<(type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,(type-level/list/t-cons :: (V, V) -> V)<std/core/types/string,c>>>("build-string-tcons: not enough strings", (std/core/types/@NoOptArg<std/core/exn/exception-info>));
+    });
+  };
+inline fun default/name-latex // inline size: 0
+  = forall<a> fn(n: (type-level/structs/name :: V -> V)<a>){
+    (match (n) {
+      ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+         -> @x;
+    });
+  };
+inline fun default/name-md // inline size: 0
+  = forall<a> fn(n: (type-level/structs/name :: V -> V)<a>){
+    (match (n) {
+      ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun latex-entry/entry // inline size: 0
+  = fn(@this: latex-entry){
+    match (@this) {
+      ((@skip koka-redex/derive/Latex-entry((@x: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : latex-entry ) as @pat: latex-entry)
+         -> @x;
+    };
+  };
+fun latex-entry/@copy // inline size: 2
+  = fn(@this: latex-entry, entry: (std/core/types/@optional :: V -> V)<render-entry>){
+    koka-redex/derive/Latex-entry((match (entry) {
+      ((std/core/types/@OptArg((@uniq-entry@2747: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))> ) as @pat: ((std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))>))
+         -> @uniq-entry@2747;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))> ) as @pat@0: ((std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))>))
+         -> (match (@this) {
+          ((@skip koka-redex/derive/Latex-entry((@x: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : latex-entry ) as @pat@1: latex-entry)
+             -> @x;
+        });
+    }));
+  };
+inline borrow "^" fun md-entry/entry // inline size: 0
+  = fn(@this: md-entry){
+    match (@this) {
+      ((@skip koka-redex/derive/Md-entry((@x: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : md-entry ) as @pat: md-entry)
+         -> @x;
+    };
+  };
+fun md-entry/@copy // inline size: 2
+  = fn(@this: md-entry, entry: (std/core/types/@optional :: V -> V)<render-entry>){
+    koka-redex/derive/Md-entry((match (entry) {
+      ((std/core/types/@OptArg((@uniq-entry@2771: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))> ) as @pat: ((std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))>))
+         -> @uniq-entry@2771;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))> ) as @pat@0: ((std/core/types/@optional :: V -> V)<(render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))>))
+         -> (match (@this) {
+          ((@skip koka-redex/derive/Md-entry((@x: (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : (render-entry == 2 (std/core/types/string, (render-fmt == 1 ((std/core/types/list :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string)))) : md-entry ) as @pat@1: md-entry)
+             -> @x;
+        });
+    }));
+  };
+fun atom/latex/map-field // inline size: 4
+  = forall<a,b> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>){
+    koka-redex/derive/Latex-entry((std/core/types/Tuple2<std/core/types/string,render-fmt>((match (@implicit/con-name) {
+        ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+           -> @x;
+      }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@pat-x260_31: (std/core/types/list :: V -> V)<std/core/types/string>){
+        (match (@pat-x260_31) {
+          ((std/core/types/Cons((v: std/core/types/string) : std/core/types/string, (@pat@0@0: (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/list :: V -> V)<std/core/types/string>))
+             -> v;
+          (@pat@1: ((std/core/types/list :: V -> V)<std/core/types/string>))
+             -> std/core/exn/error-pattern<std/core/types/string>("koka-redex/derive(260,31)", "atom/latex/map-field");
+        });
+      }))));
+  };
+fun node/latex/map-field // inline size: 4
+  = forall<a,b,c,d,a1> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<d,a1>,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>, @implicit/render-latex: ((type-level/structs/name :: V -> V)<a>, c) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string, @implicit/build-string-tcons: ((std/core/types/list :: V -> V)<std/core/types/string>, (field-witness :: V -> V)<a1>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> c){
+    koka-redex/derive/Latex-entry((std/core/types/Tuple2<std/core/types/string,render-fmt>((match (@implicit/con-name) {
+        ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+           -> @x;
+      }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(rendered: (std/core/types/list :: V -> V)<std/core/types/string>){
+        (@implicit/render-latex(@implicit/con-name, (@implicit/build-string-tcons(rendered, (koka-redex/derive/FieldWitness<a1>)))));
+      }))));
+  };
+fun nullary/latex/map-field // inline size: 4
+  = forall<a,b> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>, @implicit/name-latex: ((type-level/structs/name :: V -> V)<a>) -> std/core/types/string){
+    koka-redex/derive/Latex-entry((std/core/types/Tuple2<std/core/types/string,render-fmt>((match (@implicit/con-name) {
+        ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+           -> @x;
+      }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@x@_wildcard-x282_25: (std/core/types/list :: V -> V)<std/core/types/string>){
+        (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,((type-level/structs/name :: V -> V)<a>) -> std/core/types/string,((type-level/structs/name :: V -> V)<a>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(@implicit/name-latex)(@implicit/con-name));
+      }))));
+  };
+fun atom/md/map-field // inline size: 4
+  = forall<a,b> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,std/core/types/string,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>){
+    koka-redex/derive/Md-entry((std/core/types/Tuple2<std/core/types/string,render-fmt>((match (@implicit/con-name) {
+        ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+           -> @x;
+      }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@pat-x289_29: (std/core/types/list :: V -> V)<std/core/types/string>){
+        (match (@pat-x289_29) {
+          ((std/core/types/Cons((v: std/core/types/string) : std/core/types/string, (@pat@0@0: (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string>) : (std/core/types/list :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/list :: V -> V)<std/core/types/string>))
+             -> v;
+          (@pat@1: ((std/core/types/list :: V -> V)<std/core/types/string>))
+             -> std/core/exn/error-pattern<std/core/types/string>("koka-redex/derive(289,29)", "atom/md/map-field");
+        });
+      }))));
+  };
+fun node/md/map-field // inline size: 4
+  = forall<a,b,c,d,a1> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<d,a1>,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>, @implicit/render-md: ((type-level/structs/name :: V -> V)<a>, c) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string, @implicit/build-string-tcons: ((std/core/types/list :: V -> V)<std/core/types/string>, (field-witness :: V -> V)<a1>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> c){
+    koka-redex/derive/Md-entry((std/core/types/Tuple2<std/core/types/string,render-fmt>((match (@implicit/con-name) {
+        ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+           -> @x;
+      }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(rendered: (std/core/types/list :: V -> V)<std/core/types/string>){
+        (@implicit/render-md(@implicit/con-name, (@implicit/build-string-tcons(rendered, (koka-redex/derive/FieldWitness<a1>)))));
+      }))));
+  };
+fun nullary/md/map-field // inline size: 4
+  = forall<a,b> fn(ci: (type-level/con-info/con-info :: (V, V, V) -> V)<a,type-level/nil/t-nil,b>, @implicit/con-name: (type-level/structs/name :: V -> V)<a>, @implicit/name-md: ((type-level/structs/name :: V -> V)<a>) -> std/core/types/string){
+    koka-redex/derive/Md-entry((std/core/types/Tuple2<std/core/types/string,render-fmt>((match (@implicit/con-name) {
+        ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (type-level/structs/name :: V -> V)<a> ) as @pat: ((type-level/structs/name :: V -> V)<a>))
+           -> @x;
+      }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@x@_wildcard-x311_22: (std/core/types/list :: V -> V)<std/core/types/string>){
+        (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,((type-level/structs/name :: V -> V)<a>) -> std/core/types/string,((type-level/structs/name :: V -> V)<a>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string>(@implicit/name-md)(@implicit/con-name));
+      }))));
+  };
+fun make-term-renderer // inline size: 1
+  = fn(entries: (std/core/types/list :: V -> V)<render-entry>, @implicit/var-render: (std/core/types/string, std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string){
+    fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(t: koka-redex/term/term){
+      koka-redex/derive/render-term(t, entries, @implicit/var-render);
+    };
+  };
+fun derive-term-renderer // inline size: 2
+  = forall<a,b> fn(info: b, @implicit/to-render-entries: (b) -> (std/core/types/list :: V -> V)<render-entry>, @implicit/var-render: (std/core/types/string, std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string){
+    val entries@10034[1,0,1,0] : (std/core/types/list :: V -> V)<render-entry>
+          = @implicit/to-render-entries(info);
+    fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(t: koka-redex/term/term){
+      koka-redex/derive/render-term(t, entries@10034, @implicit/var-render);
+    };
+  };

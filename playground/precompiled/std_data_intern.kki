@@ -1,0 +1,274 @@
+module interface std/data/intern
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+import std/core-extras = std/core-extras = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub value{0,2,8} type intern-ref[12,1,13,26] <a> :: V -> V {
+  pub con Interned[13,3,13,10](idx: std/core/types/int, a: a){0,2,8} : forall<a> (idx : std/core/types/int, a : a) -> (intern-ref :: V -> V)<a> = 1;
+};
+pub recursive named effect type intern[9,7,10,33] <(s :: S),a,(e :: E),b> :: (S, V, E, V) -> V {
+  pub con @Hnd-intern[9,7,9,19](@cfc: std/core/types/int, @fun-intern: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>){0,2,8} : forall<(s :: S),a,(e :: E),b> (std/core/types/int, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) -> (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b> = 1;
+};
+pub recursive effect type interner[3,8,4,58] <(s :: S),(e :: E),a> :: (S, E, V) -> V {
+  pub con @Hnd-interner[3,8,3,22](@cfc: std/core/types/int, @ctl-interner: forall<b> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(b, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),b>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>){0,2,8} : forall<(s :: S),(e :: E),a> (std/core/types/int, forall<b> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(b, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),b>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>) -> (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `@cfc` constructor field of the `:interner` type.
+fun interner/@cfc[3,8,3,22] : forall<(s :: S),(e :: E),a> (^ interner : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a>) -> std/core/types/int;
+// runtime tag for the effect `:interner`
+pub val interner/@tag[3,8,3,22] : forall<(s :: S)> (std/core/hnd/htag :: ((E, V) -> V) -> V)<(interner :: (S, E, V) -> V)<(s :: S)>>;
+// handler for the effect `:interner`
+pub fun interner/@handle[3,15,3,22] : forall<(s :: S),a,(e :: E),b> (hnd : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),b>, ret : (res : a) -> (e :: E) b, action : forall<(s1 :: S)> () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s1 :: S)>>|(e :: E)> a) -> (e :: E) b;
+// Automatically generated. Retrieves the `@ctl-interner` constructor field of the `:interner` type.
+fun interner/@ctl-interner[4,7,4,58] : forall<(s :: S),(e :: E),a,b> (^ interner : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(b, b) -> (std/core/pure :: E) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),b>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>;
+// select `interner` operation out of effect `:interner`
+pub fun interner/@select[4,7,4,58] : forall<(s :: S),a,(e :: E),b> (^ hnd : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(a, a) -> (std/core/pure :: E) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),b>;
+// Call the `ctl interner` operation of the effect `:interner`
+pub fun interner[4,7,4,14] : forall<(s :: S),a> (eq : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>;
+pub fun make-interner[6,5,6,17] : forall<(s :: S),a> (?(==) : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>;
+// Automatically generated. Retrieves the `@cfc` constructor field of the `:intern` type.
+fun intern/@cfc[9,7,9,19] : forall<(s :: S),a,(e :: E),b> (^ intern : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>) -> std/core/types/int;
+// runtime tag for the effect `:intern`
+pub val intern/@tag[9,7,9,19] : forall<(s :: S),a> (std/core/hnd/htag :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>;
+// handler for the effect `:intern`
+pub fun intern/@handle[9,14,9,19] : forall<(s :: S),a,b,(e :: E),c> (hnd : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),c>, ret : (res : b) -> (e :: E) c, action : (hname : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>) -> (e :: E) b) -> (e :: E) c;
+// Automatically generated. Retrieves the `@fun-intern` constructor field of the `:intern` type.
+fun intern/@fun-intern[10,7,10,33] : forall<(s :: S),a,(e :: E),b> (^ intern : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>;
+// select `intern` operation out of effect `:intern`
+pub fun intern/@select[10,7,10,33] : forall<(s :: S),a,(e :: E),b> (^ hnd : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>;
+// Call the `fun intern` operation of the effect `:intern`
+pub fun intern[10,7,10,12] : forall<(s :: S),a> (@hname : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>, x : a) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (intern-ref :: V -> V)<a>;
+// Automatically generated. Retrieves the `idx` constructor field of the `:intern-ref` type.
+pub fun intern-ref/idx[13,12,13,14] : forall<a> (^ @this : (intern-ref :: V -> V)<a>) -> std/core/types/int;
+// Automatically generated. Retrieves the `a` constructor field of the `:intern-ref` type.
+pub fun intern-ref/a[13,22,13,22] : forall<a> (^ @this : (intern-ref :: V -> V)<a>) -> a;
+pub fun intern-ref/@copy[13,3,13,10] : forall<a> (@this : (intern-ref :: V -> V)<a>, idx : (std/core/types/@optional :: V -> V)<std/core/types/int>, a : (std/core/types/@optional :: V -> V)<a>) -> (intern-ref :: V -> V)<a>;
+// monadic lift
+fun @mlift-with-new-pool@10121[1,0,1,0] : forall<(h :: H),a,(e :: E)> (a : a, @y-x10045 : (std/core/types/list :: V -> V)<a>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> (intern-ref :: V -> V)<a>;
+// monadic lift
+fun @mlift-with-new-pool@10122[1,0,1,0] : forall<(h :: H),a,(e :: E)> (a : a, vec : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<a>>, wild_@0 : ()) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> (intern-ref :: V -> V)<a>;
+// monadic lift
+fun @mlift-with-new-pool@10123[1,0,1,0] : forall<(h :: H),a,(e :: E)> (a : a, vec : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<a>>, @y-x10043 : (std/core/types/list :: V -> V)<a>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> (intern-ref :: V -> V)<a>;
+// monadic lift
+fun @mlift-with-new-pool@10124[1,0,1,0] : forall<a,(e :: E)> (i : std/core/types/int, x : a, @y-x10037 : std/core/types/bool) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X)|(e :: E)> ();
+// monadic lift
+fun @mlift-with-new-pool@10125[1,0,1,0] : forall<(h :: H),a,(e :: E)> (a : a, vec : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<a>>, wild_ : ()) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> (intern-ref :: V -> V)<a>;
+// monadic lift
+fun @mlift-with-new-pool@10126[1,0,1,0] : forall<(h :: H),a,(e :: E)> (a : a, eq : (a, a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X)|(e :: E)> std/core/types/bool, vec : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<a>>, v : (std/core/types/list :: V -> V)<a>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> (intern-ref :: V -> V)<a>;
+pub fun with-new-pool[19,5,19,17] : forall<a,b,(e :: E),(s :: S)> (eq : (a, a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X)|(e :: E)> std/core/types/bool, action : ((std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>) -> <(std/core/types/div :: X)|(e :: E)> b) -> <(std/core/types/div :: X)|(e :: E)> b;
+pub fun intern-creator[15,5,15,18] : forall<a,(e :: E)> (action : forall<(s :: S)> () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>,(std/core/pure :: E)|(e :: E)> a) -> <(std/core/pure :: E)|(e :: E)> a;
+pub fun (==)[35,5,35,8] : forall<a> (x : (intern-ref :: V -> V)<a>, y : (intern-ref :: V -> V)<a>) -> std/core/types/bool;
+pub val strs[38,5,38,8] : forall<(s :: S)> (std/core/delayed/delayed :: (E, V) -> V)<<(std/core/pure :: E),(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),std/core/types/string>>>;
+// monadic lift
+fun @mlift-s-intern@10127[1,0,1,0] : forall<(s :: S)> (s : std/core/types/string, @hname@10007 : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),std/core/types/string>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> (intern-ref :: V -> V)<std/core/types/string>;
+pub fun s-intern[40,5,40,12] : forall<(s :: S)> (s : std/core/types/string) -> <(std/core/pure :: E),(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> (intern-ref :: V -> V)<std/core/types/string>;
+// monadic lift
+fun @mlift-example@10128[1,0,1,0] : forall<(s :: S)> (@y-x10071 : std/core/types/string) -> <(std/core/console/console :: X),(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10129[1,0,1,0] : forall<(s :: S)> (a : (intern-ref :: V -> V)<std/core/types/string>, anothera : (intern-ref :: V -> V)<std/core/types/string>, @y-x10070 : std/core/types/string) -> <(std/core/console/console :: X),(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10130[1,0,1,0] : forall<(s :: S)> (a : (intern-ref :: V -> V)<std/core/types/string>, b : (intern-ref :: V -> V)<std/core/types/string>, anothera : (intern-ref :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10131[1,0,1,0] : forall<(s :: S)> (a : (intern-ref :: V -> V)<std/core/types/string>, b : (intern-ref :: V -> V)<std/core/types/string>, @hname@1@10020 : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),std/core/types/string>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10132[1,0,1,0] : forall<(s :: S)> (a : (intern-ref :: V -> V)<std/core/types/string>, b : (intern-ref :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10133[1,0,1,0] : forall<(s :: S)> (a : (intern-ref :: V -> V)<std/core/types/string>, @hname@0@10016 : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),std/core/types/string>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10134[1,0,1,0] : forall<(s :: S)> (a : (intern-ref :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+// monadic lift
+fun @mlift-example@10135[1,0,1,0] : forall<(s :: S)> (@hname@10012 : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),std/core/types/string>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> ();
+pub fun example[43,5,43,11] : () -> <(std/core/pure :: E),(std/core/console/console :: X)> ();
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "*_" fun with-new-pool // inline size: 1
+  = forall<a,b,(e :: E),(s :: S)> fn<<(std/core/types/div :: X)|(e :: E)>>(eq: (a, a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X)|(e :: E)> std/core/types/bool, action: ((std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>) -> <(std/core/types/div :: X)|(e :: E)> b){
+    std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X)|(e :: E)>,(action : forall<(h :: H)> () -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> b) -> (() -> <(std/core/types/div :: X)|(e :: E)> b),(action : forall<(h :: H)> () -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> b) -> <(std/core/types/div :: X)|(e :: E)> (() -> <(std/core/types/div :: X)|(e :: E)> b)>((std/core/types/unsafe-no-local-cast<b,<(std/core/types/div :: X)|(e :: E)>>))((forall<(h :: H)> fn<<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)>>(){
+      std/core/hnd/local-var<(std/core/types/list :: V -> V)<a>,b,<(std/core/types/div :: X)|(e :: E)>,(h :: H)>((std/core/types/Nil<a>), (fn<<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)>>(vec: (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<a>>){
+          (std/data/intern/#intern/@handle<(s :: S),a,b,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,b>((std/data/intern/@Hnd-intern<(s :: S),a,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,b>(1, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(op : (a) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> (intern-ref :: V -> V)<a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,b>,(op : (a) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> (intern-ref :: V -> V)<a>) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,b>>((std/core/hnd/clause-tail1<<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,b,(intern :: (S, V, E, V) -> V)<(s :: S),a>,a,(intern-ref :: V -> V)<a>>))((fn<<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>>(a: a){
+                (std/core-extras/#find/@handle<(intern-ref :: V -> V)<a>,(intern-ref :: V -> V)<a>,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(intern-ref :: V -> V)<a>>((std/core-extras/@Hnd-find<(intern-ref :: V -> V)<a>,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(intern-ref :: V -> V)<a>>(0, (forall<c> std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(op : ((intern-ref :: V -> V)<a>) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> (intern-ref :: V -> V)<a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(intern-ref :: V -> V)<a>,c,(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(intern-ref :: V -> V)<a>>,(op : ((intern-ref :: V -> V)<a>) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> (intern-ref :: V -> V)<a>) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(intern-ref :: V -> V)<a>,c,(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(intern-ref :: V -> V)<a>>>((std/core/hnd/clause-never1<(intern-ref :: V -> V)<a>,c,<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>,(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>,(intern-ref :: V -> V)<a>>))((fn<<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>>(a@0: (intern-ref :: V -> V)<a>){
+                      a@0;
+                    }))))), (fn<<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>>(@res: (intern-ref :: V -> V)<a>){
+                    @res;
+                  }), (fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>>(){
+                    val v[24,11,24,11] : ((std/core/types/list :: V -> V)<a>)
+                      = (std/core/types/local-get<(std/core/types/list :: V -> V)<a>,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>(vec, (std/core/types/@Hnodiv<(h :: H),(std/core/types/list :: V -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>)));
+                    val _[25,7,25,17] : ()
+                      = (std/core/hnd/@mask-builtin<(),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>,<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>((fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>(){
+                        (std/core/list/foreach-indexed<a,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>(v, (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>(i: std/core/types/int, x: a){
+                            (match ((eq(a, x))) {
+                              ((std/core/types/True() : std/core/types/bool ) as @pat: std/core/types/bool)
+                                 -> std/core/types/@open<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X)|(e :: E)>,(a : (intern-ref :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>> (),(a : (intern-ref :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(std/core/types/div :: X)|(e :: E)> ()>((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>>>(a@1: (intern-ref :: V -> V)<a>){
+                                  (std/core/hnd/@perform1<(intern-ref :: V -> V)<a>,(),(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>>,(i : (std/core/hnd/ev-index == 1 std/core/types/ssize_t)) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>,(i : (std/core/hnd/ev-index == 1 std/core/types/ssize_t)) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>>((std/core/hnd/@evv-at<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), (forall<(e1 :: E),c> std/core-extras/#found/@select<(intern-ref :: V -> V)<a>,(),(e1 :: E),c>), a@1));
+                                }))((std/data/intern/Interned<a>(i, x)));
+                              ((@skip std/core/types/False() : std/core/types/bool ) as @pat@0: std/core/types/bool)
+                                 -> std/core/types/Unit;
+                            });
+                          })));
+                      })));
+                    val _@0[29,7,29,25] : ()
+                      = (std/core/types/local-set<(std/core/types/list :: V -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>,(h :: H)>(vec, (std/core/types/Cons<a>(a, (std/core/types/local-get<(std/core/types/list :: V -> V)<a>,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>(vec, (std/core/types/@Hnodiv<(h :: H),(std/core/types/list :: V -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>)))))));
+                    val _@1[31,7,31,23] : ()
+                      = (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>,(x : a) -> (),(x : a) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> ()>((std/core-extras/unsafe-box-drop<a>))(a));
+                    (std/data/intern/Interned<a>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>,(x : std/core/types/int, y : std/core/types/int) -> std/core/types/int,(x : std/core/types/int, y : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> std/core/types/int>((fn(x@0: std/core/types/int, y: std/core/types/int){
+                        (std/core/int/int-sub(x@0, y));
+                      }))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>,(xs : (std/core/types/list :: V -> V)<a>) -> std/core/types/int,(xs : (std/core/types/list :: V -> V)<a>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)> std/core/types/int>((fn(xs: (std/core/types/list :: V -> V)<a>){
+                          (std/core/list/@lift-length@6003<a>(xs, 0));
+                        }))((std/core/types/local-get<(std/core/types/list :: V -> V)<a>,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>(vec, (std/core/types/@Hnodiv<(h :: H),(std/core/types/list :: V -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core-extras/find :: (V, E, V) -> V)<(intern-ref :: V -> V)<a>>>|(e :: E)>>))))), 1)), a));
+                  })));
+              }))))), (fn<<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>>(@res@0: b){
+              @res@0;
+            }), (fn<<(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)>>(r: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>){
+              (std/core/hnd/@mask-builtin<b,<(std/core/types/div :: X)|(e :: E)>,<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)>>((fn<<(std/core/types/div :: X)|(e :: E)>>(){
+                (action(r));
+              })));
+            })));
+        }));
+    }))();
+  };
+inline borrow "^" fun interner/@cfc // inline size: 0
+  = forall<(s :: S),(e :: E),a> fn(interner@0: (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a>){
+    (match (interner@0) {
+      ((@skip std/data/intern/@Hnd-interner((@x: std/core/types/int) : std/core/types/int, (@pat@0: (forall<b> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(b, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),b>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>)) : (forall<b> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(b, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),b>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>)) : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a> ) as @pat: ((interner :: (S, E, V) -> V)<(s :: S),(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun interner/@ctl-interner // inline size: 0
+  = forall<(s :: S),(e :: E),a,b> fn(interner@0: (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a>){
+    (match (interner@0) {
+      ((@skip std/data/intern/@Hnd-interner((@pat@0: std/core/types/int) : std/core/types/int, (@x: (forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(c, c) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),c>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>)) : (forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(c, c) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),c>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),a>)) : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),a> ) as @pat: ((interner :: (S, E, V) -> V)<(s :: S),(e :: E),a>))
+         -> @x<b>;
+    });
+  };
+inline borrow "^" fun interner/@select // inline size: 0
+  = forall<(s :: S),a,(e :: E),b> fn(hnd: (interner :: (S, E, V) -> V)<(s :: S),(e :: E),b>){
+    (match (hnd) {
+      ((@skip std/data/intern/@Hnd-interner((@pat@0: std/core/types/int) : std/core/types/int, (@ctl-interner: (forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(c, c) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),c>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),b>)) : (forall<c> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(c, c) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),c>>,(interner :: (S, E, V) -> V)<(s :: S)>,(e :: E),b>)) : (interner :: (S, E, V) -> V)<(s :: S),(e :: E),b> ) as @pat: ((interner :: (S, E, V) -> V)<(s :: S),(e :: E),b>))
+         -> @ctl-interner<a>;
+    });
+  };
+inline fun interner // inline size: 5
+  = forall<(s :: S),a> fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>>>(eq: (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    std/core/hnd/@perform1<(a, a) -> (std/core/pure :: E) std/core/types/bool,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>,(interner :: (S, E, V) -> V)<(s :: S)>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(interner :: (S, E, V) -> V)<(s :: S)>>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(interner :: (S, E, V) -> V)<(s :: S)>>>((std/core/hnd/@evv-at<(interner :: (S, E, V) -> V)<(s :: S)>>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), (forall<(e :: E),b> std/data/intern/#interner/@select<(s :: S),a,(e :: E),b>), eq);
+  };
+inline borrow "^" fun intern/@cfc // inline size: 0
+  = forall<(s :: S),a,(e :: E),b> fn(intern@0: (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>){
+    (match (intern@0) {
+      ((@skip std/data/intern/@Hnd-intern((@x: std/core/types/int) : std/core/types/int, (@pat@0: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b> ) as @pat: ((intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun intern/@fun-intern // inline size: 0
+  = forall<(s :: S),a,(e :: E),b> fn(intern@0: (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>){
+    (match (intern@0) {
+      ((@skip std/data/intern/@Hnd-intern((@pat@0: std/core/types/int) : std/core/types/int, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b> ) as @pat: ((intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun intern/@select // inline size: 0
+  = forall<(s :: S),a,(e :: E),b> fn(hnd: (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>){
+    (match (hnd) {
+      ((@skip std/data/intern/@Hnd-intern((@pat@0: std/core/types/int) : std/core/types/int, (@fun-intern: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,(e :: E),b>) : (intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b> ) as @pat: ((intern :: (S, V, E, V) -> V)<(s :: S),a,(e :: E),b>))
+         -> @fun-intern;
+    });
+  };
+inline fun intern // inline size: 1
+  = forall<(s :: S),a> fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@hname: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(intern :: (S, V, E, V) -> V)<(s :: S),a>>, x: a){
+    std/core/hnd/@perform1<a,(intern-ref :: V -> V)<a>,(intern :: (S, V, E, V) -> V)<(s :: S),a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(interner :: (S, E, V) -> V)<(s :: S)>>>>(@hname, (forall<(e :: E),b> std/data/intern/#intern/@select<(s :: S),a,(e :: E),b>), x);
+  };
+inline borrow "^" fun intern-ref/idx // inline size: 0
+  = forall<a> fn(@this: (intern-ref :: V -> V)<a>){
+    (match (@this) {
+      ((@skip std/data/intern/Interned((@x: std/core/types/int) : std/core/types/int, (@pat@0: a) : a) : (intern-ref :: V -> V)<a> ) as @pat: ((intern-ref :: V -> V)<a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun intern-ref/a // inline size: 0
+  = forall<a> fn(@this: (intern-ref :: V -> V)<a>){
+    (match (@this) {
+      ((@skip std/data/intern/Interned((@pat@0: std/core/types/int) : std/core/types/int, (@x: a) : a) : (intern-ref :: V -> V)<a> ) as @pat: ((intern-ref :: V -> V)<a>))
+         -> @x;
+    });
+  };
+fun intern-ref/@copy // inline size: 3
+  = forall<a> fn(@this: (intern-ref :: V -> V)<a>, idx: (std/core/types/@optional :: V -> V)<std/core/types/int>, a: (std/core/types/@optional :: V -> V)<a>){
+    std/data/intern/Interned<a>((match (idx) {
+        ((std/core/types/@OptArg((@uniq-idx@914: std/core/types/int) : std/core/types/int) : (std/core/types/@optional :: V -> V)<std/core/types/int> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/int>))
+           -> @uniq-idx@914;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/int> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/int>))
+           -> (match (@this) {
+            ((@skip std/data/intern/Interned((@x: std/core/types/int) : std/core/types/int, (@pat@0@0: a) : a) : (intern-ref :: V -> V)<a> ) as @pat@1: ((intern-ref :: V -> V)<a>))
+               -> @x;
+          });
+      }), (match (a) {
+        ((std/core/types/@OptArg((@uniq-a@925: a) : a) : (std/core/types/@optional :: V -> V)<a> ) as @pat@1@0: ((std/core/types/@optional :: V -> V)<a>))
+           -> @uniq-a@925;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<a> ) as @pat@2: ((std/core/types/@optional :: V -> V)<a>))
+           -> (match (@this) {
+            ((@skip std/data/intern/Interned((@pat@0@1: std/core/types/int) : std/core/types/int, (@x@0: a) : a) : (intern-ref :: V -> V)<a> ) as @pat@3: ((intern-ref :: V -> V)<a>))
+               -> @x@0;
+          });
+      }));
+  };
+fun (==) // inline size: 1
+  = forall<a> fn(x: (intern-ref :: V -> V)<a>, y: (intern-ref :: V -> V)<a>){
+    std/core/int/(==)((match (x) {
+        ((@skip std/data/intern/Interned((@x: std/core/types/int) : std/core/types/int, (@pat@0: a) : a) : (intern-ref :: V -> V)<a> ) as @pat: ((intern-ref :: V -> V)<a>))
+           -> @x;
+      }), (match (y) {
+        ((@skip std/data/intern/Interned((@x@0: std/core/types/int) : std/core/types/int, (@pat@0@0: a) : a) : (intern-ref :: V -> V)<a> ) as @pat@1: ((intern-ref :: V -> V)<a>))
+           -> @x@0;
+      }));
+  };

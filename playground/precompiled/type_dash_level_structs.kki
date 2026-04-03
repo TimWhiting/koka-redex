@@ -1,0 +1,261 @@
+/*----------------------------------------------------------------------------
+   Copyright 2024, Koka-Community Authors
+
+   Licensed under the MIT License ("The License"). You may not
+   use this file except in compliance with the License. A copy of the License
+   can be found in the LICENSE file at the root of this distribution.
+----------------------------------------------------------------------------*/
+module interface type-level/structs
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+pub import type-level/nil = type-level/nil = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+infixr 5 (*:);
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub value{0,1,8} type field[13,1,14,7] <a,b> :: (V, V) -> V {
+  pub con Field[13,12,13,16](v: b){0,1,8} : forall<a,b> (v : b) -> (field :: (V, V) -> V)<a,b> = 1;
+};
+pub value{0,1,8} type name[19,1,20,11] <a> :: V -> V {
+  pub con Name[19,12,19,15](s: std/core/types/string){0,1,8} : forall<a> (s : std/core/types/string) -> (name :: V -> V)<a> = 1;
+};
+pub type t-struct[22,1,26,3] <a,b,c> :: (V, V, V) -> V {
+  pub con TStruct[23,3,23,9](head-field: (field :: (V, V) -> V)<a,b>, rest: c){0,2,8} : forall<a,b,c> (head-field : (field :: (V, V) -> V)<a,b>, rest : c) -> (t-struct :: (V, V, V) -> V)<a,b,c> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `v` constructor field of the `:field` type.
+pub fun field/v[14,3,14,3] : forall<a,b> (^ field : (field :: (V, V) -> V)<a,b>) -> b;
+pub fun field/@copy[13,12,13,16] : forall<a,b> (@this : (field :: (V, V) -> V)<a,b>, v : (std/core/types/@optional :: V -> V)<b>) -> (field :: (V, V) -> V)<a,b>;
+// Automatically generated. Retrieves the `s` constructor field of the `:name` type.
+pub fun name/s[20,3,20,3] : forall<a> (^ name : (name :: V -> V)<a>) -> std/core/types/string;
+// monadic lift
+fun default/struct/@mlift-show@10026[1,0,1,0] : forall<(e :: E)> (@y-x10009 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) std/core/types/string;
+pub fun default/struct/show[63,9,63,27] : forall<a,(e :: E)> (t : a, ?a/struct-show : (a) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) std/core/types/string;
+// monadic lift
+fun field/@mlift-show@10027[1,0,1,0] : forall<(e :: E),a> (?name/show : () -> (name :: V -> V)<a>, @y-x10010 : std/core/types/string) -> (e :: E) std/core/types/string;
+pub fun field/show[16,9,16,18] : forall<(e :: E),a,b> (f : (field :: (V, V) -> V)<b,a>, ?field/show : (a) -> (e :: E) std/core/types/string, ?name/show : () -> (name :: V -> V)<b>) -> (e :: E) std/core/types/string;
+// monadic lift
+fun default/mapend/@mlift-struct-show@10028[1,0,1,0] : forall<(e :: E)> (@y-x10011 : std/core/types/string, @y-x10012 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun default/mapend/@mlift-struct-show@10029[1,0,1,0] : forall<a,(e :: E)> (?tail/struct-show : (a) -> (e :: E) std/core/types/string, t' : a, @y-x10011 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Once there is one more level of nesting (no more nested `tcons`), we can delegate to the regular `show` instance for that type (in case the user didn't add TNil)
+pub fun default/mapend/struct-show[59,9,59,34] : forall<a,b,(e :: E),c> (t : (t-struct :: (V, V, V) -> V)<c,a,b>, ?field/show : ((field :: (V, V) -> V)<c,a>) -> (e :: E) std/core/types/string, ?tail/struct-show : (b) -> (e :: E) std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun map/@mlift-struct-show@10030[1,0,1,0] : forall<(e :: E)> (@y-x10014 : std/core/types/string, @y-x10015 : (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun map/@mlift-struct-show@10031[1,0,1,0] : forall<a,b,(e :: E),c> (?tail/struct-show : ((t-struct :: (V, V, V) -> V)<c,a,b>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>, t' : (t-struct :: (V, V, V) -> V)<c,a,b>, @y-x10014 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Primary workhorse for showing type-level structs
+// Essentially we are pattern matching on the first two levels of types to avoid ambiguity
+pub fun map/struct-show[51,9,51,23] : forall<a,b,c,(e :: E),d,a1> (t : (t-struct :: (V, V, V) -> V)<d,a,(t-struct :: (V, V, V) -> V)<a1,b,c>>, ?field/show : ((field :: (V, V) -> V)<d,a>) -> (e :: E) std/core/types/string, ?tail/struct-show : ((t-struct :: (V, V, V) -> V)<a1,b,c>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// monadic lift
+fun nil/@mlift-struct-show@10032[1,0,1,0] : forall<(e :: E)> (@y-x10017 : std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+// Base case for showing type-level structs: when the tail is `t-nil`, we can show the head and stop
+pub fun nil/struct-show[55,9,55,23] : forall<a,(e :: E),b> (t : (t-struct :: (V, V, V) -> V)<b,a,type-level/nil/t-nil>, ?field/show : ((field :: (V, V) -> V)<b,a>) -> (e :: E) std/core/types/string) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>;
+pub fun name/@copy[19,12,19,15] : forall<a> (@this : (name :: V -> V)<a>, s : (std/core/types/@optional :: V -> V)<std/core/types/string>) -> (name :: V -> V)<a>;
+// Automatically generated. Retrieves the `head-field` constructor field of the `:t-struct` type.
+pub fun t-struct/head-field[24,5,24,14] : forall<a,b,c> (^ @this : (t-struct :: (V, V, V) -> V)<a,b,c>) -> (field :: (V, V) -> V)<a,b>;
+// Automatically generated. Retrieves the `rest` constructor field of the `:t-struct` type.
+pub fun t-struct/rest[25,5,25,8] : forall<a,b,c> (^ @this : (t-struct :: (V, V, V) -> V)<a,b,c>) -> c;
+pub fun t-struct/@copy[23,3,23,9] : forall<a,b,c> (@this : (t-struct :: (V, V, V) -> V)<a,b,c>, head-field : (std/core/types/@optional :: V -> V)<(field :: (V, V) -> V)<a,b>>, rest : (std/core/types/@optional :: V -> V)<c>) -> (t-struct :: (V, V, V) -> V)<a,b,c>;
+pub fun any/mk-field[28,9,28,20] : forall<a,b> (v : b) -> (field :: (V, V) -> V)<a,b>;
+pub fun field/(*:)[30,9,30,18] : forall<a,b,c,d> (f1 : (field :: (V, V) -> V)<c,a>, f2 : (field :: (V, V) -> V)<d,b>) -> (t-struct :: (V, V, V) -> V)<c,a,(t-struct :: (V, V, V) -> V)<d,b,type-level/nil/t-nil>>;
+pub fun end/(*:)[32,9,32,16] : forall<a,b> (f1 : (field :: (V, V) -> V)<b,a>, @x@_wildcard-x32_34 : type-level/nil/t-nil) -> (t-struct :: (V, V, V) -> V)<b,a,type-level/nil/t-nil>;
+pub fun prepend/(*:)[34,9,34,20] : forall<a,b,c,d,a1> (f1 : (field :: (V, V) -> V)<c,a>, s : (t-struct :: (V, V, V) -> V)<d,b,a1>) -> (t-struct :: (V, V, V) -> V)<c,a,(t-struct :: (V, V, V) -> V)<d,b,a1>>;
+pub fun direct/field[37,9,37,20] : forall<a,b,c> (self : (t-struct :: (V, V, V) -> V)<b,a,c>) -> (field :: (V, V) -> V)<b,a>;
+pub fun recur/field[39,9,39,19] : forall<a,b,c,d,a1> (self : (t-struct :: (V, V, V) -> V)<c,a,a1>, ?field : (a1) -> (field :: (V, V) -> V)<d,b>) -> (field :: (V, V) -> V)<d,b>;
+pub fun direct/update-field[42,9,42,27] : forall<a,b,c,d> (self : (t-struct :: (V, V, V) -> V)<c,a,d>, new-field : (field :: (V, V) -> V)<c,b>) -> (t-struct :: (V, V, V) -> V)<c,b,d>;
+pub fun recur/update-field[44,9,44,26] : forall<a,b,c,d,a1,b1> (self : (t-struct :: (V, V, V) -> V)<c,a,a1>, new-field : (field :: (V, V) -> V)<d,b>, ?update-field : (a1, (field :: (V, V) -> V)<d,b>) -> b1) -> (t-struct :: (V, V, V) -> V)<c,a,b1>;
+// monadic lift
+fun @mlift-to-list@10033[1,0,1,0] : forall<a,(e :: E)> (@y-x10019 : a, @y-x10020 : (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>;
+// monadic lift
+fun @mlift-to-list@10034[1,0,1,0] : forall<a,(e :: E),b,c,d> (self : (t-struct :: (V, V, V) -> V)<c,b,d>, ?to-list : (d) -> (e :: E) (std/core/types/list :: V -> V)<a>, @y-x10019 : a) -> (e :: E) (std/core/types/list :: V -> V)<a>;
+pub fun to-list[47,9,47,15] : forall<a,(e :: E),b,c,d> (self : (t-struct :: (V, V, V) -> V)<c,b,d>, ?map-field : (b) -> (e :: E) a, ?to-list : (d) -> (e :: E) (std/core/types/list :: V -> V)<a>) -> (e :: E) (std/core/types/list :: V -> V)<a>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+inline borrow "^" fun field/v // inline size: 0
+  = forall<a,b> fn(field: (field :: (V, V) -> V)<a,b>){
+    (match (field) {
+      ((@skip type-level/structs/Field((@x: b) : b) : (field :: (V, V) -> V)<a,b> ) as @pat: ((field :: (V, V) -> V)<a,b>))
+         -> @x;
+    });
+  };
+fun field/@copy // inline size: 2
+  = forall<a,b> fn(@this: (field :: (V, V) -> V)<a,b>, v: (std/core/types/@optional :: V -> V)<b>){
+    type-level/structs/Field<a,b>((match (v) {
+      ((std/core/types/@OptArg((@uniq-v@301: b) : b) : (std/core/types/@optional :: V -> V)<b> ) as @pat: ((std/core/types/@optional :: V -> V)<b>))
+         -> @uniq-v@301;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<b> ) as @pat@0: ((std/core/types/@optional :: V -> V)<b>))
+         -> (match (@this) {
+          ((@skip type-level/structs/Field((@x: b) : b) : (field :: (V, V) -> V)<a,b> ) as @pat@1: ((field :: (V, V) -> V)<a,b>))
+             -> @x;
+        });
+    }));
+  };
+inline borrow "^" fun name/s // inline size: 0
+  = forall<a> fn(name: (name :: V -> V)<a>){
+    (match (name) {
+      ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (name :: V -> V)<a> ) as @pat: ((name :: V -> V)<a>))
+         -> @x;
+    });
+  };
+fun default/mapend/struct-show // inline size: 4
+  = forall<a,b,(e :: E),c> fn<(e :: E)>(t: (t-struct :: (V, V, V) -> V)<c,a,b>, @implicit/field/show: ((field :: (V, V) -> V)<c,a>) -> (e :: E) std/core/types/string, @implicit/tail/struct-show: (b) -> (e :: E) std/core/types/string){
+    (match (t) {
+      ((@skip type-level/structs/TStruct((h: (field :: (V, V) -> V)<c,a>) : (field :: (V, V) -> V)<c,a>, (t': b) : b) : (t-struct :: (V, V, V) -> V)<c,a,b> ) as @pat: ((t-struct :: (V, V, V) -> V)<c,a,b>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/field/show(h)), (std/core/types/Cons<std/core/types/string>((@implicit/tail/struct-show(t')), (std/core/types/Nil<std/core/types/string>))));
+    });
+  };
+fun map/struct-show // inline size: 3
+  = forall<a,b,c,(e :: E),d,a1> fn<(e :: E)>(t: (t-struct :: (V, V, V) -> V)<d,a,(t-struct :: (V, V, V) -> V)<a1,b,c>>, @implicit/field/show: ((field :: (V, V) -> V)<d,a>) -> (e :: E) std/core/types/string, @implicit/tail/struct-show: ((t-struct :: (V, V, V) -> V)<a1,b,c>) -> (e :: E) (std/core/types/list :: V -> V)<std/core/types/string>){
+    (match (t) {
+      ((@skip type-level/structs/TStruct((h: (field :: (V, V) -> V)<d,a>) : (field :: (V, V) -> V)<d,a>, (t': (t-struct :: (V, V, V) -> V)<a1,b,c>) : (t-struct :: (V, V, V) -> V)<a1,b,c>) : (t-struct :: (V, V, V) -> V)<d,a,(t-struct :: (V, V, V) -> V)<a1,b,c>> ) as @pat: ((t-struct :: (V, V, V) -> V)<d,a,(t-struct :: (V, V, V) -> V)<a1,b,c>>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/field/show(h)), (@implicit/tail/struct-show(t')));
+    });
+  };
+fun nil/struct-show // inline size: 2
+  = forall<a,(e :: E),b> fn<(e :: E)>(t: (t-struct :: (V, V, V) -> V)<b,a,type-level/nil/t-nil>, @implicit/field/show: ((field :: (V, V) -> V)<b,a>) -> (e :: E) std/core/types/string){
+    (match (t) {
+      ((@skip type-level/structs/TStruct((h: (field :: (V, V) -> V)<b,a>) : (field :: (V, V) -> V)<b,a>, ((@skip type-level/nil/TNil() : type-level/nil/t-nil ) as @pat@0: type-level/nil/t-nil) : type-level/nil/t-nil) : (t-struct :: (V, V, V) -> V)<b,a,type-level/nil/t-nil> ) as @pat: ((t-struct :: (V, V, V) -> V)<b,a,type-level/nil/t-nil>))
+         -> std/core/types/Cons<std/core/types/string>((@implicit/field/show(h)), (std/core/types/Nil<std/core/types/string>));
+    });
+  };
+fun name/@copy // inline size: 2
+  = forall<a> fn(@this: (name :: V -> V)<a>, s: (std/core/types/@optional :: V -> V)<std/core/types/string>){
+    type-level/structs/Name<a>((match (s) {
+      ((std/core/types/@OptArg((@uniq-s@1213: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+         -> @uniq-s@1213;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+         -> (match (@this) {
+          ((@skip type-level/structs/Name((@x: std/core/types/string) : std/core/types/string) : (name :: V -> V)<a> ) as @pat@1: ((name :: V -> V)<a>))
+             -> @x;
+        });
+    }));
+  };
+inline borrow "^" fun t-struct/head-field // inline size: 0
+  = forall<a,b,c> fn(@this: (t-struct :: (V, V, V) -> V)<a,b,c>){
+    (match (@this) {
+      ((@skip type-level/structs/TStruct((@x: (field :: (V, V) -> V)<a,b>) : (field :: (V, V) -> V)<a,b>, (@pat@0: c) : c) : (t-struct :: (V, V, V) -> V)<a,b,c> ) as @pat: ((t-struct :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun t-struct/rest // inline size: 0
+  = forall<a,b,c> fn(@this: (t-struct :: (V, V, V) -> V)<a,b,c>){
+    (match (@this) {
+      ((@skip type-level/structs/TStruct((@pat@0: (field :: (V, V) -> V)<a,b>) : (field :: (V, V) -> V)<a,b>, (@x: c) : c) : (t-struct :: (V, V, V) -> V)<a,b,c> ) as @pat: ((t-struct :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+fun t-struct/@copy // inline size: 3
+  = forall<a,b,c> fn(@this: (t-struct :: (V, V, V) -> V)<a,b,c>, head-field: (std/core/types/@optional :: V -> V)<(field :: (V, V) -> V)<a,b>>, rest: (std/core/types/@optional :: V -> V)<c>){
+    type-level/structs/TStruct<a,b,c>((match (head-field) {
+        ((std/core/types/@OptArg((@uniq-head-field@1334: (field :: (V, V) -> V)<a,b>) : (field :: (V, V) -> V)<a,b>) : (std/core/types/@optional :: V -> V)<(field :: (V, V) -> V)<a,b>> ) as @pat: ((std/core/types/@optional :: V -> V)<(field :: (V, V) -> V)<a,b>>))
+           -> @uniq-head-field@1334;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(field :: (V, V) -> V)<a,b>> ) as @pat@0: ((std/core/types/@optional :: V -> V)<(field :: (V, V) -> V)<a,b>>))
+           -> (match (@this) {
+            ((@skip type-level/structs/TStruct((@x: (field :: (V, V) -> V)<a,b>) : (field :: (V, V) -> V)<a,b>, (@pat@0@0: c) : c) : (t-struct :: (V, V, V) -> V)<a,b,c> ) as @pat@1: ((t-struct :: (V, V, V) -> V)<a,b,c>))
+               -> @x;
+          });
+      }), (match (rest) {
+        ((std/core/types/@OptArg((@uniq-rest@1351: c) : c) : (std/core/types/@optional :: V -> V)<c> ) as @pat@1@0: ((std/core/types/@optional :: V -> V)<c>))
+           -> @uniq-rest@1351;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<c> ) as @pat@2: ((std/core/types/@optional :: V -> V)<c>))
+           -> (match (@this) {
+            ((@skip type-level/structs/TStruct((@pat@0@1: (field :: (V, V) -> V)<a,b>) : (field :: (V, V) -> V)<a,b>, (@x@0: c) : c) : (t-struct :: (V, V, V) -> V)<a,b,c> ) as @pat@3: ((t-struct :: (V, V, V) -> V)<a,b,c>))
+               -> @x@0;
+          });
+      }));
+  };
+fun any/mk-field // inline size: 1
+  = forall<a,b> fn(v: b){
+    type-level/structs/Field<a,b>(v);
+  };
+fun field/(*:) // inline size: 2
+  = forall<a,b,c,d> fn(f1: (field :: (V, V) -> V)<c,a>, f2: (field :: (V, V) -> V)<d,b>){
+    type-level/structs/TStruct<c,a,(t-struct :: (V, V, V) -> V)<d,b,type-level/nil/t-nil>>(f1, (type-level/structs/TStruct<d,b,type-level/nil/t-nil>(f2, type-level/nil/TNil)));
+  };
+fun end/(*:) // inline size: 1
+  = forall<a,b> fn(f1: (field :: (V, V) -> V)<b,a>, @x@_wildcard-x32_34: type-level/nil/t-nil){
+    type-level/structs/TStruct<b,a,type-level/nil/t-nil>(f1, type-level/nil/TNil);
+  };
+fun prepend/(*:) // inline size: 1
+  = forall<a,b,c,d,a1> fn(f1: (field :: (V, V) -> V)<c,a>, s: (t-struct :: (V, V, V) -> V)<d,b,a1>){
+    type-level/structs/TStruct<c,a,(t-struct :: (V, V, V) -> V)<d,b,a1>>(f1, s);
+  };
+inline fun direct/field // inline size: 0
+  = forall<a,b,c> fn(self: (t-struct :: (V, V, V) -> V)<b,a,c>){
+    (match (self) {
+      ((@skip type-level/structs/TStruct((@x: (field :: (V, V) -> V)<b,a>) : (field :: (V, V) -> V)<b,a>, (@pat@0: c) : c) : (t-struct :: (V, V, V) -> V)<b,a,c> ) as @pat: ((t-struct :: (V, V, V) -> V)<b,a,c>))
+         -> @x;
+    });
+  };
+fun recur/field // inline size: 1
+  = forall<a,b,c,d,a1> fn(self: (t-struct :: (V, V, V) -> V)<c,a,a1>, @implicit/field: (a1) -> (field :: (V, V) -> V)<d,b>){
+    @implicit/field((match (self) {
+      ((@skip type-level/structs/TStruct((@pat@0: (field :: (V, V) -> V)<c,a>) : (field :: (V, V) -> V)<c,a>, (@x: a1) : a1) : (t-struct :: (V, V, V) -> V)<c,a,a1> ) as @pat: ((t-struct :: (V, V, V) -> V)<c,a,a1>))
+         -> @x;
+    }));
+  };
+fun direct/update-field // inline size: 1
+  = forall<a,b,c,d> fn(self: (t-struct :: (V, V, V) -> V)<c,a,d>, new-field: (field :: (V, V) -> V)<c,b>){
+    type-level/structs/TStruct<c,b,d>(new-field, (match (self) {
+        ((@skip type-level/structs/TStruct((@pat@0: (field :: (V, V) -> V)<c,a>) : (field :: (V, V) -> V)<c,a>, (@x: d) : d) : (t-struct :: (V, V, V) -> V)<c,a,d> ) as @pat: ((t-struct :: (V, V, V) -> V)<c,a,d>))
+           -> @x;
+      }));
+  };
+fun recur/update-field // inline size: 2
+  = forall<a,b,c,d,a1,b1> fn(self: (t-struct :: (V, V, V) -> V)<c,a,a1>, new-field: (field :: (V, V) -> V)<d,b>, @implicit/update-field: (a1, (field :: (V, V) -> V)<d,b>) -> b1){
+    type-level/structs/TStruct<c,a,b1>((match (self) {
+        ((@skip type-level/structs/TStruct((@x: (field :: (V, V) -> V)<c,a>) : (field :: (V, V) -> V)<c,a>, (@pat@0: a1) : a1) : (t-struct :: (V, V, V) -> V)<c,a,a1> ) as @pat: ((t-struct :: (V, V, V) -> V)<c,a,a1>))
+           -> @x;
+      }), (@implicit/update-field((match (self) {
+          ((@skip type-level/structs/TStruct((@pat@0@0: (field :: (V, V) -> V)<c,a>) : (field :: (V, V) -> V)<c,a>, (@x@0: a1) : a1) : (t-struct :: (V, V, V) -> V)<c,a,a1> ) as @pat@1: ((t-struct :: (V, V, V) -> V)<c,a,a1>))
+             -> @x@0;
+        }), new-field)));
+  };

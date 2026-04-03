@@ -1,0 +1,389 @@
+module interface koka-redex/syntax
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import type-level/nil = type-level/nil pub = "";
+import std/core = std/core = "";
+import type-level/structs = type-level/structs = "";
+import type-level/list = type-level/list = "";
+import koka-redex/term = koka-redex/term = "";
+import koka-redex/logic = koka-redex/logic = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+infixr 5 (\);
+infixr 5 (|-);
+infixr 3 (\\);
+infixl 2 (---);
+infixl 1 (-->);
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An `:error<a>` type represents a first-class exception result as a `:result<a,exception>`.
+local alias std/core/exn/error[65,1,65,40]<a> :: V -> V = (std/core/types/result :: (V, V) -> V)<a,std/core/exn/exception> = 1;
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+// External solver entry (stored in t-struct alongside rules)
+pub type external-entry[55,1,60,3] {
+  pub con MkExternalEntry[56,3,56,17](ext-pred: std/core/types/string, ext-n-inputs: std/core/types/int, ext-solver: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>){0,3,8} : (ext-pred : std/core/types/string, ext-n-inputs : std/core/types/int, ext-solver : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) -> external-entry = 1;
+};
+// Premise separator marker — empty phantom type inserted by \\
+pub value{1,0,1} type premise-sep[25,1,26,12] {
+  pub con PremiseSep[26,3,26,12]{0,0,0} : premise-sep = 1;
+};
+pub value{0,1,8} type relation-def[21,1,22,23] <a> :: V -> V {
+  pub con RelationDef[22,3,22,13](rules: a){0,1,8} : forall<a> (rules : a) -> (relation-def :: V -> V)<a> = 1;
+};
+pub type rule[18,1,19,43] <a,b,c> :: (V, V, V) -> V {
+  pub con Rule[19,3,19,6](name: a, premises: b, conclusion: c){0,3,8} : forall<a,b,c> (name : a, premises : b, conclusion : c) -> (rule :: (V, V, V) -> V)<a,b,c> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `conclusion` constructor field of the `:rule` type.
+pub fun rule/conclusion[19,30,19,39] : forall<a,b,c> (^ rule : (rule :: (V, V, V) -> V)<a,b,c>) -> c;
+// Automatically generated. Retrieves the `name` constructor field of the `:rule` type.
+pub fun rule/name[19,8,19,11] : forall<a,b,c> (^ rule : (rule :: (V, V, V) -> V)<a,b,c>) -> a;
+// Automatically generated. Retrieves the `premises` constructor field of the `:rule` type.
+pub fun rule/premises[19,17,19,24] : forall<a,b,c> (^ rule : (rule :: (V, V, V) -> V)<a,b,c>) -> b;
+pub fun rule/@copy[19,3,19,6] : forall<a,b,c> (@this : (rule :: (V, V, V) -> V)<a,b,c>, name : (std/core/types/@optional :: V -> V)<a>, premises : (std/core/types/@optional :: V -> V)<b>, conclusion : (std/core/types/@optional :: V -> V)<c>) -> (rule :: (V, V, V) -> V)<a,b,c>;
+// Automatically generated. Retrieves the `rules` constructor field of the `:relation-def` type.
+pub fun relation-def/rules[22,15,22,19] : forall<a> (^ @this : (relation-def :: V -> V)<a>) -> a;
+pub fun relation-def/@copy[22,3,22,13] : forall<a> (@this : (relation-def :: V -> V)<a>, rules : (std/core/types/@optional :: V -> V)<a>) -> (relation-def :: V -> V)<a>;
+pub fun premise-sep/@copy[26,3,26,12] : (@this : premise-sep) -> premise-sep;
+// Chain premises: inserts a premise-sep marker between them in the tcons chain
+pub fun cons/(\\)[29,9,29,17] : forall<a,b> (h : a, t : b) -> (type-level/list/t-cons :: (V, V) -> V)<a,(type-level/list/t-cons :: (V, V) -> V)<premise-sep,b>>;
+// Rule line: premises --- "name" --> conclusion
+pub fun named/(---)[33,9,33,19] : forall<a,b> (premises : b, name : a) -> (b, a);
+pub fun concluded/(-->)[36,9,36,23] : forall<a,b,c> (pn : (c, b), conclusion : a) -> (rule :: (V, V, V) -> V)<b,c,a>;
+// Builders for t-struct rule collections
+pub fun single/rule[40,9,40,19] : forall<a,b,c> (r : (rule :: (V, V, V) -> V)<b,c,a>) -> (type-level/structs/t-struct :: (V, V, V) -> V)<b,(rule :: (V, V, V) -> V)<b,c,a>,type-level/nil/t-nil>;
+// monadic lift
+fun cons/@mlift-rule@10093[1,0,1,0] : forall<a,b,c,d,a1,b1,(e :: E)> (r : (rule :: (V, V, V) -> V)<a,b,c>, @y-x10022 : (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>) -> (e :: E) (type-level/structs/t-struct :: (V, V, V) -> V)<a,(rule :: (V, V, V) -> V)<a,b,c>,(type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>>;
+pub fun cons/rule[43,9,43,17] : forall<a,b,c,d,a1,b1,(e :: E)> (r : (rule :: (V, V, V) -> V)<a,b,c>, rest : () -> (e :: E) (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>) -> (e :: E) (type-level/structs/t-struct :: (V, V, V) -> V)<a,(rule :: (V, V, V) -> V)<a,b,c>,(type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>>;
+// Within-judgement chaining (elements of one judgement)
+pub fun cons/(\)[47,9,47,16] : forall<a,b> (h : a, t : b) -> (type-level/list/t-cons :: (V, V) -> V)<a,b>;
+// Turnstile: visual marker before relation name (same as \, just for readability)
+pub fun turnstile/(|-)[51,9,51,22] : forall<a,b> (h : a, t : b) -> (type-level/list/t-cons :: (V, V) -> V)<a,b>;
+// Automatically generated. Retrieves the `ext-pred` constructor field of the `:external-entry` type.
+pub fun external-entry/ext-pred[57,5,57,12] : (^ @this : external-entry) -> std/core/types/string;
+// Automatically generated. Retrieves the `ext-n-inputs` constructor field of the `:external-entry` type.
+pub fun external-entry/ext-n-inputs[58,5,58,16] : (^ @this : external-entry) -> std/core/types/int;
+// Automatically generated. Retrieves the `ext-solver` constructor field of the `:external-entry` type.
+pub fun external-entry/ext-solver[59,5,59,14] : (^ @this : external-entry) -> ((koka-redex/term/fact) -> <(std/core/pure :: E),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>);
+// monadic lift
+fun external-entry/@mlift-copy@10094[1,0,1,0] : (@this : external-entry, ext-n-inputs : (std/core/types/@optional :: V -> V)<std/core/types/int>, ext-pred : (std/core/types/@optional :: V -> V)<std/core/types/string>, @c-x10025 : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) -> external-entry;
+pub fun external-entry/@copy[56,3,56,17] : (@this : external-entry, ext-pred : (std/core/types/@optional :: V -> V)<std/core/types/string>, ext-n-inputs : (std/core/types/@optional :: V -> V)<std/core/types/int>, ext-solver : (std/core/types/@optional :: V -> V)<(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>>) -> external-entry;
+// monadic lift
+fun cons/@mlift-external-rule@10095[1,0,1,0] : forall<a> (input-args : (std/core/types/list :: V -> V)<koka-redex/term/term>, pred : std/core/types/string, ?to-outputs : (a) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>, results : (std/core/types/list :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/fact>;
+// monadic lift
+fun cons/@mlift-external-rule@10096[1,0,1,0] : forall<a,b> (input-args : (std/core/types/list :: V -> V)<koka-redex/term/term>, pred : std/core/types/string, solver : (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<b>, ?to-outputs : (b) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>, domain-inputs : a) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/fact>;
+// monadic lift
+fun cons/@mlift-external-rule@10097[1,0,1,0] : (attempt : (std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+// monadic lift
+fun cons/@mlift-external-rule@10098[1,0,1,0] : forall<a,b,c,d,a1,(e :: E)> (?from-inputs : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a, n : std/core/types/int, pred : std/core/types/string, solver : (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<b>, ?to-outputs : (b) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>, @y-x10032 : (type-level/structs/t-struct :: (V, V, V) -> V)<c,d,a1>) -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<c,d,a1>>;
+// Builders for external solvers within relation-def
+pub fun cons/external-rule[63,9,63,26] : forall<a,b,c,d,a1,b1,(e :: E)> (shape : a, solver : (b) -> <(std/core/pure :: E),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<c>, rest : () -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>, ?to-fact-args : (a) -> <(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>), ?from-inputs : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/pure :: E)> b, ?to-outputs : (c) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>>;
+// monadic lift
+fun cons/@mlift-external-term-rule@10099[1,0,1,0] : (@y-x10034 : (std/core/types/list :: V -> V)<koka-redex/term/fact>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+// monadic lift
+fun cons/@mlift-external-term-rule@10100[1,0,1,0] : forall<a,b,c,(e :: E)> (n : std/core/types/int, pred : std/core/types/string, solver : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/fact>, @y-x10038 : (type-level/structs/t-struct :: (V, V, V) -> V)<a,b,c>) -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<a,b,c>>;
+// Builders for external solvers within relation-def
+pub fun cons/external-term-rule[91,9,91,31] : forall<a,b,c,d,(e :: E)> (shape : a, solver : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/pure :: E),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/fact>, rest : () -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<b,c,d>, ?to-fact-args : (a) -> <(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>)) -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<b,c,d>>;
+// monadic lift
+fun single/@mlift-external-rule@10101[1,0,1,0] : forall<a> (input-args : (std/core/types/list :: V -> V)<koka-redex/term/term>, pred : std/core/types/string, ?to-outputs : (a) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>, results : (std/core/types/list :: V -> V)<a>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/fact>;
+// monadic lift
+fun single/@mlift-external-rule@10102[1,0,1,0] : forall<a,b> (input-args : (std/core/types/list :: V -> V)<koka-redex/term/term>, pred : std/core/types/string, solver : (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<b>, ?to-outputs : (b) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>, domain-inputs : a) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/fact>;
+// monadic lift
+fun single/@mlift-external-rule@10103[1,0,1,0] : (attempt : (std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+pub fun single/external-rule[108,9,108,28] : forall<a,b,c> (shape : c, solver : (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<b>, ?to-fact-args : (c) -> <(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>), ?from-inputs : ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a, ?to-outputs : (b) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X)> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,type-level/nil/t-nil>;
+pub fun default/relation-def[133,9,133,28] : forall<a> (rules : a) -> (relation-def :: V -> V)<a>;
+// monadic lift
+fun func/@mlift-relation-def@10104[1,0,1,0] : forall<(e :: E),a> (@y-x10047 : a) -> (e :: E) (relation-def :: V -> V)<a>;
+pub fun func/relation-def[136,9,136,25] : forall<(e :: E),a> (rules : () -> (e :: E) a) -> (e :: E) (relation-def :: V -> V)<a>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "_____*" fun cons/external-rule // inline size: 1
+  = forall<a,b,c,d,a1,b1,(e :: E)> fn<<(std/core/types/div :: X)|(e :: E)>>(shape: a, solver: (b) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<c>, rest: () -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>, @implicit/to-fact-args: (a) -> <(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>), @implicit/from-inputs: ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> b, @implicit/to-outputs: (c) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>){
+    (match ((std/core/types/@open<<(std/core/types/div :: X)>,<(std/core/types/div :: X)|(e :: E)>,(a) -> <(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>),(a) -> <(std/core/types/div :: X)|(e :: E)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>)>(@implicit/to-fact-args)(shape))) {
+      ((@skip std/core/types/Tuple3((input-terms: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>, (pred: std/core/types/string) : std/core/types/string, (@pat@0: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>) ) as @pat: ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>))
+         -> val n[72,7,72,7] : std/core/types/int
+                  = std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X)|(e :: E)>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> std/core/types/int,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X)|(e :: E)> std/core/types/int>((fn(xs: (std/core/types/list :: V -> V)<koka-redex/term/term>){
+                    (std/core/list/@lift-length@6003<koka-redex/term/term>(xs, 0));
+                  }))(input-terms);
+        std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X)|(e :: E)>,(f1 : (type-level/structs/field :: (V, V) -> V)<std/core/types/string,external-entry>, s : (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>) -> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>>,(f1 : (type-level/structs/field :: (V, V) -> V)<std/core/types/string,external-entry>, s : (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>) -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/t-struct :: (V, V, V) -> V)<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>>>((fn(f1: (type-level/structs/field :: (V, V) -> V)<std/core/types/string,external-entry>, s: (type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>){
+          (type-level/structs/TStruct<std/core/types/string,external-entry,(type-level/structs/t-struct :: (V, V, V) -> V)<d,a1,b1>>(f1, s));
+        }))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X)|(e :: E)>,(v : external-entry) -> (type-level/structs/field :: (V, V) -> V)<std/core/types/string,external-entry>,(v : external-entry) -> <(std/core/types/div :: X)|(e :: E)> (type-level/structs/field :: (V, V) -> V)<std/core/types/string,external-entry>>((fn(v: external-entry){
+            (type-level/structs/Field<std/core/types/string,external-entry>(v));
+          }))((koka-redex/syntax/MkExternalEntry(pred, n, (std/core/types/@open<<(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>,(koka-redex/term/fact) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>>((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X)>>(goal: koka-redex/term/fact){
+              (match (goal) {
+                ((@skip koka-redex/term/Fact((p: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/fact ) as @pat@1: koka-redex/term/fact)
+                   -> (match ((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(std/core/types/string, std/core/types/string) -> std/core/types/bool,(std/core/types/string, std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> std/core/types/bool>(std/core/string/(==))(p, pred))) {
+                    ((std/core/types/True() : std/core/types/bool ) as @pat@2: std/core/types/bool)
+                       -> val input-args[77,15,77,24] : (std/core/types/list :: V -> V)<koka-redex/term/term>
+                            = std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, n : std/core/types/int) -> (std/core/types/list :: V -> V)<koka-redex/term/term>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, n : std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/term>>((std/core/list/take<koka-redex/term/term>))(args, n);
+                          val attempt[78,15,78,21] : ((std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>> == 1 (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception>)
+                            = std/core/exn/try<(std/core/types/list :: V -> V)<koka-redex/term/fact>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>(){
+                              val domain-inputs[79,17,79,29] : b
+                                = (std/core/types/@open<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> b,((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> b>(@implicit/from-inputs)(input-args));
+                              val results[80,17,80,23] : ((std/core/types/list :: V -> V)<c>)
+                                = (solver(domain-inputs));
+                              (std/core/list/map<c,koka-redex/term/fact,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>(results, (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>(out: c){
+                                  (koka-redex/term/Fact(pred, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, ys : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> (std/core/types/list :: V -> V)<koka-redex/term/term>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, ys : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/term>>((fn(xs@0: (std/core/types/list :: V -> V)<koka-redex/term/term>, ys: (std/core/types/list :: V -> V)<koka-redex/term/term>){
+                                      (std/core/list/append<koka-redex/term/term>(xs@0, ys));
+                                    }))(input-args, (std/core/types/@open<<(std/core/types/div :: X)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(c) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>,(c) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/term>>(@implicit/to-outputs)(out))))));
+                                })));
+                            }));
+                      (match (attempt) {
+                        ((std/core/types/Ok((facts: (std/core/types/list :: V -> V)<koka-redex/term/fact>) : (std/core/types/list :: V -> V)<koka-redex/term/fact>) : (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception> ) as @pat@3: ((std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>> == 1 (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception>))
+                           -> std/core/types/Just<(std/core/types/list :: V -> V)<koka-redex/term/fact>>(facts);
+                        ((@skip std/core/types/Error(((@skip std/core/exn/Exception((@pat@6: std/core/types/string) : std/core/types/string, (@pat@7: std/core/exn/exception-info) : std/core/exn/exception-info) : std/core/exn/exception ) as @pat@5: std/core/exn/exception) : std/core/exn/exception) : (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception> ) as @pat@4: ((std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>> == 1 (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception>))
+                           -> std/core/types/Nothing<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+                      });
+                    ((@skip std/core/types/False() : std/core/types/bool ) as @pat@8: std/core/types/bool)
+                       -> std/core/types/Nothing<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+                  });
+              });
+            }))))))), (rest()));
+    });
+  };
+specialize "____*" fun single/external-rule // inline size: 1
+  = forall<a,b,c> fn<<(std/core/types/div :: X)>>(shape: c, solver: (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/list :: V -> V)<b>, @implicit/to-fact-args: (c) -> <(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>), @implicit/from-inputs: ((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a, @implicit/to-outputs: (b) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>){
+    (match ((@implicit/to-fact-args(shape))) {
+      ((@skip std/core/types/Tuple3((input-terms: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>, (pred: std/core/types/string) : std/core/types/string, (@pat@0: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>) ) as @pat: ((std/core/types/list :: V -> V)<koka-redex/term/term>, std/core/types/string, (std/core/types/list :: V -> V)<koka-redex/term/term>))
+         -> val n[116,7,116,7] : std/core/types/int
+              = std/core/list/@lift-length@6003<koka-redex/term/term>(input-terms, 0);
+            val v@10021[1,0,1,0] : external-entry
+              = koka-redex/syntax/MkExternalEntry(pred, n, (std/core/types/@open<<(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>,(koka-redex/term/fact) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>>((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X)>>(goal: koka-redex/term/fact){
+                  (match (goal) {
+                    ((@skip koka-redex/term/Fact((p: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/fact ) as @pat@1: koka-redex/term/fact)
+                       -> (match ((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(std/core/types/string, std/core/types/string) -> std/core/types/bool,(std/core/types/string, std/core/types/string) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> std/core/types/bool>(std/core/string/(==))(p, pred))) {
+                        ((std/core/types/True() : std/core/types/bool ) as @pat@2: std/core/types/bool)
+                           -> val input-args[121,15,121,24] : (std/core/types/list :: V -> V)<koka-redex/term/term>
+                                = std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, n : std/core/types/int) -> (std/core/types/list :: V -> V)<koka-redex/term/term>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, n : std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/term>>((std/core/list/take<koka-redex/term/term>))(args, n);
+                              val attempt[122,15,122,21] : ((std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>> == 1 (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception>)
+                                = std/core/exn/try<(std/core/types/list :: V -> V)<koka-redex/term/fact>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>(){
+                                  val domain-inputs[123,17,123,29] : a
+                                    = (std/core/types/@open<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a,((std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> a>(@implicit/from-inputs)(input-args));
+                                  val results[124,17,124,23] : ((std/core/types/list :: V -> V)<b>)
+                                    = (solver(domain-inputs));
+                                  (std/core/list/map<b,koka-redex/term/fact,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>(results, (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>>(out: b){
+                                      (koka-redex/term/Fact(pred, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, ys : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> (std/core/types/list :: V -> V)<koka-redex/term/term>,(xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, ys : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/term>>((fn(xs@0: (std/core/types/list :: V -> V)<koka-redex/term/term>, ys: (std/core/types/list :: V -> V)<koka-redex/term/term>){
+                                          (std/core/list/append<koka-redex/term/term>(xs@0, ys));
+                                        }))(input-args, (std/core/types/@open<<(std/core/types/div :: X)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>>,(b) -> <(std/core/types/div :: X)> (std/core/types/list :: V -> V)<koka-redex/term/term>,(b) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<koka-redex/term/term>>(@implicit/to-outputs)(out))))));
+                                    })));
+                                }));
+                          (match (attempt) {
+                            ((std/core/types/Ok((facts: (std/core/types/list :: V -> V)<koka-redex/term/fact>) : (std/core/types/list :: V -> V)<koka-redex/term/fact>) : (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception> ) as @pat@3: ((std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>> == 1 (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception>))
+                               -> std/core/types/Just<(std/core/types/list :: V -> V)<koka-redex/term/fact>>(facts);
+                            ((@skip std/core/types/Error(((@skip std/core/exn/Exception((@pat@6: std/core/types/string) : std/core/types/string, (@pat@7: std/core/exn/exception-info) : std/core/exn/exception-info) : std/core/exn/exception ) as @pat@5: std/core/exn/exception) : std/core/exn/exception) : (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception> ) as @pat@4: ((std/core/exn/error :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>> == 1 (std/core/types/result :: (V, V) -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>,std/core/exn/exception>))
+                               -> std/core/types/Nothing<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+                          });
+                        ((@skip std/core/types/False() : std/core/types/bool ) as @pat@8: std/core/types/bool)
+                           -> std/core/types/Nothing<(std/core/types/list :: V -> V)<koka-redex/term/fact>>;
+                      });
+                  });
+                }))));
+        type-level/structs/TStruct<std/core/types/string,external-entry,type-level/nil/t-nil>((type-level/structs/Field<std/core/types/string,external-entry>(v@10021)), type-level/nil/TNil);
+    });
+  };
+inline borrow "^" fun rule/conclusion // inline size: 0
+  = forall<a,b,c> fn(rule: (rule :: (V, V, V) -> V)<a,b,c>){
+    (match (rule) {
+      ((@skip koka-redex/syntax/Rule((@pat@0: a) : a, (@pat@1: b) : b, (@x: c) : c) : (rule :: (V, V, V) -> V)<a,b,c> ) as @pat: ((rule :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun rule/name // inline size: 0
+  = forall<a,b,c> fn(rule: (rule :: (V, V, V) -> V)<a,b,c>){
+    (match (rule) {
+      ((@skip koka-redex/syntax/Rule((@x: a) : a, (@pat@0: b) : b, (@pat@1: c) : c) : (rule :: (V, V, V) -> V)<a,b,c> ) as @pat: ((rule :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun rule/premises // inline size: 0
+  = forall<a,b,c> fn(rule: (rule :: (V, V, V) -> V)<a,b,c>){
+    (match (rule) {
+      ((@skip koka-redex/syntax/Rule((@pat@0: a) : a, (@x: b) : b, (@pat@1: c) : c) : (rule :: (V, V, V) -> V)<a,b,c> ) as @pat: ((rule :: (V, V, V) -> V)<a,b,c>))
+         -> @x;
+    });
+  };
+fun rule/@copy // inline size: 4
+  = forall<a,b,c> fn(@this: (rule :: (V, V, V) -> V)<a,b,c>, name: (std/core/types/@optional :: V -> V)<a>, premises: (std/core/types/@optional :: V -> V)<b>, conclusion: (std/core/types/@optional :: V -> V)<c>){
+    koka-redex/syntax/Rule<a,b,c>((match (name) {
+        ((std/core/types/@OptArg((@uniq-name@413: a) : a) : (std/core/types/@optional :: V -> V)<a> ) as @pat: ((std/core/types/@optional :: V -> V)<a>))
+           -> @uniq-name@413;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<a> ) as @pat@0: ((std/core/types/@optional :: V -> V)<a>))
+           -> (match (@this) {
+            ((@skip koka-redex/syntax/Rule((@x: a) : a, (@pat@0@0: b) : b, (@pat@1@0: c) : c) : (rule :: (V, V, V) -> V)<a,b,c> ) as @pat@1: ((rule :: (V, V, V) -> V)<a,b,c>))
+               -> @x;
+          });
+      }), (match (premises) {
+        ((std/core/types/@OptArg((@uniq-premises@430: b) : b) : (std/core/types/@optional :: V -> V)<b> ) as @pat@1@1: ((std/core/types/@optional :: V -> V)<b>))
+           -> @uniq-premises@430;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<b> ) as @pat@2: ((std/core/types/@optional :: V -> V)<b>))
+           -> (match (@this) {
+            ((@skip koka-redex/syntax/Rule((@pat@0@1: a) : a, (@x@0: b) : b, (@pat@1@2: c) : c) : (rule :: (V, V, V) -> V)<a,b,c> ) as @pat@3: ((rule :: (V, V, V) -> V)<a,b,c>))
+               -> @x@0;
+          });
+      }), (match (conclusion) {
+        ((std/core/types/@OptArg((@uniq-conclusion@447: c) : c) : (std/core/types/@optional :: V -> V)<c> ) as @pat@3@0: ((std/core/types/@optional :: V -> V)<c>))
+           -> @uniq-conclusion@447;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<c> ) as @pat@4: ((std/core/types/@optional :: V -> V)<c>))
+           -> (match (@this) {
+            ((@skip koka-redex/syntax/Rule((@pat@0@2: a) : a, (@pat@1@3: b) : b, (@x@1: c) : c) : (rule :: (V, V, V) -> V)<a,b,c> ) as @pat@5: ((rule :: (V, V, V) -> V)<a,b,c>))
+               -> @x@1;
+          });
+      }));
+  };
+inline borrow "^" fun relation-def/rules // inline size: 0
+  = forall<a> fn(@this: (relation-def :: V -> V)<a>){
+    (match (@this) {
+      ((@skip koka-redex/syntax/RelationDef((@x: a) : a) : (relation-def :: V -> V)<a> ) as @pat: ((relation-def :: V -> V)<a>))
+         -> @x;
+    });
+  };
+fun relation-def/@copy // inline size: 2
+  = forall<a> fn(@this: (relation-def :: V -> V)<a>, rules: (std/core/types/@optional :: V -> V)<a>){
+    koka-redex/syntax/RelationDef<a>((match (rules) {
+      ((std/core/types/@OptArg((@uniq-rules@521: a) : a) : (std/core/types/@optional :: V -> V)<a> ) as @pat: ((std/core/types/@optional :: V -> V)<a>))
+         -> @uniq-rules@521;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<a> ) as @pat@0: ((std/core/types/@optional :: V -> V)<a>))
+         -> (match (@this) {
+          ((@skip koka-redex/syntax/RelationDef((@x: a) : a) : (relation-def :: V -> V)<a> ) as @pat@1: ((relation-def :: V -> V)<a>))
+             -> @x;
+        });
+    }));
+  };
+inline fun premise-sep/@copy // inline size: 0
+  = fn(@this: premise-sep){
+    koka-redex/syntax/PremiseSep;
+  };
+fun cons/(\\) // inline size: 2
+  = forall<a,b> fn(h: a, t: b){
+    type-level/list/TCons<a,(type-level/list/t-cons :: (V, V) -> V)<premise-sep,b>>(h, (type-level/list/TCons<premise-sep,b>(koka-redex/syntax/PremiseSep, t)));
+  };
+fun named/(---) // inline size: 1
+  = forall<a,b> fn(premises: b, name: a){
+    std/core/types/Tuple2<b,a>(premises, name);
+  };
+fun concluded/(-->) // inline size: 1
+  = forall<a,b,c> fn(pn: (c, b), conclusion: a){
+    koka-redex/syntax/Rule<b,c,a>((match (pn) {
+        ((@skip std/core/types/Tuple2((@pat@0: c) : c, (@x: b) : b) : (c, b) ) as @pat: (c, b))
+           -> @x;
+      }), (match (pn) {
+        ((@skip std/core/types/Tuple2((@x@0: c) : c, (@pat@0@0: b) : b) : (c, b) ) as @pat@1: (c, b))
+           -> @x@0;
+      }), conclusion);
+  };
+fun single/rule // inline size: 2
+  = forall<a,b,c> fn(r: (rule :: (V, V, V) -> V)<b,c,a>){
+    type-level/structs/TStruct<b,(rule :: (V, V, V) -> V)<b,c,a>,type-level/nil/t-nil>((type-level/structs/Field<b,(rule :: (V, V, V) -> V)<b,c,a>>(r)), type-level/nil/TNil);
+  };
+fun cons/(\) // inline size: 1
+  = forall<a,b> fn(h: a, t: b){
+    type-level/list/TCons<a,b>(h, t);
+  };
+fun turnstile/(|-) // inline size: 1
+  = forall<a,b> fn(h: a, t: b){
+    type-level/list/TCons<a,b>(h, t);
+  };
+inline borrow "^" fun external-entry/ext-pred // inline size: 0
+  = fn(@this: external-entry){
+    match (@this) {
+      ((@skip koka-redex/syntax/MkExternalEntry((@x: std/core/types/string) : std/core/types/string, (@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : external-entry ) as @pat: external-entry)
+         -> @x;
+    };
+  };
+inline borrow "^" fun external-entry/ext-n-inputs // inline size: 0
+  = fn(@this: external-entry){
+    match (@this) {
+      ((@skip koka-redex/syntax/MkExternalEntry((@pat@0: std/core/types/string) : std/core/types/string, (@x: std/core/types/int) : std/core/types/int, (@pat@1: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : external-entry ) as @pat: external-entry)
+         -> @x;
+    };
+  };
+inline borrow "^" fun external-entry/ext-solver // inline size: 0
+  = fn(@this: external-entry){
+    match (@this) {
+      ((@skip koka-redex/syntax/MkExternalEntry((@pat@0: std/core/types/string) : std/core/types/string, (@pat@1: std/core/types/int) : std/core/types/int, (@x: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : external-entry ) as @pat: external-entry)
+         -> @x;
+    };
+  };
+fun external-entry/@copy // inline size: 4
+  = fn(@this: external-entry, ext-pred: (std/core/types/@optional :: V -> V)<std/core/types/string>, ext-n-inputs: (std/core/types/@optional :: V -> V)<std/core/types/int>, ext-solver: (std/core/types/@optional :: V -> V)<(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>>){
+    koka-redex/syntax/MkExternalEntry((match (ext-pred) {
+        ((std/core/types/@OptArg((@uniq-ext-pred@1024: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+           -> @uniq-ext-pred@1024;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+           -> (match (@this) {
+            ((@skip koka-redex/syntax/MkExternalEntry((@x: std/core/types/string) : std/core/types/string, (@pat@0@0: std/core/types/int) : std/core/types/int, (@pat@1@0: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : external-entry ) as @pat@1: external-entry)
+               -> @x;
+          });
+      }), (match (ext-n-inputs) {
+        ((std/core/types/@OptArg((@uniq-ext-n-inputs@1032: std/core/types/int) : std/core/types/int) : (std/core/types/@optional :: V -> V)<std/core/types/int> ) as @pat@1@1: ((std/core/types/@optional :: V -> V)<std/core/types/int>))
+           -> @uniq-ext-n-inputs@1032;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/int> ) as @pat@2: ((std/core/types/@optional :: V -> V)<std/core/types/int>))
+           -> (match (@this) {
+            ((@skip koka-redex/syntax/MkExternalEntry((@pat@0@1: std/core/types/string) : std/core/types/string, (@x@0: std/core/types/int) : std/core/types/int, (@pat@1@2: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : external-entry ) as @pat@3: external-entry)
+               -> @x@0;
+          });
+      }), (match (ext-solver) {
+        ((std/core/types/@OptArg((@uniq-ext-solver@1043: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (std/core/types/@optional :: V -> V)<(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>> ) as @pat@3@0: ((std/core/types/@optional :: V -> V)<(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>>))
+           -> @uniq-ext-solver@1043;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>> ) as @pat@4: ((std/core/types/@optional :: V -> V)<(koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>>))
+           -> (match (@this) {
+            ((@skip koka-redex/syntax/MkExternalEntry((@pat@0@2: std/core/types/string) : std/core/types/string, (@pat@1@3: std/core/types/int) : std/core/types/int, (@x@1: (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : (koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(koka-redex/logic/logic :: (E, V) -> V)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<koka-redex/term/fact>>) : external-entry ) as @pat@5: external-entry)
+               -> @x@1;
+          });
+      }));
+  };
+fun default/relation-def // inline size: 1
+  = forall<a> fn(rules: a){
+    koka-redex/syntax/RelationDef<a>(rules);
+  };
+fun func/relation-def // inline size: 2
+  = forall<(e :: E),a> fn<(e :: E)>(rules: () -> (e :: E) a){
+    koka-redex/syntax/RelationDef<a>((rules()));
+  };

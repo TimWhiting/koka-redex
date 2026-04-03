@@ -1,0 +1,288 @@
+module interface std/fixpoint/lattice
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+import std/data/rb-set = std/data/rb-set = "";
+import std/data/rbtree = std/data/rbtree inline = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub type change-lattice[5,1,8,25] <a,b> :: (V, V) -> V {
+  pub con Change-lattice[5,12,5,25](bottom: a, join: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), changes: (a) -> (std/core/types/list :: V -> V)<b>){0,3,8} : forall<a,b> (bottom : a, join : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), changes : (a) -> (std/core/types/list :: V -> V)<b>) -> (change-lattice :: (V, V) -> V)<a,b> = 1;
+};
+pub value{0,2,8} type product-change[66,1,68,14] <a,b> :: (V, V) -> V {
+  pub con CLeft[67,3,67,7](a: a){0,2,8} : forall<a,b> (a : a) -> (product-change :: (V, V) -> V)<a,b> = 1;
+  pub con CRight[68,3,68,8](b: b){0,2,8} : forall<a,b> (b : b) -> (product-change :: (V, V) -> V)<a,b> = 2;
+};
+pub value{0,2,8} type simple-lattice[23,1,26,6] <a> :: V -> V {
+  pub con LValue[24,3,24,8](a: a){0,2,8} : forall<a> (a : a) -> (simple-lattice :: V -> V)<a> = 1;
+  pub con LTop[25,3,25,6]{0,1,8} : forall<a> (simple-lattice :: V -> V)<a> = 2;
+  pub con LBot[26,3,26,6]{0,1,8} : forall<a> (simple-lattice :: V -> V)<a> = 3;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `bottom` constructor field of the `:change-lattice` type.
+pub fun change-lattice/bottom[6,3,6,8] : forall<a,b> (^ @this : (change-lattice :: (V, V) -> V)<a,b>) -> a;
+// Automatically generated. Retrieves the `join` constructor field of the `:change-lattice` type.
+pub fun change-lattice/join[7,3,7,6] : forall<a,b> (^ @this : (change-lattice :: (V, V) -> V)<a,b>) -> ((a, b) -> (std/core/pure :: E) (std/core/types/bool, a));
+// Automatically generated. Retrieves the `changes` constructor field of the `:change-lattice` type.
+pub fun change-lattice/changes[8,3,8,9] : forall<a,b> (^ @this : (change-lattice :: (V, V) -> V)<a,b>) -> ((a) -> (std/core/types/list :: V -> V)<b>);
+// monadic lift
+fun change-lattice/@mlift-copy@10040[1,0,1,0] : forall<a,b> (@this : (change-lattice :: (V, V) -> V)<a,b>, bottom : (std/core/types/@optional :: V -> V)<a>, changes : (std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>>, @c-x10014 : (a, b) -> (std/core/pure :: E) (std/core/types/bool, a)) -> (change-lattice :: (V, V) -> V)<a,b>;
+pub fun change-lattice/@copy[5,12,5,25] : forall<a,b> (@this : (change-lattice :: (V, V) -> V)<a,b>, bottom : (std/core/types/@optional :: V -> V)<a>, join : (std/core/types/@optional :: V -> V)<(a, b) -> (std/core/pure :: E) (std/core/types/bool, a)>, changes : (std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>>) -> (change-lattice :: (V, V) -> V)<a,b>;
+pub fun (==)[48,9,48,12] : forall<a> (a : (simple-lattice :: V -> V)<a>, b : (simple-lattice :: V -> V)<a>, ?(==) : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> (std/core/pure :: E) std/core/types/bool;
+// monadic lift
+fun list/@mlift-join@10041[1,0,1,0] : forall<a> (new : a, old : (std/core/types/list :: V -> V)<a>, @y-x10018 : std/core/types/bool) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/bool, (std/core/types/list :: V -> V)<a>);
+pub fun list/join[10,9,10,17] : forall<a> (old : (std/core/types/list :: V -> V)<a>, new : a, ?(==) : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> (std/core/pure :: E) (std/core/types/bool, (std/core/types/list :: V -> V)<a>);
+// monadic lift
+fun set/@mlift-join@10042[1,0,1,0] : forall<a> (@y-x10019 : (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>);
+pub fun set/join[16,9,16,16] : forall<a> (old : (std/data/rb-set/rbset :: V -> V)<a>, new : a, ?order2 : (a, a) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<a>) -> (std/core/pure :: E) (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>);
+// monadic lift
+fun simple/@mlift-join@10043[1,0,1,0] : forall<a> (a : (simple-lattice :: V -> V)<a>, @y-x10020 : std/core/types/bool) -> (std/core/pure :: E) (std/core/types/bool, (simple-lattice :: V -> V)<a>);
+pub fun simple/join[55,9,55,19] : forall<a> (a : (simple-lattice :: V -> V)<a>, b : (simple-lattice :: V -> V)<a>, ?(==) : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> (std/core/pure :: E) (std/core/types/bool, (simple-lattice :: V -> V)<a>);
+pub fun list/change-lattice[13,9,13,27] : forall<a> (?(==) : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> (std/core/pure :: E) (change-lattice :: (V, V) -> V)<(std/core/types/list :: V -> V)<a>,a>;
+// monadic lift
+fun set/@mlift-change-lattice@10044[1,0,1,0] : forall<a> (@y-x10023 : (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>);
+pub fun set/change-lattice[20,9,20,26] : forall<a> (?order2 : (a, a) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<a>) -> (change-lattice :: (V, V) -> V)<(std/data/rb-set/rbset :: V -> V)<a>,a>;
+// Automatically generated. Tests for the `LValue` constructor of the `:simple-lattice` type.
+pub fip fun is-lvalue[24,3,24,8] : forall<a> (^ simple-lattice : (simple-lattice :: V -> V)<a>) -> std/core/types/bool;
+// Automatically generated. Tests for the `LTop` constructor of the `:simple-lattice` type.
+pub fip fun is-ltop[25,3,25,6] : forall<a> (^ simple-lattice : (simple-lattice :: V -> V)<a>) -> std/core/types/bool;
+// Automatically generated. Tests for the `LBot` constructor of the `:simple-lattice` type.
+pub fip fun is-lbot[26,3,26,6] : forall<a> (^ simple-lattice : (simple-lattice :: V -> V)<a>) -> std/core/types/bool;
+pub fun order2[28,9,28,14] : forall<a> (a : (simple-lattice :: V -> V)<a>, b : (simple-lattice :: V -> V)<a>, ?order2 : (a, a) -> (std/core/types/order2 :: V -> V)<a>) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<(simple-lattice :: V -> V)<a>>;
+pub fun show[42,9,42,12] : forall<a> (s : (simple-lattice :: V -> V)<a>, ?show : (a) -> std/core/types/string) -> std/core/types/string;
+pub fun simple/change-lattice[63,9,63,29] : forall<a> ((==) : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> (std/core/pure :: E) (change-lattice :: (V, V) -> V)<(simple-lattice :: V -> V)<a>,(simple-lattice :: V -> V)<a>>;
+// Automatically generated. Tests for the `CLeft` constructor of the `:product-change` type.
+pub fip fun is-cleft[67,3,67,7] : forall<a,b> (^ product-change : (product-change :: (V, V) -> V)<a,b>) -> std/core/types/bool;
+// Automatically generated. Tests for the `CRight` constructor of the `:product-change` type.
+pub fip fun is-cright[68,3,68,8] : forall<a,b> (^ product-change : (product-change :: (V, V) -> V)<a,b>) -> std/core/types/bool;
+// monadic lift
+fun product/@mlift-change-lattice@10045[1,0,1,0] : forall<a,b> (r1 : b, @y-x10028 : (std/core/types/bool, a)) -> (std/core/pure :: E) (std/core/types/bool, (a, b));
+// monadic lift
+fun product/@mlift-change-lattice@10046[1,0,1,0] : forall<a,b> (l1 : a, @y-x10030 : (std/core/types/bool, b)) -> (std/core/pure :: E) (std/core/types/bool, (a, b));
+pub fun product/change-lattice[70,9,70,30] : forall<a,b,c,d> (l : (change-lattice :: (V, V) -> V)<c,a>, r : (change-lattice :: (V, V) -> V)<d,b>) -> (change-lattice :: (V, V) -> V)<(c, d),(product-change :: (V, V) -> V)<a,b>>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "*" fun list/change-lattice // inline size: 1
+  = forall<a> fn<(std/core/pure :: E)>(@implicit/(==): (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    std/fixpoint/lattice/Change-lattice<(std/core/types/list :: V -> V)<a>,a>((std/core/types/Nil<a>), (fn<(std/core/pure :: E)>(r: (std/core/types/list :: V -> V)<a>, c: a){
+        (std/fixpoint/lattice/#list/join<a>(r, c, @implicit/(==)));
+      }), (fn(x: (std/core/types/list :: V -> V)<a>){
+        x;
+      }));
+  };
+specialize "*" fun set/change-lattice // inline size: 1
+  = forall<a> fn(@implicit/order2: (a, a) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<a>){
+    std/fixpoint/lattice/Change-lattice<(std/data/rb-set/rbset :: V -> V)<a>,a>((std/data/rb-set/Rbset<a>((std/data/rbtree/Leaf<a,()>))), (fn<(std/core/pure :: E)>(r: (std/data/rb-set/rbset :: V -> V)<a>, c: a){
+        (match ((std/data/rb-set/#check/add<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,a>(r, c, @implicit/order2))) {
+          ((@skip std/core/types/Tuple2((change: std/core/types/bool) : std/core/types/bool, (l': (std/data/rb-set/rbset :: V -> V)<a>) : (std/data/rb-set/rbset :: V -> V)<a>) : (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>) ) as @pat: (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>))
+             -> std/core/types/Tuple2<std/core/types/bool,(std/data/rb-set/rbset :: V -> V)<a>>(change, l');
+        });
+      }), (std/data/rb-set/list<a>));
+  };
+specialize "_**" fun list/join // inline size: 1
+  = forall<a> fn<(std/core/pure :: E)>(old: (std/core/types/list :: V -> V)<a>, new: a, @implicit/(==): (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    (match ((std/core/list/any<a,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(old, (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@eta-x11_14: a){
+        (@implicit/(==)(@eta-x11_14, new));
+      })))) {
+      ((std/core/types/True() : std/core/types/bool ) as @pat: std/core/types/bool)
+         -> std/core/types/Tuple2<std/core/types/bool,(std/core/types/list :: V -> V)<a>>(std/core/types/False, old);
+      ((@skip std/core/types/False() : std/core/types/bool ) as @pat@0: std/core/types/bool)
+         -> std/core/types/Tuple2<std/core/types/bool,(std/core/types/list :: V -> V)<a>>(std/core/types/True, (std/core/types/Cons<a>(new, old)));
+    });
+  };
+specialize "__*" fun set/join // inline size: 1
+  = forall<a> fn<(std/core/pure :: E)>(old: (std/data/rb-set/rbset :: V -> V)<a>, new: a, @implicit/order2: (a, a) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match ((std/data/rb-set/#check/add<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,a>(old, new, @implicit/order2))) {
+      ((@skip std/core/types/Tuple2((change: std/core/types/bool) : std/core/types/bool, (l': (std/data/rb-set/rbset :: V -> V)<a>) : (std/data/rb-set/rbset :: V -> V)<a>) : (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>) ) as @pat: (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>))
+         -> std/core/types/Tuple2<std/core/types/bool,(std/data/rb-set/rbset :: V -> V)<a>>(change, l');
+    });
+  };
+inline borrow "^" fun change-lattice/bottom // inline size: 0
+  = forall<a,b> fn(@this: (change-lattice :: (V, V) -> V)<a,b>){
+    (match (@this) {
+      ((@skip std/fixpoint/lattice/Change-lattice((@x: a) : a, (@pat@0: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), (@pat@1: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (change-lattice :: (V, V) -> V)<a,b> ) as @pat: ((change-lattice :: (V, V) -> V)<a,b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun change-lattice/join // inline size: 0
+  = forall<a,b> fn(@this: (change-lattice :: (V, V) -> V)<a,b>){
+    (match (@this) {
+      ((@skip std/fixpoint/lattice/Change-lattice((@pat@0: a) : a, (@x: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), (@pat@1: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (change-lattice :: (V, V) -> V)<a,b> ) as @pat: ((change-lattice :: (V, V) -> V)<a,b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun change-lattice/changes // inline size: 0
+  = forall<a,b> fn(@this: (change-lattice :: (V, V) -> V)<a,b>){
+    (match (@this) {
+      ((@skip std/fixpoint/lattice/Change-lattice((@pat@0: a) : a, (@pat@1: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), (@x: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (change-lattice :: (V, V) -> V)<a,b> ) as @pat: ((change-lattice :: (V, V) -> V)<a,b>))
+         -> @x;
+    });
+  };
+fun change-lattice/@copy // inline size: 4
+  = forall<a,b> fn(@this: (change-lattice :: (V, V) -> V)<a,b>, bottom: (std/core/types/@optional :: V -> V)<a>, join: (std/core/types/@optional :: V -> V)<(a, b) -> (std/core/pure :: E) (std/core/types/bool, a)>, changes: (std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>>){
+    std/fixpoint/lattice/Change-lattice<a,b>((match (bottom) {
+        ((std/core/types/@OptArg((@uniq-bottom@228: a) : a) : (std/core/types/@optional :: V -> V)<a> ) as @pat: ((std/core/types/@optional :: V -> V)<a>))
+           -> @uniq-bottom@228;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<a> ) as @pat@0: ((std/core/types/@optional :: V -> V)<a>))
+           -> (match (@this) {
+            ((@skip std/fixpoint/lattice/Change-lattice((@x: a) : a, (@pat@0@0: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), (@pat@1@0: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (change-lattice :: (V, V) -> V)<a,b> ) as @pat@1: ((change-lattice :: (V, V) -> V)<a,b>))
+               -> @x;
+          });
+      }), (match (join) {
+        ((std/core/types/@OptArg((@uniq-join@245: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (std/core/types/@optional :: V -> V)<(a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)> ) as @pat@1@1: ((std/core/types/@optional :: V -> V)<(a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)>))
+           -> @uniq-join@245;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)> ) as @pat@2: ((std/core/types/@optional :: V -> V)<(a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)>))
+           -> (match (@this) {
+            ((@skip std/fixpoint/lattice/Change-lattice((@pat@0@1: a) : a, (@x@0: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), (@pat@1@2: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (change-lattice :: (V, V) -> V)<a,b> ) as @pat@3: ((change-lattice :: (V, V) -> V)<a,b>))
+               -> @x@0;
+          });
+      }), (match (changes) {
+        ((std/core/types/@OptArg((@uniq-changes@262: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>> ) as @pat@3@0: ((std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>>))
+           -> @uniq-changes@262;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>> ) as @pat@4: ((std/core/types/@optional :: V -> V)<(a) -> (std/core/types/list :: V -> V)<b>>))
+           -> (match (@this) {
+            ((@skip std/fixpoint/lattice/Change-lattice((@pat@0@2: a) : a, (@pat@1@3: (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a)) : (a, b) -> ((std/core/pure :: E) == 1 <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>) (std/core/types/bool, a), (@x@1: (a) -> (std/core/types/list :: V -> V)<b>) : (a) -> (std/core/types/list :: V -> V)<b>) : (change-lattice :: (V, V) -> V)<a,b> ) as @pat@5: ((change-lattice :: (V, V) -> V)<a,b>))
+               -> @x@1;
+          });
+      }));
+  };
+fun (==) // inline size: 4
+  = forall<a> fn<(std/core/pure :: E)>(a: (simple-lattice :: V -> V)<a>, b: (simple-lattice :: V -> V)<a>, @implicit/(==): (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    (match (a, b) {
+      ((std/fixpoint/lattice/LValue((b': a) : a) : (simple-lattice :: V -> V)<a> ) as @pat@1: (simple-lattice :: V -> V)<a>), ((std/fixpoint/lattice/LValue((a': a) : a) : (simple-lattice :: V -> V)<a> ) as @pat@0: ((simple-lattice :: V -> V)<a>))
+         -> @implicit/(==)(a', b');
+      ((std/fixpoint/lattice/LTop() : (simple-lattice :: V -> V)<a> ) as @pat@4: (simple-lattice :: V -> V)<a>), ((std/fixpoint/lattice/LTop() : (simple-lattice :: V -> V)<a> ) as @pat@3: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/True;
+      ((std/fixpoint/lattice/LBot() : (simple-lattice :: V -> V)<a> ) as @pat@7: (simple-lattice :: V -> V)<a>), ((std/fixpoint/lattice/LBot() : (simple-lattice :: V -> V)<a> ) as @pat@6: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/True;
+      (@pat@2: ((simple-lattice :: V -> V)<a>)), (@pat: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/False;
+    });
+  };
+fun set/join // inline size: 2
+  = forall<a> fn<(std/core/pure :: E)>(old: (std/data/rb-set/rbset :: V -> V)<a>, new: a, @implicit/order2: (a, a) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match ((std/data/rb-set/#check/add<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,a>(old, new, @implicit/order2))) {
+      ((@skip std/core/types/Tuple2((change: std/core/types/bool) : std/core/types/bool, (l': (std/data/rb-set/rbset :: V -> V)<a>) : (std/data/rb-set/rbset :: V -> V)<a>) : (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>) ) as @pat: (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>))
+         -> std/core/types/Tuple2<std/core/types/bool,(std/data/rb-set/rbset :: V -> V)<a>>(change, l');
+    });
+  };
+fun list/change-lattice // inline size: 2
+  = forall<a> fn<(std/core/pure :: E)>(@implicit/(==): (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    std/fixpoint/lattice/Change-lattice<(std/core/types/list :: V -> V)<a>,a>((std/core/types/Nil<a>), (fn<(std/core/pure :: E)>(r: (std/core/types/list :: V -> V)<a>, c: a){
+        (std/fixpoint/lattice/#list/join<a>(r, c, @implicit/(==)));
+      }), (fn(x: (std/core/types/list :: V -> V)<a>){
+        x;
+      }));
+  };
+fun set/change-lattice // inline size: 4
+  = forall<a> fn(@implicit/order2: (a, a) -> (std/core/pure :: E) (std/core/types/order2 :: V -> V)<a>){
+    std/fixpoint/lattice/Change-lattice<(std/data/rb-set/rbset :: V -> V)<a>,a>((std/data/rb-set/Rbset<a>((std/data/rbtree/Leaf<a,()>))), (fn<(std/core/pure :: E)>(r: (std/data/rb-set/rbset :: V -> V)<a>, c: a){
+        (match ((std/data/rb-set/#check/add<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,a>(r, c, @implicit/order2))) {
+          ((@skip std/core/types/Tuple2((change: std/core/types/bool) : std/core/types/bool, (l': (std/data/rb-set/rbset :: V -> V)<a>) : (std/data/rb-set/rbset :: V -> V)<a>) : (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>) ) as @pat: (std/core/types/bool, (std/data/rb-set/rbset :: V -> V)<a>))
+             -> std/core/types/Tuple2<std/core/types/bool,(std/data/rb-set/rbset :: V -> V)<a>>(change, l');
+        });
+      }), (std/data/rb-set/list<a>));
+  };
+inline borrow "^" fip fun is-lvalue // inline size: 1
+  = forall<a> fn(simple-lattice: (simple-lattice :: V -> V)<a>){
+    (match (simple-lattice) {
+      ((std/fixpoint/lattice/LValue((@pat@0: a) : a) : (simple-lattice :: V -> V)<a> ) as @pat: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/True;
+      (@pat@1: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/False;
+    });
+  };
+inline borrow "^" fip fun is-ltop // inline size: 1
+  = forall<a> fn(simple-lattice: (simple-lattice :: V -> V)<a>){
+    (match (simple-lattice) {
+      ((std/fixpoint/lattice/LTop() : (simple-lattice :: V -> V)<a> ) as @pat: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/True;
+      (@pat@0: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/False;
+    });
+  };
+inline borrow "^" fip fun is-lbot // inline size: 1
+  = forall<a> fn(simple-lattice: (simple-lattice :: V -> V)<a>){
+    (match (simple-lattice) {
+      ((std/fixpoint/lattice/LBot() : (simple-lattice :: V -> V)<a> ) as @pat: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/True;
+      (@pat@0: ((simple-lattice :: V -> V)<a>))
+         -> std/core/types/False;
+    });
+  };
+fun simple/change-lattice // inline size: 3
+  = forall<a> fn<(std/core/pure :: E)>((@x@0==): (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    std/fixpoint/lattice/Change-lattice<(simple-lattice :: V -> V)<a>,(simple-lattice :: V -> V)<a>>((std/fixpoint/lattice/LBot<a>), (fn<(std/core/pure :: E)>(r: (simple-lattice :: V -> V)<a>, c: (simple-lattice :: V -> V)<a>){
+        (std/fixpoint/lattice/#simple/join<a>(r, c, (@x@0==)));
+      }), (fn(@eta-x64_53: (simple-lattice :: V -> V)<a>){
+        (std/core/types/Cons<(simple-lattice :: V -> V)<a>>(@eta-x64_53, (std/core/types/Nil<(simple-lattice :: V -> V)<a>>)));
+      }));
+  };
+inline borrow "^" fip fun is-cleft // inline size: 1
+  = forall<a,b> fn(product-change: (product-change :: (V, V) -> V)<a,b>){
+    (match (product-change) {
+      ((std/fixpoint/lattice/CLeft((@pat@0: a) : a) : (product-change :: (V, V) -> V)<a,b> ) as @pat: ((product-change :: (V, V) -> V)<a,b>))
+         -> std/core/types/True;
+      (@pat@1: ((product-change :: (V, V) -> V)<a,b>))
+         -> std/core/types/False;
+    });
+  };
+inline borrow "^" fip fun is-cright // inline size: 1
+  = forall<a,b> fn(product-change: (product-change :: (V, V) -> V)<a,b>){
+    (match (product-change) {
+      ((std/fixpoint/lattice/CRight((@pat@0: b) : b) : (product-change :: (V, V) -> V)<a,b> ) as @pat: ((product-change :: (V, V) -> V)<a,b>))
+         -> std/core/types/True;
+      (@pat@1: ((product-change :: (V, V) -> V)<a,b>))
+         -> std/core/types/False;
+    });
+  };

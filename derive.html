@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+      
+    </meta>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+      
+    </meta>
+    <title>
+      Derive · Koka Redex
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+      
+    </link>
+    <link href="styles/site.css" rel="stylesheet">
+      
+    </link>
+    <meta content="/koka-redex/playground/koka-playground.wasm" name="koka-wasm-url">
+      
+    </meta>
+    <meta content="/koka-redex/playground/" name="koka-stdlib-url">
+      
+    </meta>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <div class="nav-brand">
+        <a href="index.html">
+          Koka Redex
+        </a>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">
+          Overview
+        </a>
+        <a class="nav-link" href="tutorial.html">
+          Tutorial
+        </a>
+        <a class="nav-link" href="engine.html">
+          Engine
+        </a>
+        <a class="nav-link" href="derive.html">
+          Derive
+        </a>
+        <a class="nav-link" href="rendering.html">
+          Rendering
+        </a>
+        <a class="nav-link" href="api.html">
+          API
+        </a>
+      </div>
+    </nav>
+    <main class="site-content">
+      <div class="body madoko" style="line-adjust:0">
+<h2 id="sec-derive--auto-derivation-from-constructor-descriptors" class="h1" data-heading-depth="1" style="display:block">Derive: Auto-Derivation from Constructor Descriptors</h2>
+<p class="p noindent">The derive system (<code class="code code1">derive.kk</code>) auto-generates <code class="code code1">to-term</code>, <code class="code code1">from-term</code>, <code class="code code1">show</code>,
+and rendering functions from <code class="code code1">con-info</code> descriptors.
+</p><h3 id="sec-constructor-descriptors" class="h2" data-heading-depth="2" style="display:block">Constructor Descriptors</h3>
+<p class="p noindent"><code class="code code1">con-info&lt;tag, fields, whole&gt;</code> describes one constructor:
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">tag</code></strong>: phantom type identifying the constructor (e.g., <code class="code code1">type lam-expr</code>)
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">fields</code></strong>: type-level structure — <code class="code code1">string</code> (atom), <code class="code code1">t-cons&lt;a,b&gt;</code> (node), <code class="code code1">t-nil</code> (nullary)
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">whole</code></strong>: the ADT type being described
+</li></ul>
+
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:blue">type</span> <span style="color:teal">lam-expr</span>
+<span style="color:blue">fun</span> <span style="color:navy">lam-expr/name/</span>show()<span style="color:teal">:</span> <span style="color:teal">name</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">&gt;</span> { <span style="color:purple">Name</span>(<span style="color:maroon">&quot;</span><span style="color:maroon">lam</span><span style="color:maroon">&quot;</span>) }
+
+<span style="color:blue">val</span> <span style="color:navy">lam-expr/</span>con-info <span style="color:teal">:</span>
+  <span style="color:teal">con-info</span><span style="color:teal">&lt;</span><span style="color:teal">lam-expr</span><span style="color:teal">,</span> <span style="color:teal">t</span>-cons&lt;string, t-cons&lt;expr, t-nil&gt;&gt;, expr&gt; <span style="color:blue">=</span>
+  <span style="color:purple">Con-info</span>(
+    <span style="color:blue">fn</span>(e) <span style="color:blue">match</span> e { <span style="color:purple">ELam</span>(x, body) <span style="color:blue">-&gt;</span> <span style="color:purple">Just</span>(x +: body +: <span style="color:purple">TNil</span>); _ <span style="color:blue">-&gt;</span> <span style="color:purple">Nothing</span> },
+    <span style="color:blue">fn</span>(<span style="color:purple">TCons</span>(x, <span style="color:purple">TCons</span>(body, _))) <span style="color:purple">ELam</span>(x, body))</code></pre>
+<p class="p noindent para-continued">The <code class="code code1">con-match</code> function destructures a value into a t-cons chain of fields.
+The <code class="code code1">con-build</code> function reconstructs a value from fields.
+The constructor name comes from <code class="code code1">name/show</code> on the phantom tag type.
+</p><h3 id="sec-type-info" class="h2" data-heading-depth="2" style="display:block">Type Info</h3>
+<p class="p noindent">Combine con-infos into a t-struct for traversal:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:blue">val</span> expr-info <span style="color:blue">=</span>
+  mk-field(<span style="color:navy">var-expr/</span>con-info) *: mk-field(<span style="color:navy">app-expr/</span>con-info)
+  *: mk-field(<span style="color:navy">lam-expr/</span>con-info) *: <span style="color:purple">TNil</span></code></pre><h3 id="sec-deriving-to-term-from-term" class="h2" data-heading-depth="2" style="display:block">Deriving to-term / from-term</h3>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code>pub <span style="color:blue">fun</span> <span style="color:navy">expr/</span>to-term(e<span style="color:teal">:</span> <span style="color:teal">expr</span>)<span style="color:teal">:</span> <span style="color:teal">div</span> <span style="color:teal">term</span>
+  <span style="color:blue">val</span> <span style="color:navy">n/</span>to-term <span style="color:blue">=</span> <span style="color:navy">expr/</span>to-term  <span style="color:darkgreen">//</span><span style="color:darkgreen"> close recursive loop</span>
+  derive-to-term(e, expr-info)
+
+pub <span style="color:blue">fun</span> <span style="color:navy">expr/</span>from-term(t<span style="color:teal">:</span> <span style="color:teal">term</span>)<span style="color:teal">:</span> <span style="color:teal">&lt;</span><span style="color:teal">exn</span><span style="color:teal">,</span><span style="color:teal">div</span><span style="color:teal">&gt;</span> <span style="color:teal">expr</span>
+  <span style="color:blue">val</span> <span style="color:navy">n/</span>from-term <span style="color:blue">=</span> <span style="color:navy">expr/</span>from-term
+  derive-from-term(t, expr-info)</code></pre>
+<p class="p noindent para-continued">The <code class="code code1">val n/to-term = self</code> pattern binds the function as a local implicit
+so recursive fields resolve correctly.
+</p><h3 id="sec-how-it-works" class="h2" data-heading-depth="2" style="display:block">How It Works</h3>
+<p class="p noindent">The derive system dispatches on the <code class="code code1">fields</code> type parameter of each <code class="code code1">con-info</code>:
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">con-info&lt;tag, string, w&gt;</code> → maps to <code class="code code1">TAtom</code>
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">con-info&lt;tag, t-cons&lt;a,b&gt;, w&gt;</code> → maps to <code class="code code1">TNode</code> with recursive field encoding
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">con-info&lt;tag, t-nil, w&gt;</code> → maps to <code class="code code1">TNode(name, [])</code>
+</li></ul>
+
+<p class="p noindent"><code class="code code1">derive-to-term</code> tries each constructor&#39;s matcher until one succeeds.
+</p><h3 id="sec-interned-types" class="h2" data-heading-depth="2" style="display:block">Interned Types</h3>
+<p class="p noindent">Types that should be opaque to the engine use <code class="code code1">ref-pool</code> instead of structural
+encoding:
+</p>
+<pre class="para-block pre-fenced pre-fenced3 language-koka lang-koka koka colorized" style="display:block"><code><span style="color:blue">val</span> <span style="color:navy">store/</span>pool <span style="color:teal">:</span> <span style="color:teal">ev</span><span style="color:teal">&lt;</span><span style="color:teal">ref-pool</span><span style="color:teal">&lt;</span><span style="color:teal">store</span><span style="color:teal">&gt;</span><span style="color:teal">&gt;</span> <span style="color:blue">=</span> make-pool(stor<span style="color:navy">e/</span>(==))
+<span style="color:darkgreen">//</span><span style="color:darkgreen"> ref/to-term and ref/from-term resolve via ?pool implicit</span></code></pre>
+<p class="p noindent para-continued">The engine sees <code class="code code1">TRef(id)</code> — ground, O(1) equality, never walked into.
+</p><h3 id="sec-key-patterns" class="h2" data-heading-depth="2" style="display:block">Key Patterns</h3>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2"><code class="code code1">val n/to-term = self</code></strong>: closes recursive implicit chains for self-referential types
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Return-type annotation</strong>: annotate with <code class="code code1">list&lt;latex-entry&gt;</code> or <code class="code code1">list&lt;md-entry&gt;</code> to select the rendering backend
+</li></ul>
+<span data-line=""></span></div>
+    </main>
+    <footer class="site-footer">
+      Koka Redex
+    </footer>
+    <script src="/koka-redex/playground/embed.js" type="module">
+      
+    </script>
+  </body>
+</html>

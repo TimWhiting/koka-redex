@@ -1,0 +1,502 @@
+module interface koka-redex/term
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+import std/core/undiv = std/core/undiv = "";
+import type-level/nil = type-level/nil = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An alias for pure effects: a pure function always returns the same result
+// when called with the same arguments but may not terminate or raise an exception.
+local alias std/core/pure[55,1,55,26] :: E = <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub recursive type term[14,1,19,19] {
+  pub con TVar[15,3,15,6](name: std/core/types/string, id: std/core/types/int){0,2,8} : (name : std/core/types/string, id : std/core/types/int) -> term = 1;
+  pub con TAtom[16,3,16,7](name: std/core/types/string){0,1,8} : (name : std/core/types/string) -> term = 2;
+  pub con TInt[17,3,17,6](value: std/core/types/int){0,1,8} : (value : std/core/types/int) -> term = 3;
+  pub con TNode[18,3,18,7](name: std/core/types/string, args: (std/core/types/list :: V -> V)<term>){0,2,8} : (name : std/core/types/string, args : (std/core/types/list :: V -> V)<term>) -> term = 4;
+  pub con TRef[19,3,19,6](ref-id: std/core/types/int){0,1,8} : (ref-id : std/core/types/int) -> term = 5;
+};
+pub type fact[21,1,22,38] {
+  pub con Fact[22,3,22,6](pred: std/core/types/string, args: (std/core/types/list :: V -> V)<term>){0,2,8} : (pred : std/core/types/string, args : (std/core/types/list :: V -> V)<term>) -> fact = 1;
+};
+pub recursive type proof[29,1,31,64] {
+  pub con ByFact[30,3,30,8](fact: fact){0,1,8} : (fact : fact) -> proof = 1;
+  pub con ByRule[31,3,31,8](name: std/core/types/string, conclusion: fact, subproofs: (std/core/types/list :: V -> V)<proof>){0,3,8} : (name : std/core/types/string, conclusion : fact, subproofs : (std/core/types/list :: V -> V)<proof>) -> proof = 2;
+};
+pub recursive named effect type ref-pool[104,1,106,28] <a,(e :: E),b> :: (V, E, V) -> V {
+  pub con @Hnd-ref-pool[104,1,104,25](@cfc: std/core/types/int, @fun-pool-deref: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, @fun-pool-intern: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>){0,3,8} : forall<a,(e :: E),b> (std/core/types/int, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) -> (ref-pool :: (V, E, V) -> V)<a,(e :: E),b> = 1;
+};
+pub value{0,3,8} type rule[24,1,27,18] {
+  pub con Rule[24,18,24,21](name: std/core/types/string, premises: (std/core/types/list :: V -> V)<fact>, conclusion: fact){0,3,8} : (name : std/core/types/string, premises : (std/core/types/list :: V -> V)<fact>, conclusion : fact) -> rule = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+pub val axiom[12,9,12,13] : type-level/nil/t-nil;
+// Automatically generated. Tests for the `TVar` constructor of the `:term` type.
+pub fip fun is-tvar[15,3,15,6] : (^ term : term) -> std/core/types/bool;
+// Automatically generated. Tests for the `TAtom` constructor of the `:term` type.
+pub fip fun is-tatom[16,3,16,7] : (^ term : term) -> std/core/types/bool;
+// Automatically generated. Tests for the `TInt` constructor of the `:term` type.
+pub fip fun is-tint[17,3,17,6] : (^ term : term) -> std/core/types/bool;
+// Automatically generated. Tests for the `TNode` constructor of the `:term` type.
+pub fip fun is-tnode[18,3,18,7] : (^ term : term) -> std/core/types/bool;
+// Automatically generated. Tests for the `TRef` constructor of the `:term` type.
+pub fip fun is-tref[19,3,19,6] : (^ term : term) -> std/core/types/bool;
+// Automatically generated. Retrieves the `args` constructor field of the `:fact` type.
+pub fun fact/args[22,22,22,25] : (^ fact : fact) -> (std/core/types/list :: V -> V)<term>;
+// Automatically generated. Retrieves the `pred` constructor field of the `:fact` type.
+pub fun fact/pred[22,8,22,11] : (^ fact : fact) -> std/core/types/string;
+pub fun fact/@copy[22,3,22,6] : (@this : fact, pred : (std/core/types/@optional :: V -> V)<std/core/types/string>, args : (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<term>>) -> fact;
+// Automatically generated. Retrieves the `name` constructor field of the `:rule` type.
+pub fun rule/name[25,3,25,6] : (^ rule : rule) -> std/core/types/string;
+// Automatically generated. Retrieves the `premises` constructor field of the `:rule` type.
+pub fun rule/premises[26,3,26,10] : (^ rule : rule) -> (std/core/types/list :: V -> V)<fact>;
+// Automatically generated. Retrieves the `conclusion` constructor field of the `:rule` type.
+pub fun rule/conclusion[27,3,27,12] : (^ rule : rule) -> fact;
+pub fun rule/@copy[24,18,24,21] : (@this : rule, name : (std/core/types/@optional :: V -> V)<std/core/types/string>, premises : (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<fact>>, conclusion : (std/core/types/@optional :: V -> V)<fact>) -> rule;
+// Automatically generated. Tests for the `ByFact` constructor of the `:proof` type.
+pub fip fun is-byFact[30,3,30,8] : (^ proof : proof) -> std/core/types/bool;
+// Automatically generated. Tests for the `ByRule` constructor of the `:proof` type.
+pub fip fun is-byRule[31,3,31,8] : (^ proof : proof) -> std/core/types/bool;
+pub fun term/show[37,9,37,17] : (t : term) -> std/core/types/string;
+pub fun fact/show[45,9,45,17] : (@pat-x45_19 : fact) -> std/core/types/string;
+pub fun proof/show[48,9,48,18] : (pf : proof, indent : (std/core/types/@optional :: V -> V)<std/core/types/string>) -> <(std/core/types/div :: X)> std/core/types/string;
+pub fun proof/conclusion-key[56,9,56,28] : (pf : proof) -> <(std/core/types/div :: X)> std/core/types/string;
+fun term-list/eq[74,5,74,16] : (xs : (std/core/types/list :: V -> V)<term>, ys : (std/core/types/list :: V -> V)<term>) -> <(std/core/types/div :: X)> std/core/types/bool;
+pub fun term/eq[65,9,65,15] : (t1 : term, t2 : term) -> <(std/core/types/div :: X)> std/core/types/bool;
+pub fun fact/eq[80,9,80,15] : (f1 : fact, f2 : fact) -> <(std/core/types/div :: X)> std/core/types/bool;
+pub fun fact/in-list[84,9,84,20] : (f : fact, fs : (std/core/types/list :: V -> V)<fact>) -> <(std/core/types/div :: X)> std/core/types/bool;
+pub fun term/is-ground[91,9,91,22] : (t : term) -> <(std/core/types/div :: X)> std/core/types/bool;
+pub fun fact/is-ground[97,9,97,22] : (@pat-x97_24 : fact) -> <(std/core/types/div :: X)> std/core/types/bool;
+// Automatically generated. Retrieves the `@cfc` constructor field of the `:ref-pool` type.
+fun ref-pool/@cfc[104,1,104,25] : forall<a,(e :: E),b> (^ @this : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>) -> std/core/types/int;
+// runtime tag for the effect `:ref-pool`
+pub val ref-pool/@tag[104,1,104,25] : forall<a> (std/core/hnd/htag :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>;
+// handler for the effect `:ref-pool`
+pub fun ref-pool/@handle[104,18,104,25] : forall<a,b,(e :: E),c> (hnd : (ref-pool :: (V, E, V) -> V)<a,(e :: E),c>, ret : (res : b) -> (e :: E) c, action : (hname : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>) -> (e :: E) b) -> (e :: E) c;
+// Automatically generated. Retrieves the `@fun-pool-intern` constructor field of the `:ref-pool` type.
+fun ref-pool/@fun-pool-intern[105,7,105,28] : forall<a,(e :: E),b> (^ @this : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>;
+// select `pool-intern` operation out of effect `:ref-pool`
+pub fun pool-intern/@select[105,7,105,28] : forall<a,(e :: E),b> (^ hnd : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>;
+// Call the `fun pool-intern` operation of the effect `:ref-pool`
+pub fun pool-intern[105,7,105,17] : forall<a> (@hname : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>, x : a) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+// Automatically generated. Retrieves the `@fun-pool-deref` constructor field of the `:ref-pool` type.
+fun ref-pool/@fun-pool-deref[106,7,106,28] : forall<a,(e :: E),b> (^ @this : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>;
+// select `pool-deref` operation out of effect `:ref-pool`
+pub fun pool-deref/@select[106,7,106,28] : forall<a,(e :: E),b> (^ hnd : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>;
+// Call the `fun pool-deref` operation of the effect `:ref-pool`
+pub fun pool-deref[106,7,106,16] : forall<a> (@hname : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>, id : std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> a;
+// monadic lift
+fun @mlift-make-pool@10078[1,0,1,0] : forall<(h :: H),a> (id : std/core/types/int, @y-x10027 : (std/core/types/maybe :: V -> V)<(std/core/types/int, a)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a;
+// monadic lift
+fun @mlift-make-pool@10079[1,0,1,0] : forall<(h :: H),a> (id : std/core/types/int, @y-x10025 : (std/core/types/list :: V -> V)<(std/core/types/int, a)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> a;
+// monadic lift
+fun @mlift-make-pool@10080[1,0,1,0] : forall<(h :: H)> (id@1 : std/core/types/int, wild_@0 : ()) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+// monadic lift
+fun @mlift-make-pool@10081[1,0,1,0] : forall<(h :: H),a> (entries : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>, id@1 : std/core/types/int, x : a, @y-x10037 : (std/core/types/list :: V -> V)<(std/core/types/int, a)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+// monadic lift
+fun @mlift-make-pool@10082[1,0,1,0] : forall<(h :: H),a> (entries : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>, id@1 : std/core/types/int, x : a, wild_ : ()) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+// monadic lift
+fun @mlift-make-pool@10083[1,0,1,0] : forall<(h :: H),a> (entries : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>, id@1 : std/core/types/int, next-id : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, x : a, @y-x10035 : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+// monadic lift
+fun @mlift-make-pool@10084[1,0,1,0] : forall<(h :: H),a> (entries : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>, next-id : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, x : a, id@1 : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+// monadic lift
+fun @mlift-make-pool@10085[1,0,1,0] : forall<(h :: H),a> (entries : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>, next-id : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, x : a, @y-x10033 : (std/core/types/maybe :: V -> V)<(std/core/types/int, a)>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>> std/core/types/int;
+// monadic lift
+fun @mlift-make-pool@10086[1,0,1,0] : forall<(h :: H),a> (entries : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>, eq : (a, a) -> (std/core/pure :: E) std/core/types/bool, next-id : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, x : a, @y-x10030 : (std/core/types/list :: V -> V)<(std/core/types/int, a)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+pub fun make-pool[108,9,108,17] : forall<a> (eq : (a, a) -> (std/core/pure :: E) std/core/types/bool) -> (std/core/pure :: E) (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>;
+// monadic lift
+fun ref/@mlift-to-term@10087[1,0,1,0] : (@y-x10044 : std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> term;
+// Generic to-term / from-term for any interned type
+pub fun ref/to-term[127,9,127,19] : forall<a> (x : a, ?pool : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>) -> (std/core/pure :: E) term;
+pub fun ref/from-term[130,9,130,21] : forall<a> (t : term, ?pool : (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>) -> (std/core/pure :: E) a;
+pub fun term/to-term[139,9,139,20] : (t : term) -> term;
+pub fun string/to-term[142,9,142,22] : (s : std/core/types/string) -> term;
+pub fun int/to-term[145,9,145,19] : (i : std/core/types/int) -> term;
+pub fun string/from-term[148,9,148,24] : (t : term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/string;
+pub fun int/from-term[153,9,153,21] : (t : term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "*_" fun fact/in-list // inline size: 1
+  = fn<<(std/core/types/div :: X)>>(f: fact, fs: (std/core/types/list :: V -> V)<fact>){
+    std/core/list/any<fact,<(std/core/types/div :: X)>>(fs, (fn<<(std/core/types/div :: X)>>(x: fact){
+        (match (f, x) {
+          ((@skip koka-redex/term/Fact((p2: std/core/types/string) : std/core/types/string, (as2: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact), ((@skip koka-redex/term/Fact((p1: std/core/types/string) : std/core/types/string, (as1: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@0: fact)
+             -> (match ((std/core/string/(==)(p1, p2))) {
+              ((std/core/types/True() : std/core/types/bool ) as @pat@2: std/core/types/bool)
+                 -> koka-redex/term/#term-list/eq(as1, as2);
+              (@pat@3: std/core/types/bool)
+                 -> std/core/types/False;
+            });
+        });
+      }));
+  };
+specialize "*" fun make-pool // inline size: 1
+  = forall<a> fn<(std/core/pure :: E)>(eq: (a, a) -> (std/core/pure :: E) std/core/types/bool){
+    std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(action : forall<(h :: H)> () -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>) -> (() -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>),(action : forall<(h :: H)> () -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (() -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>)>((std/core/types/unsafe-no-local-cast<(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>))((forall<(h :: H)> fn<<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(){
+      std/core/hnd/local-var<(std/core/types/list :: V -> V)<(std/core/types/int, a)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(h :: H)>((std/core/types/Nil<(std/core/types/int, a)>), (fn<<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(entries: (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>>){
+          (std/core/hnd/local-var<std/core/types/int,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(h :: H)>(0, (fn<<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(next-id: (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>){
+              (koka-redex/term/#ref-pool/@handle<a,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>>((koka-redex/term/@Hnd-ref-pool<a,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>>(1, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>>,(op : (std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)> a) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>>,(op : (std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)> a) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>>>((std/core/hnd/clause-tail1<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>,(ref-pool :: (V, E, V) -> V)<a>,std/core/types/int,a>))((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>>(id: std/core/types/int){
+                    (match ((std/core/list/find<(std/core/types/int, a),<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>>((std/core/types/local-get<(std/core/types/list :: V -> V)<(std/core/types/int, a)>,(h :: H),<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>>(entries, (std/core/types/@Hnodiv<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>>))), (fn<<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>>(@pat-x121_29: (std/core/types/int, a)){
+                        (match (@pat-x121_29) {
+                          ((@skip std/core/types/Tuple2((i: std/core/types/int) : std/core/types/int, (@pat@0: a) : a) : (std/core/types/int, a) ) as @pat: (std/core/types/int, a))
+                             -> std/core/types/@open<(std/core/types/total :: E),<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)>,(x : std/core/types/int, y : std/core/types/int) -> std/core/types/bool,(x : std/core/types/int, y : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/div :: X)> std/core/types/bool>(std/core/int/(==))(i, id);
+                        });
+                      })))) {
+                      ((std/core/types/Just(((@skip std/core/types/Tuple2((@pat@3: std/core/types/int) : std/core/types/int, (v: a) : a) : (std/core/types/int, a) ) as @pat@2: (std/core/types/int, a)) : (std/core/types/int, a)) : (std/core/types/maybe :: V -> V)<(std/core/types/int, a)> ) as @pat@1: ((std/core/types/maybe :: V -> V)<(std/core/types/int, a)>))
+                         -> v;
+                      ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/int, a)> ) as @pat@4: ((std/core/types/maybe :: V -> V)<(std/core/types/int, a)>))
+                         -> std/core/exn/throw<a>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(x : std/core/types/string, y : std/core/types/string) -> std/core/types/string,(x : std/core/types/string, y : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)> std/core/types/string>(std/core/types/(++))("pool-deref: invalid ref ", (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(i : std/core/types/int) -> std/core/types/string,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)> std/core/types/string>(std/core/int/show)(id)))), (std/core/types/@NoOptArg<std/core/exn/exception-info>));
+                    });
+                  }))), (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>>,(op : (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)> std/core/types/int) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>>,(op : (a) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)> std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>>>((std/core/hnd/clause-tail1<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>,(std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>,(ref-pool :: (V, E, V) -> V)<a>,a,std/core/types/int>))((fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>>(x: a){
+                    (match ((std/core/list/find<(std/core/types/int, a),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>>>((std/core/types/local-get<(std/core/types/list :: V -> V)<(std/core/types/int, a)>,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(entries, (std/core/types/@Hnodiv<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>))), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>>>(@pat-x113_29: (std/core/types/int, a)){
+                        (match (@pat-x113_29) {
+                          ((@skip std/core/types/Tuple2((@pat@6: std/core/types/int) : std/core/types/int, (existing: a) : a) : (std/core/types/int, a) ) as @pat@5: (std/core/types/int, a))
+                             -> eq(x, existing);
+                        });
+                      })))) {
+                      ((std/core/types/Just(((@skip std/core/types/Tuple2((id@0: std/core/types/int) : std/core/types/int, (@pat@9: a) : a) : (std/core/types/int, a) ) as @pat@8: (std/core/types/int, a)) : (std/core/types/int, a)) : (std/core/types/maybe :: V -> V)<(std/core/types/int, a)> ) as @pat@7: ((std/core/types/maybe :: V -> V)<(std/core/types/int, a)>))
+                         -> id@0;
+                      ((@skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/int, a)> ) as @pat@10: ((std/core/types/maybe :: V -> V)<(std/core/types/int, a)>))
+                         -> val id@1[116,15,116,16] : std/core/types/int
+                              = std/core/types/local-get<std/core/types/int,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(next-id, (std/core/types/@Hnodiv<(h :: H),std/core/types/int,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>));
+                            val _[117,11,117,32] : ()
+                              = std/core/types/local-set<std/core/types/int,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(h :: H)>(next-id, (std/core/types/@open<(std/core/types/total :: E),<(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(x : std/core/types/int, y : std/core/types/int) -> std/core/types/int,(x : std/core/types/int, y : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>> std/core/types/int>((fn(x@0: std/core/types/int, y: std/core/types/int){
+                                  (std/core/int/int-add(x@0, y));
+                                }))((std/core/types/local-get<std/core/types/int,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(next-id, (std/core/types/@Hnodiv<(h :: H),std/core/types/int,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>))), 1)));
+                            val _@0[118,11,118,43] : ()
+                              = std/core/types/local-set<(std/core/types/list :: V -> V)<(std/core/types/int, a)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>,(h :: H)>(entries, (std/core/types/Cons<(std/core/types/int, a)>((std/core/types/Tuple2<std/core/types/int,a>(id@1, x)), (std/core/types/local-get<(std/core/types/list :: V -> V)<(std/core/types/int, a)>,(h :: H),<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(entries, (std/core/types/@Hnodiv<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/int, a)>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>))))));
+                        id@1;
+                    });
+                  }))))), (fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)>>(@res: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>){
+                  @res;
+                }), (fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>,(std/core/types/local :: H -> X)<(h :: H)>>>(r: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>){
+                  r;
+                })));
+            })));
+        }));
+    }))();
+  };
+specialize "_*" fun proof/show // inline size: 1
+  = fn<<(std/core/types/div :: X)>>(pf: proof, indent: (std/core/types/@optional :: V -> V)<std/core/types/string>){
+    match (pf) {
+      ((koka-redex/term/ByFact(((@skip koka-redex/term/Fact((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as f: fact) : fact) : proof ) as @pat@1: proof)
+         -> std/core/types/(++)((match (indent) {
+            ((std/core/types/@OptArg((@uniq-indent@456: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+               -> @uniq-indent@456;
+            ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+               -> "";
+          }), (std/core/types/(++)("fact ", (koka-redex/term/#fact/show(f)))));
+      ((@skip koka-redex/term/ByRule((name: std/core/types/string) : std/core/types/string, ((@skip koka-redex/term/Fact((@pat@5: std/core/types/string) : std/core/types/string, (@pat@6: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as conc: fact) : fact, (subs: (std/core/types/list :: V -> V)<proof>) : (std/core/types/list :: V -> V)<proof>) : proof ) as @pat@4: proof)
+         -> val head[52,11,52,14] : std/core/types/string
+              = std/core/types/(++)((match (indent) {
+                  ((std/core/types/@OptArg((@uniq-indent@456: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+                     -> @uniq-indent@456;
+                  ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+                     -> "";
+                }), (std/core/types/(++)("rule ", (std/core/types/(++)(name, (std/core/types/(++)(" => ", (koka-redex/term/#fact/show(conc)))))))));
+            val xs@10009[1,0,1,0] : (std/core/types/list :: V -> V)<std/core/types/string>
+              = std/core/list/map<proof,std/core/types/string,<(std/core/types/div :: X)>>(subs, (fn<<(std/core/types/div :: X)>>(p: proof){
+                  (koka-redex/term/#proof/show(p, (std/core/types/@OptArg<std/core/types/string>((std/core/types/(++)((match (indent) {
+                        ((std/core/types/@OptArg((@uniq-indent@456: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+                           -> @uniq-indent@456;
+                        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+                           -> "";
+                      }), "  "))))));
+                }));
+            val body[53,11,53,14] : std/core/types/string
+              = std/core/list/joinsep(xs@10009, "\x0A");
+        (match ((std/core/string/(==)(body, ""))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@7: std/core/types/bool)
+             -> head;
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@8: std/core/types/bool)
+             -> std/core/types/(++)(head, (std/core/types/(++)("\x0A", body)));
+        });
+    };
+  };
+inline val axiom // inline size: 0
+  = type-level/nil/TNil;
+inline borrow "^" fip fun is-tvar // inline size: 1
+  = fn(term: term){
+    match (term) {
+      ((koka-redex/term/TVar((@pat@0: std/core/types/string) : std/core/types/string, (@pat@1: std/core/types/int) : std/core/types/int) : term ) as @pat: term)
+         -> std/core/types/True;
+      (@pat@2: term)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fip fun is-tatom // inline size: 1
+  = fn(term: term){
+    match (term) {
+      ((koka-redex/term/TAtom((@pat@0: std/core/types/string) : std/core/types/string) : term ) as @pat: term)
+         -> std/core/types/True;
+      (@pat@1: term)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fip fun is-tint // inline size: 1
+  = fn(term: term){
+    match (term) {
+      ((koka-redex/term/TInt((@pat@0: std/core/types/int) : std/core/types/int) : term ) as @pat: term)
+         -> std/core/types/True;
+      (@pat@1: term)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fip fun is-tnode // inline size: 1
+  = fn(term: term){
+    match (term) {
+      ((koka-redex/term/TNode((@pat@0: std/core/types/string) : std/core/types/string, (@pat@1: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : term ) as @pat: term)
+         -> std/core/types/True;
+      (@pat@2: term)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fip fun is-tref // inline size: 1
+  = fn(term: term){
+    match (term) {
+      ((koka-redex/term/TRef((@pat@0: std/core/types/int) : std/core/types/int) : term ) as @pat: term)
+         -> std/core/types/True;
+      (@pat@1: term)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun fact/args // inline size: 0
+  = fn(fact: fact){
+    match (fact) {
+      ((@skip koka-redex/term/Fact((@pat@0: std/core/types/string) : std/core/types/string, (@x: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat: fact)
+         -> @x;
+    };
+  };
+inline borrow "^" fun fact/pred // inline size: 0
+  = fn(fact: fact){
+    match (fact) {
+      ((@skip koka-redex/term/Fact((@x: std/core/types/string) : std/core/types/string, (@pat@0: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat: fact)
+         -> @x;
+    };
+  };
+fun fact/@copy // inline size: 3
+  = fn(@this: fact, pred: (std/core/types/@optional :: V -> V)<std/core/types/string>, args: (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<term>>){
+    koka-redex/term/Fact((match (pred) {
+        ((std/core/types/@OptArg((@uniq-pred@210: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+           -> @uniq-pred@210;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+           -> (match (@this) {
+            ((@skip koka-redex/term/Fact((@x: std/core/types/string) : std/core/types/string, (@pat@0@0: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact)
+               -> @x;
+          });
+      }), (match (args) {
+        ((std/core/types/@OptArg((@uniq-args@218: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<term>> ) as @pat@1@0: ((std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<term>>))
+           -> @uniq-args@218;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<term>> ) as @pat@2: ((std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<term>>))
+           -> (match (@this) {
+            ((@skip koka-redex/term/Fact((@pat@0@1: std/core/types/string) : std/core/types/string, (@x@0: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@3: fact)
+               -> @x@0;
+          });
+      }));
+  };
+inline borrow "^" fun rule/name // inline size: 0
+  = fn(rule: rule){
+    match (rule) {
+      ((@skip koka-redex/term/Rule((@x: std/core/types/string) : std/core/types/string, (@pat@0: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>, ((@skip koka-redex/term/Fact((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact) : fact) : rule ) as @pat: rule)
+         -> @x;
+    };
+  };
+inline borrow "^" fun rule/premises // inline size: 0
+  = fn(rule: rule){
+    match (rule) {
+      ((@skip koka-redex/term/Rule((@pat@0: std/core/types/string) : std/core/types/string, (@x: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>, ((@skip koka-redex/term/Fact((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact) : fact) : rule ) as @pat: rule)
+         -> @x;
+    };
+  };
+inline borrow "^" fun rule/conclusion // inline size: 0
+  = fn(rule: rule){
+    match (rule) {
+      ((@skip koka-redex/term/Rule((@pat@0: std/core/types/string) : std/core/types/string, (@pat@1: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>, ((@skip koka-redex/term/Fact((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @x: fact) : fact) : rule ) as @pat: rule)
+         -> @x;
+    };
+  };
+fun rule/@copy // inline size: 4
+  = fn(@this: rule, name: (std/core/types/@optional :: V -> V)<std/core/types/string>, premises: (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<fact>>, conclusion: (std/core/types/@optional :: V -> V)<fact>){
+    koka-redex/term/Rule((match (name) {
+        ((std/core/types/@OptArg((@uniq-name@259: std/core/types/string) : std/core/types/string) : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+           -> @uniq-name@259;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<std/core/types/string> ) as @pat@0: ((std/core/types/@optional :: V -> V)<std/core/types/string>))
+           -> (match (@this) {
+            ((@skip koka-redex/term/Rule((@x: std/core/types/string) : std/core/types/string, (@pat@0@0: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>, ((@skip koka-redex/term/Fact((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1@0: fact) : fact) : rule ) as @pat@1: rule)
+               -> @x;
+          });
+      }), (match (premises) {
+        ((std/core/types/@OptArg((@uniq-premises@267: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>) : (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<fact>> ) as @pat@1@1: ((std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<fact>>))
+           -> @uniq-premises@267;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<fact>> ) as @pat@2@0: ((std/core/types/@optional :: V -> V)<(std/core/types/list :: V -> V)<fact>>))
+           -> (match (@this) {
+            ((@skip koka-redex/term/Rule((@pat@0@1: std/core/types/string) : std/core/types/string, (@x@0: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>, ((@skip koka-redex/term/Fact((@pat@2@1: std/core/types/string) : std/core/types/string, (@pat@3@0: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1@2: fact) : fact) : rule ) as @pat@4: rule)
+               -> @x@0;
+          });
+      }), (match (conclusion) {
+        ((std/core/types/@OptArg((@uniq-conclusion@275: fact) : fact) : (std/core/types/@optional :: V -> V)<fact> ) as @pat@3@1: ((std/core/types/@optional :: V -> V)<fact>))
+           -> @uniq-conclusion@275;
+        ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<fact> ) as @pat@4@0: ((std/core/types/@optional :: V -> V)<fact>))
+           -> (match (@this) {
+            ((@skip koka-redex/term/Rule((@pat@0@2: std/core/types/string) : std/core/types/string, (@pat@1@3: (std/core/types/list :: V -> V)<fact>) : (std/core/types/list :: V -> V)<fact>, ((@skip koka-redex/term/Fact((@pat@2@2: std/core/types/string) : std/core/types/string, (@pat@3@2: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @x@1: fact) : fact) : rule ) as @pat@5: rule)
+               -> @x@1;
+          });
+      }));
+  };
+inline borrow "^" fip fun is-byFact // inline size: 1
+  = fn(proof: proof){
+    match (proof) {
+      ((koka-redex/term/ByFact(((@skip koka-redex/term/Fact((@pat@1: std/core/types/string) : std/core/types/string, (@pat@2: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@0: fact) : fact) : proof ) as @pat: proof)
+         -> std/core/types/True;
+      ((@skip koka-redex/term/ByRule((@pat@4: std/core/types/string) : std/core/types/string, (@pat@5: fact) : fact, (@pat@6: (std/core/types/list :: V -> V)<proof>) : (std/core/types/list :: V -> V)<proof>) : proof ) as @pat@3: proof)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fip fun is-byRule // inline size: 1
+  = fn(proof: proof){
+    match (proof) {
+      ((koka-redex/term/ByRule((@pat@0: std/core/types/string) : std/core/types/string, ((@skip koka-redex/term/Fact((@pat@2: std/core/types/string) : std/core/types/string, (@pat@3: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact) : fact, (@pat@4: (std/core/types/list :: V -> V)<proof>) : (std/core/types/list :: V -> V)<proof>) : proof ) as @pat: proof)
+         -> std/core/types/True;
+      ((@skip koka-redex/term/ByFact((@pat@6: fact) : fact) : proof ) as @pat@5: proof)
+         -> std/core/types/False;
+    };
+  };
+fun fact/eq // inline size: 3
+  = fn<<(std/core/types/div :: X)>>(f1: fact, f2: fact){
+    match (f1, f2) {
+      ((@skip koka-redex/term/Fact((p2: std/core/types/string) : std/core/types/string, (as2: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact), ((@skip koka-redex/term/Fact((p1: std/core/types/string) : std/core/types/string, (as1: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@0: fact)
+         -> (match ((std/core/string/(==)(p1, p2))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@2: std/core/types/bool)
+             -> koka-redex/term/#term-list/eq(as1, as2);
+          (@pat@3: std/core/types/bool)
+             -> std/core/types/False;
+        });
+    };
+  };
+fun fact/in-list // inline size: 4
+  = fn<<(std/core/types/div :: X)>>(f: fact, fs: (std/core/types/list :: V -> V)<fact>){
+    std/core/list/any<fact,<(std/core/types/div :: X)>>(fs, (fn<<(std/core/types/div :: X)>>(x: fact){
+        (match (f, x) {
+          ((@skip koka-redex/term/Fact((p2: std/core/types/string) : std/core/types/string, (as2: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@1: fact), ((@skip koka-redex/term/Fact((p1: std/core/types/string) : std/core/types/string, (as1: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat@0: fact)
+             -> (match ((std/core/string/(==)(p1, p2))) {
+              ((std/core/types/True() : std/core/types/bool ) as @pat@2: std/core/types/bool)
+                 -> koka-redex/term/#term-list/eq(as1, as2);
+              (@pat@3: std/core/types/bool)
+                 -> std/core/types/False;
+            });
+        });
+      }));
+  };
+fun fact/is-ground // inline size: 1
+  = fn<<(std/core/types/div :: X)>>(@pat-x97_24: fact){
+    match (@pat-x97_24) {
+      ((@skip koka-redex/term/Fact((@pat@0: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<term>) : (std/core/types/list :: V -> V)<term>) : fact ) as @pat: fact)
+         -> std/core/list/all<term,<(std/core/types/div :: X)>>(args, koka-redex/term/#term/is-ground);
+    };
+  };
+inline borrow "^" fun ref-pool/@cfc // inline size: 0
+  = forall<a,(e :: E),b> fn(@this: (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (@this) {
+      ((@skip koka-redex/term/@Hnd-ref-pool((@x: std/core/types/int) : std/core/types/int, (@pat@0: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((ref-pool :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun ref-pool/@fun-pool-intern // inline size: 0
+  = forall<a,(e :: E),b> fn(@this: (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (@this) {
+      ((@skip koka-redex/term/@Hnd-ref-pool((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((ref-pool :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun pool-intern/@select // inline size: 0
+  = forall<a,(e :: E),b> fn(hnd: (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (hnd) {
+      ((@skip koka-redex/term/@Hnd-ref-pool((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, (@fun-pool-intern: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((ref-pool :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @fun-pool-intern;
+    });
+  };
+inline fun pool-intern // inline size: 1
+  = forall<a> fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@hname: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>, x: a){
+    std/core/hnd/@perform1<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@hname, (forall<(e :: E),b> koka-redex/term/#pool-intern/@select<a,(e :: E),b>), x);
+  };
+inline borrow "^" fun ref-pool/@fun-pool-deref // inline size: 0
+  = forall<a,(e :: E),b> fn(@this: (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (@this) {
+      ((@skip koka-redex/term/@Hnd-ref-pool((@pat@0: std/core/types/int) : std/core/types/int, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((ref-pool :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun pool-deref/@select // inline size: 0
+  = forall<a,(e :: E),b> fn(hnd: (ref-pool :: (V, E, V) -> V)<a,(e :: E),b>){
+    (match (hnd) {
+      ((@skip koka-redex/term/@Hnd-ref-pool((@pat@0: std/core/types/int) : std/core/types/int, (@fun-pool-deref: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,(e :: E),b>) : (ref-pool :: (V, E, V) -> V)<a,(e :: E),b> ) as @pat: ((ref-pool :: (V, E, V) -> V)<a,(e :: E),b>))
+         -> @fun-pool-deref;
+    });
+  };
+inline fun pool-deref // inline size: 1
+  = forall<a> fn<<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@hname: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>, id: std/core/types/int){
+    std/core/hnd/@perform1<std/core/types/int,a,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@hname, (forall<(e :: E),b> koka-redex/term/#pool-deref/@select<a,(e :: E),b>), id);
+  };
+fun ref/to-term // inline size: 2
+  = forall<a> fn<(std/core/pure :: E)>(x: a, @implicit/pool: (std/core/hnd/ev :: ((E, V) -> V) -> V)<(ref-pool :: (V, E, V) -> V)<a>>){
+    koka-redex/term/TRef((std/core/hnd/@perform1<a,std/core/types/int,(ref-pool :: (V, E, V) -> V)<a>,<(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(std/core/exn/exn :: (E, V) -> V)>>>(@implicit/pool, (forall<(e :: E),b> koka-redex/term/#pool-intern/@select<a,(e :: E),b>), x)));
+  };
+inline fun term/to-term // inline size: 0
+  = fn(t: term){
+    t;
+  };
+fun string/to-term // inline size: 1
+  = fn(s: std/core/types/string){
+    koka-redex/term/TAtom(s);
+  };
+fun int/to-term // inline size: 1
+  = fn(i: std/core/types/int){
+    koka-redex/term/TInt(i);
+  };

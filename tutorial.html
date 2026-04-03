@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/koka-redex/coi-serviceworker.js">
+      
+    </script>
+    <meta charset="UTF-8">
+      
+    </meta>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+      
+    </meta>
+    <title>
+      Tutorial · Koka Redex
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+      
+    </link>
+    <link href="styles/site.css" rel="stylesheet">
+      
+    </link>
+    <meta content="/koka-redex/playground/koka-playground.wasm" name="koka-wasm-url">
+      
+    </meta>
+    <meta content="/koka-redex/playground/" name="koka-stdlib-url">
+      
+    </meta>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <div class="nav-brand">
+        <a href="index.html">
+          Koka Redex
+        </a>
+      </div>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">
+          Overview
+        </a>
+        <a class="nav-link" href="tutorial.html">
+          Tutorial
+        </a>
+        <a class="nav-link" href="engine.html">
+          Engine
+        </a>
+        <a class="nav-link" href="derive.html">
+          Derive
+        </a>
+        <a class="nav-link" href="rendering.html">
+          Rendering
+        </a>
+        <a class="nav-link" href="api.html">
+          API
+        </a>
+      </div>
+    </nav>
+    <main class="site-content">
+      <div class="body madoko" style="line-adjust:0">
+<h2 id="sec-tutorial--from-reachability-to-0cfa" class="h1" data-heading-depth="1" style="display:block">Tutorial: From Reachability to 0CFA</h2>
+<p class="p noindent">This tutorial walks through three examples of increasing complexity.
+Each code sample is editable and runnable in the browser.
+</p><h3 id="sec-1-reachability-your-first-relation" class="h2" data-heading-depth="2" style="display:block">1. Reachability — Your First Relation</h3>
+<p class="p noindent">Define a simple directed graph and query for reachable nodes.
+</p><koka-editor>
+import koka-redex/forward-bridge
+import koka-redex/pattern
+
+// Relation markers
+pub type r-edge
+  REdge
+pub val r-edge/judgment-name: name&lt;r-edge&gt; = Name("edge")
+
+pub type r-reach
+  RReach
+pub val r-reach/judgment-name: name&lt;r-reach&gt; = Name("reach")
+
+// Pattern helpers
+fun n(i: int): pat&lt;int&gt; { PatTerm(TInt(i)) }
+fun pv(nm: string, id: int): pat&lt;int&gt; { PatVar(nm, id) }
+
+// Rules
+fun reach-relation()
+  val x = pv("x", 1)
+  val y = pv("y", 2)
+  val z = pv("z", 3)
+  with relation-def
+  with rule(axiom --- "edge-1-2" --&gt; n(1) |- REdge \ n(2))
+  with rule(axiom --- "edge-2-3" --&gt; n(2) |- REdge \ n(3))
+  with rule(axiom --- "edge-3-4" --&gt; n(3) |- REdge \ n(4))
+  with rule(
+    x |- REdge \ y
+    --- "reach-edge" --&gt;
+    x |- RReach \ y)
+  single/rule(
+    x |- REdge \ y \\
+    y |- RReach \ z
+    --- "reach-step" --&gt;
+    x |- RReach \ z)
+
+pub fun main()
+  println("--- reach(1, ?) ---")
+  val goal = n(1) |- RReach \ pv("target", 0)
+  val table = forward-search(goal, reach-relation())
+  val goal-key = "reach(1)"
+  val results = table.filter(_.fst == goal-key).flatmap(snd)
+  results.foreach(_.println)
+</koka-editor>
+
+<p class="p noindent"><strong class="strong-star2">Key syntax:</strong>
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">|-</code> separates inputs from the relation marker
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">\</code> separates elements within a judgement
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">\\</code> separates premises
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">--- &quot;name&quot; --&gt;</code> creates a named rule
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">axiom</code> means no premises
+</li>
+<li class="li ul-li list-dash-li compact-li"><code class="code code1">with rule(...)</code> chains rules, <code class="code code1">single/rule(...)</code> ends the chain
+</li></ul>
+
+<hr  class="madoko" style="display:block">
+<h3 id="sec-2-0cfa-lattice-fixpoint" class="h2" data-heading-depth="2" style="display:block">2. 0CFA — Lattice Fixpoint</h3>
+<p class="p noindent">0CFA demonstrates <strong class="strong-star2">collecting semantics</strong> — the same variable can have
+multiple values, discovered through fixpoint iteration.
+</p><koka-editor>
+import koka-redex/forward-bridge
+import koka-redex/derive
+import koka-redex/pattern
+
+// Domain types
+pub type expr
+  EVar(nm: string)
+  EApp(e1: expr, e2: expr)
+  ELam(x: string, body: expr)
+
+pub type store
+  SNil
+  SCons(nm: string, vl: expr, rest: store)
+
+// Con-info descriptors for auto-derived to-term/from-term
+pub type var-expr
+pub val var-expr/con-name: name&lt;var-expr&gt; = Name("var")
+pub type app-expr
+pub val app-expr/con-name: name&lt;app-expr&gt; = Name("app")
+pub type lam-expr
+pub val lam-expr/con-name: name&lt;lam-expr&gt; = Name("lam")
+pub type snil-store
+pub val snil-store/con-name: name&lt;snil-store&gt; = Name("snil")
+pub type scons-store
+pub val scons-store/con-name: name&lt;scons-store&gt; = Name("scons")
+
+pub val var-expr/con-info : con-info&lt;var-expr, t-cons&lt;string, t-nil&gt;, expr&gt; = Con-info(
+  fn(e) match e { EVar(n) -&gt; Just(n +: TNil); _ -&gt; Nothing }, fn(TCons(n, _)) EVar(n))
+pub val app-expr/con-info : con-info&lt;app-expr, t-cons&lt;expr, t-cons&lt;expr, t-nil&gt;&gt;, expr&gt; = Con-info(
+  fn(e) match e { EApp(a, b) -&gt; Just(a +: b +: TNil); _ -&gt; Nothing }, fn(TCons(a, TCons(b, _))) EApp(a, b))
+pub val lam-expr/con-info : con-info&lt;lam-expr, t-cons&lt;string, t-cons&lt;expr, t-nil&gt;&gt;, expr&gt; = Con-info(
+  fn(e) match e { ELam(x, body) -&gt; Just(x +: body +: TNil); _ -&gt; Nothing }, fn(TCons(x, TCons(body, _))) ELam(x, body))
+val expr-info =
+  mk-field(var-expr/con-info) *: mk-field(app-expr/con-info) *: mk-field(lam-expr/con-info) *: TNil
+
+pub val snil-store/con-info : con-info&lt;snil-store, t-nil, store&gt; = Con-info(
+  fn(s) match s { SNil -&gt; Just(TNil); _ -&gt; Nothing }, fn(_) SNil)
+pub val scons-store/con-info : con-info&lt;scons-store, t-cons&lt;string, t-cons&lt;expr, t-cons&lt;store, t-nil&gt;&gt;&gt;, store&gt; = Con-info(
+  fn(s) match s { SCons(n, v, rest) -&gt; Just(n +: v +: rest +: TNil); _ -&gt; Nothing }, fn(TCons(n, TCons(v, TCons(rest, _)))) SCons(n, v, rest))
+val store-info =
+  mk-field(snil-store/con-info) *: mk-field(scons-store/con-info) *: TNil
+
+// Auto-derived to-term / from-term
+pub fun expr/to-term(e: expr): div term
+  val n/to-term = expr/to-term
+  derive-to-term(e, expr-info)
+pub fun store/to-term(s: store): div term
+  val n/to-term = store/to-term
+  derive-to-term(s, store-info)
+pub fun expr/from-term(t: term): &lt;exn,div&gt; expr
+  val n/from-term = expr/from-term
+  derive-from-term(t, expr-info)
+pub fun store/from-term(t: term): &lt;exn,div&gt; store
+  val n/from-term = store/from-term
+  derive-from-term(t, store-info)
+
+// Relation markers
+pub type r-eval
+  REval
+pub val r-eval/judgment-name: name&lt;r-eval&gt; = Name("eval")
+pub type r-lookup
+  RLookup
+pub val r-lookup/judgment-name: name&lt;r-lookup&gt; = Name("lookup")
+
+// Pattern constructors
+fun p-var(nm: pat&lt;string&gt;): pat&lt;expr&gt;
+  PatTerm(TNode("var", [nm.to-term]))
+fun p-app(e1: pat&lt;expr&gt;, e2: pat&lt;expr&gt;): pat&lt;expr&gt;
+  PatTerm(TNode("app", [e1.to-term, e2.to-term]))
+fun p-lam(x: pat&lt;string&gt;, body: pat&lt;expr&gt;): pat&lt;expr&gt;
+  PatTerm(TNode("lam", [x.to-term, body.to-term]))
+fun p-snil(): pat&lt;store&gt;
+  PatTerm(TNode("snil", []))
+fun p-scons(nm: pat&lt;string&gt;, vl: pat&lt;expr&gt;, rest: pat&lt;store&gt;): pat&lt;store&gt;
+  PatTerm(TNode("scons", [nm.to-term, vl.to-term, rest.to-term]))
+
+// External solver
+fun store-lookup-all(s: store, nm: string): div list&lt;expr&gt;
+  match s
+    SCons(n, vl, rest) -&gt;
+      val found = if n == nm then [vl] else []
+      found ++ store-lookup-all(rest, nm)
+    _ -&gt; []
+
+// Rules
+fun cfa-relation()
+  with with-pats
+  val x  : pat&lt;string&gt; = fresh-pat("x")
+  val (e, e1, e2, e3: pat&lt;expr&gt;) = four/fresh-pats("e")
+  val (s, s0, s1, s2, s3: pat&lt;store&gt;) = five/fresh-pats("s")
+  val (v, v2, vl: pat&lt;expr&gt;) = three/fresh-pats("v")
+
+  with relation-def
+  with rule(
+    axiom
+    --- "E-Lam" --&gt;
+    p-lam(x, e) \ s |- REval \ p-lam(x, e) \ s)
+  with external-rule(s \ x |- RLookup \ v,
+    fn(TCons(s-val: store, x-val: string)) store-lookup-all(s-val, x-val))
+  with rule(
+    s \ x |- RLookup \ vl
+    --- "E-Var" --&gt;
+    p-var(x) \ s |- REval \ vl \ s)
+  single/rule(
+    e1 \ s0 |- REval \ p-lam(x, e3) \ s1 \\
+    e2 \ s1 |- REval \ v2 \ s2 \\
+    e3 \ p-scons(x, v2, s2) |- REval \ v \ s3
+    --- "E-App" --&gt;
+    p-app(e1, e2) \ s0 |- REval \ v \ s3)
+
+pub fun main()
+  with with-pats
+  val rel = cfa-relation()
+
+  // (λx.x)(λz.z) — simple identity application
+  println("--- (λx.x)(λz.z) ---")
+  val id-fn = ELam("x", EVar("x"))
+  val goal1 = pat(EApp(id-fn, ELam("z", EVar("z")))) \ pat(SNil)
+            |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat&lt;store&gt;)
+  val table1 = forward-search(goal1, rel)
+  println("Entries: " ++ table1.length.show)
+
+  // let f = λx.x in (f λa.a)(f λb.b) — over-approximation
+  println("\n--- let f = λx.x in (f λa.a)(f λb.b) ---")
+  val lam-a = ELam("a", EVar("a"))
+  val lam-b = ELam("b", EVar("b"))
+  val body = EApp(EApp(EVar("f"), lam-a), EApp(EVar("f"), lam-b))
+  val prog2 = EApp(ELam("f", body), id-fn)
+  val goal2 = pat(prog2) \ pat(SNil)
+            |- REval \ fresh-pat("v") \ (fresh-pat("s") : pat&lt;store&gt;)
+  val table2 = forward-search(goal2, rel)
+  println("Entries: " ++ table2.length.show)
+
+  println("\nOver-approximation:")
+  val multi = table2.filter(fn(kv) kv.snd.length &gt; 1)
+  println("  Entries with &gt;1 value: " ++ multi.length.show)
+  multi.foreach fn(kv)
+    println("  ** " ++ kv.fst ++ " has " ++ kv.snd.length.show ++ " values **")
+</koka-editor>
+
+<p class="p noindent"><strong class="strong-star2">What&#39;s happening:</strong>
+</p>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li">The <code class="code code1">set-join</code> lattice collects all distinct results per memo key
+</li>
+<li class="li ul-li list-dash-li compact-li">When <code class="code code1">f = λx.x</code> is applied to both <code class="code code1">λa.a</code> and <code class="code code1">λb.b</code>, the variable <code class="code code1">x</code>
+gets both values — the analysis correctly over-approximates
+</li>
+<li class="li ul-li list-dash-li compact-li">The fixpoint engine discovers all values via tabled continuation resumption
+</li>
+<li class="li ul-li list-dash-li compact-li">No special abstract interpretation machinery — <code class="code code1">set-join</code> + fixpoint = collecting semantics
+</li></ul>
+
+<hr  class="madoko" style="display:block">
+<h3 id="sec-what-to-try" class="h2" data-heading-depth="2" style="display:block">What to Try</h3>
+<ul class="ul list-dash compact">
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Edit the graph</strong> in the reachability example — add edges, see how the results change
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Modify the program</strong> in the 0CFA example — try <code class="code code1">(λx.x)(λy.y)</code> or add more bindings
+</li>
+<li class="li ul-li list-dash-li compact-li"><strong class="strong-star2">Watch the entry count</strong> grow as the program gets more complex
+</li></ul>
+<span data-line=""></span></div>
+    </main>
+    <footer class="site-footer">
+      Koka Redex
+    </footer>
+    <script src="/koka-redex/playground/embed.js" type="module">
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,205 @@
+/*----------------------------------------------------------------------------
+   Copyright 2024, Koka-Community Authors
+
+   Licensed under the MIT License ("The License"). You may not
+   use this file except in compliance with the License. A copy of the License
+   can be found in the LICENSE file at the root of this distribution.
+----------------------------------------------------------------------------*/
+module interface std/data/rb-set
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/data/rbtree = std/data/rbtree pub = "";
+import std/core = std/core = "";
+import std/data/rbtree-bu = std/data/rbtree-bu = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub value{0,1,8} type rbset[12,1,13,20] <a> :: V -> V {
+  pub con Rbset[12,18,12,22](tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>){0,1,8} : forall<a> (tree : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (rbset :: V -> V)<a> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `tree` constructor field of the `:rbset` type.
+pub fun rbset/tree[13,3,13,6] : forall<a> (^ rbset : (rbset :: V -> V)<a>) -> (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>;
+pub fun rbset/@copy[12,18,12,22] : forall<a> (@this : (rbset :: V -> V)<a>, tree : (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,()>>) -> (rbset :: V -> V)<a>;
+// monadic lift
+fun set/@mlift-add@10020[1,0,1,0] : forall<(e :: E),a> (@y-x10001 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (e :: E) (rbset :: V -> V)<a>;
+pub fun set/add[15,9,15,15] : forall<(e :: E),a> (s : (rbset :: V -> V)<a>, k : a, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (rbset :: V -> V)<a>;
+pub fun contains[24,9,24,16] : forall<(e :: E),a> (s : (rbset :: V -> V)<a>, k : a, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) std/core/types/bool;
+// monadic lift
+fun check/@mlift-add@10021[1,0,1,0] : forall<(e :: E),a> (@y-x10006 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (e :: E) (std/core/types/bool, (rbset :: V -> V)<a>);
+// monadic lift
+fun check/@mlift-add@10022[1,0,1,0] : forall<(e :: E),a> (k : a, ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, tree : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, @y-x10005 : std/core/types/bool) -> (e :: E) (std/core/types/bool, (rbset :: V -> V)<a>);
+pub fun check/add[19,9,19,17] : forall<(e :: E),a> (s : (rbset :: V -> V)<a>, k : a, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (std/core/types/bool, (rbset :: V -> V)<a>);
+pub fun empty[28,9,28,13] : forall<a> () -> (rbset :: V -> V)<a>;
+pub fun list[31,9,31,12] : forall<a> (s : (rbset :: V -> V)<a>) -> (std/core/types/list :: V -> V)<a>;
+pub fun show[35,9,35,12] : forall<(e :: E),a> (s : (rbset :: V -> V)<a>, ?k/show : (a) -> (e :: E) std/core/types/string) -> (e :: E) std/core/types/string;
+// monadic lift
+fun @mlift-order2@10023[1,0,1,0] : forall<(e :: E),a> (?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, orig1 : (rbset :: V -> V)<a>, orig2 : (rbset :: V -> V)<a>, r1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, r2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, @y-x10012 : (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>;
+// monadic lift
+fun @mlift-order2@10024[1,0,1,0] : forall<(e :: E),a> (l1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, l2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>, orig1 : (rbset :: V -> V)<a>, orig2 : (rbset :: V -> V)<a>, r1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, r2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, @y-x10011 : (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>;
+pub fun order2[39,9,39,14] : forall<(e :: E),a> (t1 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, t2 : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, orig1 : (rbset :: V -> V)<a>, orig2 : (rbset :: V -> V)<a>, ^ ?order2 : (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>) -> (e :: E) (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "__*" borrow "__^" fun check/add // inline size: 1
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> (match ((std/data/rbtree/contains<(e :: E),a,()>(tree, k, @implicit/order2))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@0: std/core/types/bool)
+             -> std/core/types/Tuple2<std/core/types/bool,(rbset :: V -> V)<a>>(std/core/types/False, (std/data/rb-set/Rbset<a>(tree)));
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@1: std/core/types/bool)
+             -> std/core/types/Tuple2<std/core/types/bool,(rbset :: V -> V)<a>>(std/core/types/True, (std/data/rb-set/Rbset<a>((std/data/rbtree-bu/#bu/set<(e :: E),a,()>(tree, k, std/core/types/Unit, @implicit/order2)))));
+        });
+    });
+  };
+specialize "__*" borrow "__^" fun set/add // inline size: 1
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/data/rb-set/Rbset<a>((std/data/rbtree-bu/#bu/set<(e :: E),a,()>(tree, k, std/core/types/Unit, @implicit/order2)));
+    });
+  };
+specialize "__*" borrow "__^" fun contains // inline size: 1
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/data/rbtree/contains<(e :: E),a,()>(tree, k, @implicit/order2);
+    });
+  };
+recursive specialize "____*" borrow "____^" fun order2 // inline size: 17
+  = forall<(e :: E),a> fn<(e :: E)>(t1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, t2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, orig1: (rbset :: V -> V)<a>, orig2: (rbset :: V -> V)<a>, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (t1) {
+      ((std/data/rbtree/Leaf() : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()> ) as @pat: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,()>))
+         -> (match (t2) {
+          ((std/data/rbtree/Leaf() : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()> ) as @pat@0: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,()>))
+             -> std/core/types/Eq2<(rbset :: V -> V)<a>>(orig1);
+          ((@skip std/data/rbtree/Node((@pat@2: std/data/rbtree/color) : std/data/rbtree/color, (@pat@3: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, (@pat@4: a) : a, ((@skip std/core/types/Unit() : () ) as @pat@5: ()) : (), (@pat@6: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()> ) as @pat@1: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,()>))
+             -> std/core/types/Lt2<(rbset :: V -> V)<a>>(orig1, orig2);
+        });
+      ((@skip std/data/rbtree/Node((@pat@8: std/data/rbtree/color) : std/data/rbtree/color, (l1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, (k1: a) : a, ((@skip std/core/types/Unit() : () ) as @pat@9: ()) : (), (r1: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()> ) as @pat@7: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,()>))
+         -> (match (t2) {
+          ((std/data/rbtree/Leaf() : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()> ) as @pat@10: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,()>))
+             -> std/core/types/Gt2<(rbset :: V -> V)<a>>(orig2, orig1);
+          ((@skip std/data/rbtree/Node((@pat@12: std/data/rbtree/color) : std/data/rbtree/color, (l2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>, (k2: a) : a, ((@skip std/core/types/Unit() : () ) as @pat@13: ()) : (), (r2: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()> ) as @pat@11: ((std/data/rbtree/rbtree :: (V, V) -> V)<a,()>))
+             -> (match ((@implicit/order2(k1, k2))) {
+              ((std/core/types/Lt2((@pat@15: a) : a, (@pat@16: a) : a) : (std/core/types/order2 :: V -> V)<a> ) as @pat@14: ((std/core/types/order2 :: V -> V)<a>))
+                 -> std/core/types/Lt2<(rbset :: V -> V)<a>>(orig1, orig2);
+              ((std/core/types/Gt2((@pat@18: a) : a, (@pat@19: a) : a) : (std/core/types/order2 :: V -> V)<a> ) as @pat@17: ((std/core/types/order2 :: V -> V)<a>))
+                 -> std/core/types/Gt2<(rbset :: V -> V)<a>>(orig2, orig1);
+              ((@skip std/core/types/Eq2((@pat@21: a) : a) : (std/core/types/order2 :: V -> V)<a> ) as @pat@20: ((std/core/types/order2 :: V -> V)<a>))
+                 -> (match ((std/data/rb-set/order2<(e :: E),a>(l1, l2, orig1, orig2, @implicit/order2))) {
+                  ((std/core/types/Lt2((@pat@23: (rbset :: V -> V)<a>) : (rbset :: V -> V)<a>, (@pat@24: (rbset :: V -> V)<a>) : (rbset :: V -> V)<a>) : (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>> ) as @pat@22: ((std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>))
+                     -> std/core/types/Lt2<(rbset :: V -> V)<a>>(orig1, orig2);
+                  ((std/core/types/Gt2((@pat@26: (rbset :: V -> V)<a>) : (rbset :: V -> V)<a>, (@pat@27: (rbset :: V -> V)<a>) : (rbset :: V -> V)<a>) : (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>> ) as @pat@25: ((std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>))
+                     -> std/core/types/Gt2<(rbset :: V -> V)<a>>(orig2, orig1);
+                  ((@skip std/core/types/Eq2((@pat@29: (rbset :: V -> V)<a>) : (rbset :: V -> V)<a>) : (std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>> ) as @pat@28: ((std/core/types/order2 :: V -> V)<(rbset :: V -> V)<a>>))
+                     -> std/data/rb-set/order2<(e :: E),a>(r1, r2, orig1, orig2, @implicit/order2);
+                });
+            });
+        });
+    });
+  };
+specialize "_*" fun show // inline size: 1
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, @implicit/k/show: (a) -> (e :: E) std/core/types/string){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/core/list/show<a,(e :: E)>((std/core/types/@open<(std/core/types/total :: E),(e :: E),(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (std/core/types/list :: V -> V)<a>,(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (e :: E) (std/core/types/list :: V -> V)<a>>((std/data/rbtree/keys<a,()>))(tree)), @implicit/k/show);
+    });
+  };
+inline borrow "^" fun rbset/tree // inline size: 0
+  = forall<a> fn(rbset: (rbset :: V -> V)<a>){
+    (match (rbset) {
+      ((@skip std/data/rb-set/Rbset((@x: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> @x;
+    });
+  };
+fun rbset/@copy // inline size: 2
+  = forall<a> fn(@this: (rbset :: V -> V)<a>, tree: (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,()>>){
+    std/data/rb-set/Rbset<a>((match (tree) {
+      ((std/core/types/@OptArg((@uniq-tree@105: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,()>> ) as @pat: ((std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,()>>))
+         -> @uniq-tree@105;
+      ((@skip std/core/types/@NoOptArg() : (std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,()>> ) as @pat@0: ((std/core/types/@optional :: V -> V)<(std/data/rbtree/rbtree :: (V, V) -> V)<a,()>>))
+         -> (match (@this) {
+          ((@skip std/data/rb-set/Rbset((@x: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat@1: ((rbset :: V -> V)<a>))
+             -> @x;
+        });
+    }));
+  };
+borrow "__^" fun set/add // inline size: 2
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/data/rb-set/Rbset<a>((std/data/rbtree-bu/#bu/set<(e :: E),a,()>(tree, k, std/core/types/Unit, @implicit/order2)));
+    });
+  };
+borrow "__^" fun contains // inline size: 1
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, k: a, @implicit/order2: (a, a) -> (e :: E) (std/core/types/order2 :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/data/rbtree/contains<(e :: E),a,()>(tree, k, @implicit/order2);
+    });
+  };
+fun empty // inline size: 1
+  = forall<a> fn(){
+    std/data/rb-set/Rbset<a>((std/data/rbtree/Leaf<a,()>));
+  };
+fun list // inline size: 1
+  = forall<a> fn(s: (rbset :: V -> V)<a>){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/data/rbtree/keys<a,()>(tree);
+    });
+  };
+fun show // inline size: 3
+  = forall<(e :: E),a> fn<(e :: E)>(s: (rbset :: V -> V)<a>, @implicit/k/show: (a) -> (e :: E) std/core/types/string){
+    (match (s) {
+      ((@skip std/data/rb-set/Rbset((tree: (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) : (rbset :: V -> V)<a> ) as @pat: ((rbset :: V -> V)<a>))
+         -> std/core/list/show<a,(e :: E)>((std/core/types/@open<(std/core/types/total :: E),(e :: E),(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (std/core/types/list :: V -> V)<a>,(t : (std/data/rbtree/rbtree :: (V, V) -> V)<a,()>) -> (e :: E) (std/core/types/list :: V -> V)<a>>((std/data/rbtree/keys<a,()>))(tree)), @implicit/k/show);
+    });
+  };

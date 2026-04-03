@@ -1,0 +1,431 @@
+module interface koka-redex/logic
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types pub = "";
+import std/core/hnd = std/core/hnd pub = "";
+import std/core/exn = std/core/exn pub = "";
+import std/core/bool = std/core/bool pub = "";
+import std/core/order = std/core/order pub = "";
+import std/core/char = std/core/char pub = "";
+import std/core/int = std/core/int pub = "";
+import std/core/vector = std/core/vector pub = "";
+import std/core/string = std/core/string pub = "";
+import std/core/sslice = std/core/sslice pub = "";
+import std/core/list = std/core/list pub = "";
+import std/core/maybe = std/core/maybe pub = "";
+import std/core/maybe2 = std/core/maybe2 pub = "";
+import std/core/either = std/core/either pub = "";
+import std/core/result = std/core/result pub = "";
+import std/core/tuple = std/core/tuple pub = "";
+import std/core/lazy = std/core/lazy pub = "";
+import std/core/show = std/core/show pub = "";
+import std/core/debug = std/core/debug pub = "";
+import std/core/delayed = std/core/delayed pub = "";
+import std/core/console = std/core/console pub = "";
+import std/core = std/core = "";
+pub import koka-redex/term = koka-redex/term = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub recursive effect type logic[15,1,29,47] <(e :: E),a> :: (E, V) -> V {
+  pub con @Hnd-logic[15,1,15,16](@cfc: std/core/types/int, @fun-freshv: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, @fun-resolve: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, @fun-resolve-fact: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, @fun-restore: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, @fun-save: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, @fun-unify: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, @fun-walk: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>){0,8,8} : forall<(e :: E),a> (std/core/types/int, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) -> (logic :: (E, V) -> V)<(e :: E),a> = 1;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `@cfc` constructor field of the `:logic` type.
+fun logic/@cfc[15,1,15,16] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> std/core/types/int;
+// runtime tag for the effect `:logic`
+pub val logic/@tag[15,1,15,16] : (std/core/hnd/htag :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>;
+// handler for the effect `:logic`
+pub fun logic/@handle[15,12,15,16] : forall<a,(e :: E),b> (hnd : (logic :: (E, V) -> V)<(e :: E),b>, ret : (res : a) -> (e :: E) b, action : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>|(e :: E)> a) -> (e :: E) b;
+// Automatically generated. Retrieves the `@fun-unify` constructor field of the `:logic` type.
+fun logic/@fun-unify[18,7,18,35] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>;
+// select `unify` operation out of effect `:logic`
+pub fun unify/@select[18,7,18,35] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>;
+// Fails (via ctl fail) if unification is impossible.
+
+// Call the `fun unify` operation of the effect `:logic`
+pub fun unify[18,7,18,11] : (t1 : koka-redex/term/term, t2 : koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ();
+// Automatically generated. Retrieves the `@fun-walk` constructor field of the `:logic` type.
+fun logic/@fun-walk[20,7,20,25] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>;
+// select `walk` operation out of effect `:logic`
+pub fun walk/@select[20,7,20,25] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>;
+// Resolve a term through the current substitution (shallow walk)
+
+// Call the `fun walk` operation of the effect `:logic`
+pub fun walk[20,7,20,10] : (t : koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/term;
+// Automatically generated. Retrieves the `@fun-resolve` constructor field of the `:logic` type.
+fun logic/@fun-resolve[22,7,22,28] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>;
+// select `resolve` operation out of effect `:logic`
+pub fun resolve/@select[22,7,22,28] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>;
+// Apply substitution deeply (resolve all variables)
+
+// Call the `fun resolve` operation of the effect `:logic`
+pub fun resolve[22,7,22,13] : (t : koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/term;
+// Automatically generated. Retrieves the `@fun-resolve-fact` constructor field of the `:logic` type.
+fun logic/@fun-resolve-fact[24,7,24,33] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>;
+// select `resolve-fact` operation out of effect `:logic`
+pub fun resolve-fact/@select[24,7,24,33] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>;
+// Resolve a fact
+
+// Call the `fun resolve-fact` operation of the effect `:logic`
+pub fun resolve-fact[24,7,24,18] : (f : koka-redex/term/fact) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/fact;
+// Automatically generated. Retrieves the `@fun-freshv` constructor field of the `:logic` type.
+fun logic/@fun-freshv[26,7,26,31] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>;
+// select `freshv` operation out of effect `:logic`
+pub fun freshv/@select[26,7,26,31] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>;
+// Generate a fresh variable
+
+// Call the `fun freshv` operation of the effect `:logic`
+pub fun freshv[26,7,26,12] : (pre : std/core/types/string) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/term;
+// Automatically generated. Retrieves the `@fun-save` constructor field of the `:logic` type.
+fun logic/@fun-save[28,7,28,39] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>;
+// select `save` operation out of effect `:logic`
+pub fun save/@select[28,7,28,39] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>;
+// Save/restore substitution state (for nondeterministic branches)
+
+// Call the `fun save` operation of the effect `:logic`
+pub fun save[28,7,28,10] : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>;
+// Automatically generated. Retrieves the `@fun-restore` constructor field of the `:logic` type.
+fun logic/@fun-restore[29,7,29,47] : forall<(e :: E),a> (^ logic : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>;
+// select `restore` operation out of effect `:logic`
+pub fun restore/@select[29,7,29,47] : forall<(e :: E),a> (^ hnd : (logic :: (E, V) -> V)<(e :: E),a>) -> (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>;
+// Call the `fun restore` operation of the effect `:logic`
+pub fun restore[29,7,29,13] : (s : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ();
+// monadic lift
+fun @mlift-unify-lists@10121[1,0,1,0] : (xr : (std/core/types/list :: V -> V)<koka-redex/term/term>, yr : (std/core/types/list :: V -> V)<koka-redex/term/term>, wild_ : ()) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ();
+fun unify-lists[41,5,41,15] : (xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, ys : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ();
+pub fun unify-facts[35,9,35,19] : (f1 : koka-redex/term/fact, f2 : koka-redex/term/fact) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ();
+// monadic lift
+fun @mlift-freshen-term@10122[1,0,1,0] : (name : std/core/types/string, old-id : std/core/types/int, rs : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, new-t@0 : koka-redex/term/term) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/term);
+// monadic lift
+fun @mlift-freshen-term@10123[1,0,1,0] : (name : std/core/types/string, old-id : std/core/types/int, rs : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, @y-x10030 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>,(std/core/types/div :: X)> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/term);
+// monadic lift
+fun @mlift-freshen-term@10124[1,0,1,0] : (name@0 : std/core/types/string, @y-x10033 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/term);
+// monadic lift
+fun @mlift-freshen-terms@10125[1,0,1,0] : (t1 : koka-redex/term/term, @y-x10036 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>);
+// monadic lift
+fun @mlift-freshen-terms@10126[1,0,1,0] : (rest : (std/core/types/list :: V -> V)<koka-redex/term/term>, @y-x10035 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/term)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>);
+fun freshen-term[51,5,51,16] : (t : koka-redex/term/term, rs : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/term);
+fun freshen-terms[64,5,64,17] : (ts : (std/core/types/list :: V -> V)<koka-redex/term/term>, rs : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>);
+// monadic lift
+fun @mlift-freshen-fact@10127[1,0,1,0] : (pred : std/core/types/string, @y-x10039 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/fact);
+fun freshen-fact[72,5,72,16] : (@pat-x72_18 : koka-redex/term/fact, rs : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, koka-redex/term/fact);
+// monadic lift
+fun @mlift-freshen-facts@10128[1,0,1,0] : (args1 : (std/core/types/list :: V -> V)<koka-redex/term/term>, pred : std/core/types/string, @y-x10042 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>);
+// monadic lift
+fun @mlift-freshen-facts@10129[1,0,1,0] : (pred : std/core/types/string, rest : (std/core/types/list :: V -> V)<koka-redex/term/fact>, @y-x10041 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>);
+fun freshen-facts[76,5,76,17] : (fs : (std/core/types/list :: V -> V)<koka-redex/term/fact>, rs : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>);
+// monadic lift
+fun @mlift-freshen-rule@10130[1,0,1,0] : (args1 : (std/core/types/list :: V -> V)<koka-redex/term/term>, name : std/core/types/string, pred : std/core/types/string, @y-x10047 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/rule;
+// monadic lift
+fun @mlift-freshen-rule@10131[1,0,1,0] : (name : std/core/types/string, pred : std/core/types/string, premises : (std/core/types/list :: V -> V)<koka-redex/term/fact>, @y-x10046 : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>)) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/rule;
+pub fun freshen-rule[84,9,84,20] : (r : koka-redex/term/rule) -> <(std/core/types/div :: X),(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> koka-redex/term/rule;
+fun walk-internal[152,5,152,17] : (t : koka-redex/term/term, s : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X)> koka-redex/term/term;
+fun resolve-internal[160,5,160,20] : (t : koka-redex/term/term, s : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X)> koka-redex/term/term;
+fun occurs-internal[168,5,168,19] : (name : std/core/types/string, id : std/core/types/int, t : koka-redex/term/term, s : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X)> std/core/types/bool;
+fun unify-args-internal[143,5,143,23] : (xs : (std/core/types/list :: V -> V)<koka-redex/term/term>, ys : (std/core/types/list :: V -> V)<koka-redex/term/term>, s : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+fun unify-internal[123,5,123,18] : (t1 : koka-redex/term/term, t2 : koka-redex/term/term, s : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/div :: X)> (std/core/types/maybe :: V -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+// monadic lift
+fun @mlift-with-logic@10132[1,0,1,0] : forall<(h :: H),(e :: E)> (pre : std/core/types/string, @y-x10053 : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> koka-redex/term/term;
+// monadic lift
+fun @mlift-with-logic@10133[1,0,1,0] : forall<(h :: H),(e :: E)> (counter : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, pre : std/core/types/string, wild_ : ()) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> koka-redex/term/term;
+// monadic lift
+fun @mlift-with-logic@10134[1,0,1,0] : forall<(h :: H),(e :: E)> (counter : (std/core/types/local-var :: (H, V) -> V)<(h :: H),std/core/types/int>, pre : std/core/types/string, @y-x10051 : std/core/types/int) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> koka-redex/term/term;
+// monadic lift
+fun @mlift-with-logic@10135[1,0,1,0] : forall<(h :: H),(e :: E)> (t : koka-redex/term/term, @y-x10054 : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> koka-redex/term/term;
+// monadic lift
+fun @mlift-with-logic@10136[1,0,1,0] : forall<(h :: H),(e :: E)> (a : koka-redex/term/term, @y-x10055 : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> koka-redex/term/term;
+// monadic lift
+fun @mlift-with-logic@10137[1,0,1,0] : forall<(h :: H),(e :: E)> (pred : std/core/types/string, @y-x10056 : (std/core/types/list :: V -> V)<koka-redex/term/term>) -> <(std/core/types/div :: X),(std/core/types/local :: H -> X)<(h :: H)>|(e :: E)> koka-redex/term/fact;
+// monadic lift
+fun @mlift-with-logic@10138[1,0,1,0] : forall<(h :: H),(e :: E)> (on-fail : () -> <(std/core/types/div :: X)|(e :: E)> (), subst : (std/core/types/local-var :: (H, V) -> V)<(h :: H),(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>, t1 : koka-redex/term/term, t2 : koka-redex/term/term, @y-x10060 : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> ();
+// monadic lift
+fun @mlift-with-logic@10139[1,0,1,0] : forall<(h :: H),(e :: E)> (t@0 : koka-redex/term/term, @y-x10064 : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) -> <(std/core/types/local :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> koka-redex/term/term;
+// `on-fail` is called when unification fails — typically `none()` from cache effect.
+pub fun with-logic[95,9,95,18] : forall<a,(e :: E)> (on-fail : () -> <(std/core/types/div :: X)|(e :: E)> (), action : () -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>,(std/core/types/div :: X)|(e :: E)> a) -> <(std/core/types/div :: X)|(e :: E)> a;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "**_*" fun occurs-internal // inline size: 1
+  = fn<<(std/core/types/div :: X)>>(name: std/core/types/string, id: std/core/types/int, t: koka-redex/term/term, s: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>){
+    match ((koka-redex/logic/walk-internal(t, s))) {
+      ((koka-redex/term/TVar((n: std/core/types/string) : std/core/types/string, (i: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat: koka-redex/term/term)
+         -> (match ((std/core/string/(==)(n, name))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@0: std/core/types/bool)
+             -> std/core/int/(==)(i, id);
+          (@pat@1: std/core/types/bool)
+             -> std/core/types/False;
+        });
+      ((koka-redex/term/TNode((@pat@3: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/term ) as @pat@2: koka-redex/term/term)
+         -> std/core/list/any<koka-redex/term/term,<(std/core/types/div :: X)>>(args, (fn<<(std/core/types/div :: X)>>(a: koka-redex/term/term){
+            (koka-redex/logic/occurs-internal(name, id, a, s));
+          }));
+      (@pat@4: koka-redex/term/term)
+         -> std/core/types/False;
+    };
+  };
+specialize "_*" fun resolve-internal // inline size: 1
+  = fn<<(std/core/types/div :: X)>>(t: koka-redex/term/term, s: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>){
+    match ((koka-redex/logic/walk-internal(t, s))) {
+      ((koka-redex/term/TVar((n: std/core/types/string) : std/core/types/string, (i: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat: koka-redex/term/term)
+         -> koka-redex/term/TVar(n, i);
+      ((koka-redex/term/TAtom((a: std/core/types/string) : std/core/types/string) : koka-redex/term/term ) as @pat@0: koka-redex/term/term)
+         -> koka-redex/term/TAtom(a);
+      ((koka-redex/term/TInt((i@0: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@1: koka-redex/term/term)
+         -> koka-redex/term/TInt(i@0);
+      ((koka-redex/term/TRef((id: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@2: koka-redex/term/term)
+         -> koka-redex/term/TRef(id);
+      ((@skip koka-redex/term/TNode((n@0: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/term ) as @pat@3: koka-redex/term/term)
+         -> koka-redex/term/TNode(n@0, (std/core/list/map<koka-redex/term/term,koka-redex/term/term,<(std/core/types/div :: X)>>(args, (fn<<(std/core/types/div :: X)>>(a@0: koka-redex/term/term){
+              (koka-redex/logic/resolve-internal(a@0, s));
+            }))));
+    };
+  };
+specialize "__*" fun unify-internal // inline size: 1
+  = fn<<(std/core/types/div :: X)>>(t1: koka-redex/term/term, t2: koka-redex/term/term, s@0: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>){
+    val w1[124,7,124,8] : koka-redex/term/term
+      = koka-redex/logic/walk-internal(t1, s@0);
+    val w2[125,7,125,8] : koka-redex/term/term
+      = koka-redex/logic/walk-internal(t2, s@0);
+    match (w1, w2) {
+      ((koka-redex/term/TVar((n2: std/core/types/string) : std/core/types/string, (i2: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@1@0: koka-redex/term/term), ((koka-redex/term/TVar((n1: std/core/types/string) : std/core/types/string, (i1: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@0@0: koka-redex/term/term)
+         -> (match ((std/core/string/(==)(n1, n2))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@2@0: std/core/types/bool)
+             -> (match ((std/core/int/(==)(i1, i2))) {
+              ((std/core/types/True() : std/core/types/bool ) as @pat@4@0: std/core/types/bool)
+                 -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>(s@0);
+              ((@skip std/core/types/False() : std/core/types/bool ) as @pat@5@0: std/core/types/bool)
+                 -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>((std/core/types/Cons<(std/core/types/string, std/core/types/int, koka-redex/term/term)>((std/core/types/Tuple3<std/core/types/string,std/core/types/int,koka-redex/term/term>(n1, i1, w2)), s@0)));
+            });
+          (@pat@3@0: std/core/types/bool)
+             -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>((std/core/types/Cons<(std/core/types/string, std/core/types/int, koka-redex/term/term)>((std/core/types/Tuple3<std/core/types/string,std/core/types/int,koka-redex/term/term>(n1, i1, w2)), s@0)));
+        });
+      (t: koka-redex/term/term), ((koka-redex/term/TVar((n: std/core/types/string) : std/core/types/string, (i: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@7: koka-redex/term/term)
+         -> (match ((koka-redex/logic/occurs-internal(n, i, t, s@0))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@8: std/core/types/bool)
+             -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@9: std/core/types/bool)
+             -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>((std/core/types/Cons<(std/core/types/string, std/core/types/int, koka-redex/term/term)>((std/core/types/Tuple3<std/core/types/string,std/core/types/int,koka-redex/term/term>(n, i, t)), s@0)));
+        });
+      ((koka-redex/term/TVar((n@0: std/core/types/string) : std/core/types/string, (i@0: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@11: koka-redex/term/term), (t@0: koka-redex/term/term)
+         -> (match ((koka-redex/logic/occurs-internal(n@0, i@0, t@0, s@0))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@12: std/core/types/bool)
+             -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@13: std/core/types/bool)
+             -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>((std/core/types/Cons<(std/core/types/string, std/core/types/int, koka-redex/term/term)>((std/core/types/Tuple3<std/core/types/string,std/core/types/int,koka-redex/term/term>(n@0, i@0, t@0)), s@0)));
+        });
+      ((koka-redex/term/TAtom((a2: std/core/types/string) : std/core/types/string) : koka-redex/term/term ) as @pat@16: koka-redex/term/term), ((koka-redex/term/TAtom((a1: std/core/types/string) : std/core/types/string) : koka-redex/term/term ) as @pat@15: koka-redex/term/term)
+         -> (match ((std/core/string/(==)(a1, a2))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@17: std/core/types/bool)
+             -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>(s@0);
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@18: std/core/types/bool)
+             -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+        });
+      ((koka-redex/term/TInt((i2@0: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@21: koka-redex/term/term), ((koka-redex/term/TInt((i1@0: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@20: koka-redex/term/term)
+         -> (match ((std/core/int/(==)(i1@0, i2@0))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@22: std/core/types/bool)
+             -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>(s@0);
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@23: std/core/types/bool)
+             -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+        });
+      ((koka-redex/term/TRef((b: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@26: koka-redex/term/term), ((koka-redex/term/TRef((a: std/core/types/int) : std/core/types/int) : koka-redex/term/term ) as @pat@25: koka-redex/term/term)
+         -> (match ((std/core/int/(==)(a, b))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@27: std/core/types/bool)
+             -> std/core/types/Just<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>(s@0);
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@28: std/core/types/bool)
+             -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+        });
+      ((koka-redex/term/TNode((n2@0: std/core/types/string) : std/core/types/string, (as2: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/term ) as @pat@31: koka-redex/term/term), ((koka-redex/term/TNode((n1@0: std/core/types/string) : std/core/types/string, (as1: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/term ) as @pat@30: koka-redex/term/term)
+         -> (match ((std/core/string/(==)(n1@0, n2@0))) {
+          ((std/core/types/True() : std/core/types/bool ) as @pat@32: std/core/types/bool)
+             -> koka-redex/logic/unify-args-internal(as1, as2, s@0);
+          ((@skip std/core/types/False() : std/core/types/bool ) as @pat@33: std/core/types/bool)
+             -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+        });
+      (@pat@14: koka-redex/term/term), (@pat@10: koka-redex/term/term)
+         -> std/core/types/Nothing<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>>;
+    };
+  };
+inline borrow "^" fun logic/@cfc // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@x: std/core/types/int) : std/core/types/int, (@pat@0: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun logic/@fun-unify // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@x: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun unify/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@fun-unify: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-unify;
+    });
+  };
+inline fun unify // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(t1: koka-redex/term/term, t2: koka-redex/term/term){
+    std/core/hnd/@perform2<koka-redex/term/term,koka-redex/term/term,(),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(logic :: (E, V) -> V)>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#unify/@select, t1, t2);
+  };
+inline borrow "^" fun logic/@fun-walk // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun walk/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@fun-walk: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-walk;
+    });
+  };
+inline fun walk // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(t: koka-redex/term/term){
+    std/core/hnd/@perform1<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#walk/@select, t);
+  };
+inline borrow "^" fun logic/@fun-resolve // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun resolve/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@fun-resolve: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-resolve;
+    });
+  };
+inline fun resolve // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(t: koka-redex/term/term){
+    std/core/hnd/@perform1<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#resolve/@select, t);
+  };
+inline borrow "^" fun logic/@fun-resolve-fact // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun resolve-fact/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@fun-resolve-fact: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-resolve-fact;
+    });
+  };
+inline fun resolve-fact // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(f: koka-redex/term/fact){
+    std/core/hnd/@perform1<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#resolve-fact/@select, f);
+  };
+inline borrow "^" fun logic/@fun-freshv // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun freshv/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@fun-freshv: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-freshv;
+    });
+  };
+inline fun freshv // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(pre: std/core/types/string){
+    std/core/hnd/@perform1<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#freshv/@select, pre);
+  };
+inline borrow "^" fun logic/@fun-save // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@x: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun save/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@fun-save: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-save;
+    });
+  };
+inline fun save // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(){
+    std/core/hnd/@perform0<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(logic :: (E, V) -> V)>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#save/@select);
+  };
+inline borrow "^" fun logic/@fun-restore // inline size: 0
+  = forall<(e :: E),a> fn(logic: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (logic) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@x: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @x;
+    });
+  };
+inline borrow "^" fun restore/@select // inline size: 0
+  = forall<(e :: E),a> fn(hnd: (logic :: (E, V) -> V)<(e :: E),a>){
+    (match (hnd) {
+      ((@skip koka-redex/logic/@Hnd-logic((@pat@0: std/core/types/int) : std/core/types/int, (@pat@1: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<std/core/types/string,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@2: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>, (@pat@3: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/fact,koka-redex/term/fact,(logic :: (E, V) -> V),(e :: E),a>, (@fun-restore: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@4: (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause0 :: (V, (E, V) -> V, E, V) -> V)<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(logic :: (E, V) -> V),(e :: E),a>, (@pat@5: (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause2 :: (V, V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(),(logic :: (E, V) -> V),(e :: E),a>, (@pat@6: (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (std/core/hnd/clause1 :: (V, V, (E, V) -> V, E, V) -> V)<koka-redex/term/term,koka-redex/term/term,(logic :: (E, V) -> V),(e :: E),a>) : (logic :: (E, V) -> V)<(e :: E),a> ) as @pat: ((logic :: (E, V) -> V)<(e :: E),a>))
+         -> @fun-restore;
+    });
+  };
+inline fun restore // inline size: 5
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>(s: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>){
+    std/core/hnd/@perform1<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,(),(logic :: (E, V) -> V),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>>((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/hnd/ev-index) -> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>,(i : std/core/hnd/ev-index) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> (std/core/hnd/ev :: ((E, V) -> V) -> V)<(logic :: (E, V) -> V)>>((std/core/hnd/@evv-at<(logic :: (E, V) -> V)>))((std/core/types/@open<(std/core/types/total :: E),<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>>,(i : std/core/types/int) -> std/core/types/ssize_t,(i : std/core/types/int) -> <(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>> std/core/types/ssize_t>(std/core/types/@make-ssize_t)(0)))), koka-redex/logic/#restore/@select, s);
+  };
+fun freshen-fact // inline size: 3
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>,(std/core/types/div :: X)>>(@pat-x72_18: koka-redex/term/fact, rs: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>){
+    match (@pat-x72_18) {
+      ((@skip koka-redex/term/Fact((pred: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/fact ) as @pat: koka-redex/term/fact)
+         -> (match ((koka-redex/logic/freshen-terms(args, rs))) {
+          ((@skip std/core/types/Tuple2((rs1: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (args1: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>) ) as @pat@0: ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>))
+             -> std/core/types/Tuple2<(std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>,koka-redex/term/fact>(rs1, (koka-redex/term/Fact(pred, args1)));
+        });
+    };
+  };
+fun freshen-rule // inline size: 4
+  = fn<<(std/core/types/handled :: ((E, V) -> V) -> X)<(logic :: (E, V) -> V)>,(std/core/types/div :: X)>>(r: koka-redex/term/rule){
+    match (r) {
+      ((@skip koka-redex/term/Rule((name: std/core/types/string) : std/core/types/string, (premises: (std/core/types/list :: V -> V)<koka-redex/term/fact>) : (std/core/types/list :: V -> V)<koka-redex/term/fact>, ((@skip koka-redex/term/Fact((@pat@0: std/core/types/string) : std/core/types/string, (@pat@1: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/fact ) as conclusion: koka-redex/term/fact) : koka-redex/term/fact) : koka-redex/term/rule ) as @pat: koka-redex/term/rule)
+         -> (match (conclusion) {
+          ((@skip koka-redex/term/Fact((pred: std/core/types/string) : std/core/types/string, (args: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : koka-redex/term/fact ) as @pat@2: koka-redex/term/fact)
+             -> (match ((koka-redex/logic/freshen-terms(args, (std/core/types/Nil<(std/core/types/string, std/core/types/int, koka-redex/term/term)>)))) {
+              ((@skip std/core/types/Tuple2((rs1: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (args1: (std/core/types/list :: V -> V)<koka-redex/term/term>) : (std/core/types/list :: V -> V)<koka-redex/term/term>) : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>) ) as @pat@0@0: ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/term>))
+                 -> (match ((koka-redex/logic/freshen-facts(premises, rs1))) {
+                  ((@skip std/core/types/Tuple2((@pat@6: (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>) : (std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (prems1: (std/core/types/list :: V -> V)<koka-redex/term/fact>) : (std/core/types/list :: V -> V)<koka-redex/term/fact>) : ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>) ) as @pat@5: ((std/core/types/list :: V -> V)<(std/core/types/string, std/core/types/int, koka-redex/term/term)>, (std/core/types/list :: V -> V)<koka-redex/term/fact>))
+                     -> koka-redex/term/Rule(name, prems1, (koka-redex/term/Fact(pred, args1)));
+                });
+            });
+        });
+    };
+  };

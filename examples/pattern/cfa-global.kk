@@ -1,11 +1,15 @@
 module examples/pattern/cfa-global
 
-// 0CFA with global store widening.
+// 0CFA with global store widening and explicit reachability.
 //
-// Instead of threading a store through evaluation, bindings are a
-// separate relation: bind(x, v). Rules produce bind facts as
-// additional conclusions. Lookup reads from the bind table.
-// The set-join lattice on bind accumulates all values per variable.
+// Relations:
+//   eval(e, v)    — expression e evaluates to value v
+//   bind(x, v)    — variable x is bound to value v (global store)
+//   reach(e)      — expression e is reachable for evaluation
+//
+// Reachability drives the analysis: reach facts propagate through
+// sub-expressions, bind facts are asserted when reaching application
+// sites, and eval computes values for reachable expressions.
 
 import koka-redex/forward-bridge
 import koka-redex/derive
@@ -20,7 +24,6 @@ type expr
   EApp(e1: expr, e2: expr)
   ELam(x: string, body: expr)
 
-// Con-info for auto-derived to-term / from-term
 type var-expr
 val var-expr/con-name : name<var-expr> = Name("var")
 type app-expr
@@ -57,6 +60,10 @@ type r-bind
   RBind
 val r-bind/judgment-name : name<r-bind> = Name("bind")
 
+type r-reach
+  RReach
+val r-reach/judgment-name : name<r-reach> = Name("reach")
+
 // ----------------------------------------------------------------------------
 // Pattern constructors
 // ----------------------------------------------------------------------------
@@ -65,24 +72,38 @@ fun p-var(nm: pat<string>): pat<expr>
   PatTerm(TNode("var", [nm.to-term]))
 fun p-app(e1: pat<expr>, e2: pat<expr>): pat<expr>
   PatTerm(TNode("app", [e1.to-term, e2.to-term]))
+val unit-pat : pat<term> = PatTerm(TAtom("*"))
+
 fun p-lam(x: pat<string>, body: pat<expr>): pat<expr>
   PatTerm(TNode("lam", [x.to-term, body.to-term]))
 
 // ----------------------------------------------------------------------------
 // Rules
 //
-// E-Lam: λx.e ⇓ λx.e
+// E-Lam:       λx.e ⇓ λx.e
 //
-// E-Var: x ∈ v          (lookup from bind table)
-//        ─────
-//        var(x) ⇓ v
+// E-Var:       x ∈ v
+//              ─────
+//              var(x) ⇓ v
 //
-// E-App: e1 ⇓ λx.e3
-//        e2 ⇓ v2
-//        e3 ⇓ v
-//        ─────────────
-//        app(e1,e2) ⇓ v
-//        x ∈ v2          (side-effect: add binding)
+// E-App:       reach(app(e1,e2))
+//              e1 ⇓ λx.e3
+//              e2 ⇓ v2
+//              e3 ⇓ v
+//              ─────
+//              app(e1,e2) ⇓ v
+//
+// Reach-App:   reach(app(e1,e2))
+//              ─────
+//              reach(e1)
+//              reach(e2)
+//
+// Reach-Body:  reach(app(e1,e2))
+//              e1 ⇓ λx.e3
+//              e2 ⇓ v2
+//              ─────
+//              reach(e3)
+//              x ∈ v2
 // ----------------------------------------------------------------------------
 
 fun cfa-relation()
@@ -106,19 +127,36 @@ fun cfa-relation()
     x |- RBind \ v
     --- "E-Var" -->
     p-var(x) |- REval \ v)
-  // E-App: application with global bind as side-effect conclusion
+  // E-App: application (requires reachability)
   with rule(
-    e1 |- REval \ p-lam(x, e3) \\
-    e2 |- REval \ v2
-    --- "E-App-Bind" -->
-    p-app(e1, e2) |- REval \ v \\
-    x |- RBind \ v2)
-  rule(
+    p-app(e1, e2) |- RReach \ unit-pat \\
     e1 |- REval \ p-lam(x, e3) \\
     e2 |- REval \ v2 \\
     e3 |- REval \ v
     --- "E-App" -->
     p-app(e1, e2) |- REval \ v)
+  // Reach-App: propagate reachability to sub-expressions (one per sub-expr)
+  with rule(
+    p-app(e1, e2) |- RReach \ unit-pat
+    --- "Reach-App-L" -->
+    e1 |- RReach \ unit-pat)
+  with rule(
+    p-app(e1, e2) |- RReach \ unit-pat
+    --- "Reach-App-R" -->
+    e2 |- RReach \ unit-pat)
+  // Reach-Body: reaching an app site makes body reachable
+  with rule(
+    p-app(e1, e2) |- RReach \ unit-pat \\
+    e1 |- REval \ p-lam(x, e3)
+    --- "Reach-Body" -->
+    e3 |- RReach \ unit-pat)
+  // Bind: reaching an app site with known function and argument binds x
+  single/rule(
+    p-app(e1, e2) |- RReach \ unit-pat \\
+    e1 |- REval \ p-lam(x, e3) \\
+    e2 |- REval \ v2
+    --- "Bind" -->
+    x |- RBind \ v2)
 
 // ----------------------------------------------------------------------------
 // Run
@@ -131,11 +169,15 @@ pub fun main()
   // Example 1: (λx.x)(λz.z)
   println("--- (λx.x)(λz.z) ---")
   val id-fn = ELam("x", EVar("x"))
-  val goal1 = pat(EApp(id-fn, ELam("z", EVar("z")))) |- REval \ (fresh-pat("v") : pat<expr>)
-  val table1 = forward-search(goal1, rel)
+  val prog1 = EApp(id-fn, ELam("z", EVar("z")))
+  // Seed reach(prog) and search for eval(prog, ?)
+  val reach1 = Fact("reach", [prog1.to-term, TAtom("*")])
+  val eval-goal1 = pat(prog1) |- REval \ (fresh-pat("v") : pat<expr>)
+  val table1 = forward-search(eval-goal1, rel, ?initial-facts=[reach1])
   println("Entries: " ++ table1.length.show)
   table1.foreach fn(kv)
-    println("  " ++ kv.fst ++ " -> " ++ kv.snd.map(show).join(", "))
+    if kv.snd.length > 0 then
+      println("  " ++ kv.fst ++ " -> " ++ kv.snd.map(show).join(", "))
 
   // Example 2: let f = λx.x in (f λa.a)(f λb.b)
   println("\n--- let f = λx.x in (f λa.a)(f λb.b) ---")
@@ -143,15 +185,16 @@ pub fun main()
   val lam-b = ELam("b", EVar("b"))
   val body = EApp(EApp(EVar("f"), lam-a), EApp(EVar("f"), lam-b))
   val prog2 = EApp(ELam("f", body), id-fn)
-  val goal2 = pat(prog2) |- REval \ (fresh-pat("v") : pat<expr>)
-  val table2 = forward-search(goal2, rel)
+  val reach2 = Fact("reach", [prog2.to-term, TAtom("*")])
+  val eval-goal2 = pat(prog2) |- REval \ (fresh-pat("v") : pat<expr>)
+  val table2 = forward-search(eval-goal2, rel, ?initial-facts=[reach2])
   println("Entries: " ++ table2.length.show)
 
   // Show bind table entries (the global store)
   println("\nGlobal store (bind table):")
   val binds = table2.filter(fn(kv) kv.fst.starts-with("bind(").is-just)
   binds.foreach fn(kv)
-    println("  " ++ kv.fst ++ " -> " ++ kv.snd.length.show ++ " values")
+    println("  " ++ kv.fst ++ ": " ++ kv.snd.length.show ++ " values")
     kv.snd.foreach fn(f) println("    " ++ f.show)
 
   // Show over-approximation

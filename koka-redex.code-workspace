@@ -28,13 +28,9 @@
 			"path": "../../timwhitingdev"
 		},
 		{
-			"path": "../../koka/.worktrees/redex"
-		},
-		{
 			"path": "../../koka-community/compiler"
 		}
 	],
 	"settings": {
-		"koka.dev.developmentPath": "/Users/timwhiting/koka/.worktrees/redex"
 	}
 }

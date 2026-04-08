@@ -390,7 +390,8 @@ pub fun forward-search(
   rel: relation-def<r>,
   ?to-fact: g -> div fact,
   ?to-list: r -> div list<relation-entry>,
-  ?collect-sigs: relation-def<r> -> <div,exn> list<judgment-sig>
+  ?collect-sigs: relation-def<r> -> <div,exn> list<judgment-sig>,
+  ?initial-facts: list<fact>
 ): <div,exn> list<(string, list<fact>)>
   val entries = to-list(rel.rules)
   val (rules, ext-pairs) = partition-entries(entries)
@@ -398,5 +399,5 @@ pub fun forward-search(
   val sigs = rel.collect-sigs
   val mk = sigs-to-memo-key(sigs)
   val policies = sigs-to-policies(sigs)
-  koka-redex/forward/forward-search(goal.to-fact, rules, ?external=ext, ?memo-key=mk, ?lattice-policies=policies)
+  koka-redex/forward/forward-search(goal.to-fact, rules, ?external=ext, ?memo-key=mk, ?lattice-policies=policies, ?initial-facts=initial-facts)
 

@@ -124,17 +124,17 @@ pub fun forward-eval(
       match matched
         Nothing -> none()  // no conclusion matches
         Just(primary) ->
+          // trace("  Rule: " ++ rf.name ++ " matched goal " ++ key ++ " premises: " ++ rf.premises.map(show).join(", "))
           unify-facts(goal, primary)  // re-unify to bind variables
-          forward-premises(rf.premises, rules, ?external=external, ?memo-key=memo-key)
-          // Add all resolved conclusions to their tables
-          val primary-resolved = normalize-fact(resolve-fact(primary))
-          rf.conclusions.foreach fn(c)
-            val resolved = normalize-fact(resolve-fact(c))
-            if !fact/eq(resolved, primary-resolved) then
-              val extra-key = memo-key(normalize-fact(resolved))
-              trace("Add result: " ++ extra-key ++ " resolved: " ++ resolved.show)
-              add-result(extra-key, normalize-fact(resolved))
-          primary-resolved
+          // Collect non-primary conclusions (different predicate from primary)
+          val primary-pred = match primary
+            Fact(p, _) -> p
+          val extras = rf.conclusions.filter fn(c)
+            match c
+              Fact(p, _) -> p != primary-pred
+          // trace("  Extras: " ++ extras.length.show ++ " conclusions: " ++ extras.map(show).join(", "))
+          forward-premises-with-extras(rf.premises, extras, rules, ?external=external, ?memo-key=memo-key)
+          resolve-fact(primary)
   val ext-branches : list<() -> <cache<string,search-result>,logic,div,exn> search-result> = match external(goal)
     Just(results) -> results.map(fn(r) fn() r)
     Nothing -> []
@@ -188,6 +188,41 @@ fun forward-premises(
           forward-premises(rest.map(fst), rules, ?external=external, ?memo-key=memo-key)
         Nil -> ()
 
+// Like forward-premises but also asserts extra conclusions as soon as they become ground
+fun forward-premises-with-extras(
+  premises: list<fact>,
+  extras: list<fact>,
+  rules: list<rule>,
+  ?external: external-solver,
+  ?memo-key: (fact) -> div string
+): <cache<string, search-result>, logic, div, exn> ()
+  // Assert any extra conclusions that are now fully ground
+  extras.foreach fn(c)
+    val resolved = resolve-fact(c)
+    // trace("  Check extra: " ++ resolved.show ++ " ground=" ++ resolved.is-ground.show)
+    if resolved.is-ground then
+      val extra-key = memo-key(normalize-fact(resolved))
+      // trace("  Mid-rule assert: " ++ resolved.show ++ " key=" ++ extra-key)
+      add-result(extra-key, resolved)
+  // Evaluate remaining premises
+  match premises
+    Nil -> ()
+    _ ->
+      val resolved = premises.map(fn(p) (p, resolve-fact(p)))
+      val sorted = resolved.sort-by-groundness
+      match sorted
+        Cons((p, p-resolved), rest) ->
+          val result = match external(p-resolved)
+            Just(results) ->
+              if results.is-empty then none()
+              else do-each(results)
+            Nothing ->
+              forward-eval(p-resolved, rules, ?external=external, ?memo-key=memo-key)
+          unify-facts(p, result)
+          // Recurse — re-check extras after each premise
+          forward-premises-with-extras(rest.map(fst), extras, rules, ?external=external, ?memo-key=memo-key)
+        Nil -> ()
+
 // ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
@@ -197,16 +232,23 @@ pub fun forward-search(
   rules: list<rule>,
   ?external: external-solver,
   ?memo-key: (fact) -> div string,
-  ?lattice-policies: list<(string, join-policy)>
+  ?lattice-policies: list<(string, join-policy)>,
+  ?initial-facts: list<fact>
 ): <div,exn> list<(string, list<search-result>)>
   val table =
     with cache(?change-lattice = make-lattice(lattice-policies),
                ?order2 = string/order2,
                ?k/show = fn(s) s,
                ?r/show = fn(f: fact) unsafe-total({f.show}))
+    // Seed initial facts into the table
+    initial-facts.foreach fn(f)
+      val key = memo-key(normalize-fact(f))
+      add-result(key, f)
     with-logic({none()})
       forward-eval(goal, rules, ?external=external, ?memo-key=memo-key)
   table.list
+
+pub val default/initial-facts : list<fact> = []
 
 pub val default/lattice-policies : list<(string, join-policy)> = []
 // kki test
